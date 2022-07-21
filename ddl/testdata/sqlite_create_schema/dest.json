@@ -1,0 +1,93 @@
+{
+  "Dialect": "sqlite",
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "actor",
+          "SQL": "CREATE TABLE actor (\n    actor_id INTEGER PRIMARY KEY AUTOINCREMENT\n    ,first_name TEXT NOT NULL\n    ,last_name TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "first_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "last_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "actor",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "actor",
+              "IndexName": "actor_last_name_idx",
+              "Columns": [
+                "last_name"
+              ],
+              "SQL": "CREATE INDEX actor_last_name_idx ON actor (last_name);"
+            }
+          ]
+        },
+        {
+          "TableName": "category",
+          "SQL": "CREATE TABLE category (\n    category_id INTEGER PRIMARY KEY\n    ,name TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "category",
+              "ColumnName": "category_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "category",
+              "ColumnName": "name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "category",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "category",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

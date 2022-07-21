@@ -1,0 +1,1940 @@
+{
+  "Dialect": "sqlite",
+  "VersionNums": [
+    3,
+    38,
+    5
+  ],
+  "DefaultCollationValid": true,
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "actor",
+          "SQL": "CREATE TABLE actor (\n    actor_id INTEGER PRIMARY KEY AUTOINCREMENT\n    ,first_name TEXT NOT NULL\n    ,last_name TEXT NOT NULL\n    ,full_name TEXT GENERATED ALWAYS AS (first_name || ' ' || last_name) VIRTUAL\n    ,full_name_reversed TEXT GENERATED ALWAYS AS (last_name || ' ' || first_name) VIRTUAL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "first_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "last_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "full_name",
+              "ColumnType": "TEXT",
+              "IsGenerated": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "full_name_reversed",
+              "ColumnType": "TEXT",
+              "IsGenerated": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "actor",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "actor",
+              "IndexName": "actor_last_name_idx",
+              "Columns": [
+                "last_name"
+              ],
+              "SQL": "CREATE INDEX actor_last_name_idx ON actor (last_name);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "actor",
+              "TriggerName": "actor_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER actor_last_update_after_update_trg AFTER UPDATE ON actor BEGIN\n    UPDATE actor SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "address",
+          "SQL": "CREATE TABLE address (\n    address_id INTEGER PRIMARY KEY\n    ,address TEXT NOT NULL\n    ,address2 TEXT\n    ,district TEXT NOT NULL\n    ,city_id INT NOT NULL\n    ,postal_code TEXT\n    ,phone TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT address_city_id_fkey FOREIGN KEY (city_id) REFERENCES city (city_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "address",
+              "ColumnName": "address_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "address",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "address2",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "district",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "city_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "city",
+              "ReferencesColumn": "city_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "postal_code",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "phone",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "address",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "address_id"
+              ]
+            },
+            {
+              "TableName": "address",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "city_id"
+              ],
+              "ReferencesTable": "city",
+              "ReferencesColumns": [
+                "city_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "address",
+              "IndexName": "address_city_id_idx",
+              "Columns": [
+                "city_id"
+              ],
+              "SQL": "CREATE INDEX address_city_id_idx ON address (city_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "address",
+              "TriggerName": "address_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER address_last_update_after_update_trg AFTER UPDATE ON address BEGIN\n    UPDATE address SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "category",
+          "SQL": "CREATE TABLE category (\n    category_id INTEGER PRIMARY KEY\n    ,name TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "category",
+              "ColumnName": "category_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "category",
+              "ColumnName": "name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "category",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "category",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category_id"
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "category",
+              "TriggerName": "category_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER category_last_update_after_update_trg AFTER UPDATE ON category BEGIN\n    UPDATE category SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "city",
+          "SQL": "CREATE TABLE city (\n    city_id INTEGER PRIMARY KEY\n    ,city TEXT NOT NULL\n    ,country_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT city_country_id_fkey FOREIGN KEY (country_id) REFERENCES country (country_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "city",
+              "ColumnName": "city_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "city",
+              "ColumnName": "city",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "city",
+              "ColumnName": "country_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "city",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "city",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "city_id"
+              ]
+            },
+            {
+              "TableName": "city",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "city",
+              "IndexName": "city_country_id_idx",
+              "Columns": [
+                "country_id"
+              ],
+              "SQL": "CREATE INDEX city_country_id_idx ON city (country_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "city",
+              "TriggerName": "city_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER city_last_update_after_update_trg AFTER UPDATE ON city BEGIN\n    UPDATE city SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "country",
+          "SQL": "CREATE TABLE country (\n    country_id INTEGER PRIMARY KEY\n    ,country TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "country",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "country",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "country",
+              "TriggerName": "country_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER country_last_update_after_update_trg AFTER UPDATE ON country BEGIN\n    UPDATE country SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "customer",
+          "SQL": "CREATE TABLE customer (\n    customer_id INTEGER PRIMARY KEY\n    ,store_id INT NOT NULL\n    ,first_name TEXT NOT NULL\n    ,last_name TEXT NOT NULL\n    ,email TEXT\n    ,address_id INT NOT NULL\n    ,active INT NOT NULL DEFAULT TRUE\n    ,create_date TIMESTAMP NOT NULL DEFAULT (unixepoch())\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT customer_email_first_name_last_name_key UNIQUE (email, first_name, last_name)\n    ,CONSTRAINT customer_store_id_fkey FOREIGN KEY (store_id) REFERENCES store (store_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT customer_email_key UNIQUE (email)\n    ,CONSTRAINT customer_address_id_fkey FOREIGN KEY (address_id) REFERENCES address (address_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "customer",
+              "ColumnName": "customer_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "store_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "first_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "last_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "email",
+              "ColumnType": "TEXT",
+              "IsUnique": true
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "address_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "active",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ColumnDefault": "TRUE"
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "create_date",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            },
+            {
+              "TableName": "customer",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "customer",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "customer",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "customer_id"
+              ]
+            },
+            {
+              "TableName": "customer",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableName": "customer",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email",
+                "first_name",
+                "last_name"
+              ]
+            },
+            {
+              "TableName": "customer",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "customer",
+              "IndexName": "customer_address_id_idx",
+              "Columns": [
+                "address_id"
+              ],
+              "SQL": "CREATE INDEX customer_address_id_idx ON customer (address_id);"
+            },
+            {
+              "TableName": "customer",
+              "IndexName": "customer_last_name_idx",
+              "Columns": [
+                "last_name"
+              ],
+              "SQL": "CREATE INDEX customer_last_name_idx ON customer (last_name);"
+            },
+            {
+              "TableName": "customer",
+              "IndexName": "customer_store_id_idx",
+              "Columns": [
+                "store_id"
+              ],
+              "SQL": "CREATE INDEX customer_store_id_idx ON customer (store_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "customer",
+              "TriggerName": "customer_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER customer_last_update_after_update_trg AFTER UPDATE ON customer BEGIN\n    UPDATE customer SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "department",
+          "SQL": "CREATE TABLE department (\n    department_id UUID NOT NULL\n    ,name TEXT NOT NULL\n\n    ,CONSTRAINT department_department_id_pkey PRIMARY KEY (department_id)\n);",
+          "Columns": [
+            {
+              "TableName": "department",
+              "ColumnName": "department_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "department",
+              "ColumnName": "name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "department",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "department_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableName": "employee",
+          "SQL": "CREATE TABLE employee (\n    employee_id UUID NOT NULL\n    ,name TEXT NOT NULL\n    ,title TEXT NOT NULL\n    ,manager_id UUID\n\n    ,CONSTRAINT employee_employee_id_pkey PRIMARY KEY (employee_id)\n    ,CONSTRAINT employee_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES employee (employee_id)\n);",
+          "Columns": [
+            {
+              "TableName": "employee",
+              "ColumnName": "employee_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "employee",
+              "ColumnName": "name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "employee",
+              "ColumnName": "title",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "employee",
+              "ColumnName": "manager_id",
+              "ColumnType": "UUID",
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "employee",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id"
+              ]
+            },
+            {
+              "TableName": "employee",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_id"
+              ],
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "employee",
+              "IndexName": "employee_manager_id_idx",
+              "Columns": [
+                "manager_id"
+              ],
+              "SQL": "CREATE INDEX employee_manager_id_idx ON employee (manager_id);"
+            }
+          ]
+        },
+        {
+          "TableName": "employee_department",
+          "SQL": "CREATE TABLE employee_department (\n    employee_id UUID NOT NULL\n    ,department_id UUID NOT NULL\n\n    ,CONSTRAINT employee_department_employee_id_department_id_pkey PRIMARY KEY (employee_id, department_id)\n    ,CONSTRAINT employee_department_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES employee (employee_id)\n    ,CONSTRAINT employee_department_department_id_fkey FOREIGN KEY (department_id) REFERENCES department (department_id)\n);",
+          "Columns": [
+            {
+              "TableName": "employee_department",
+              "ColumnName": "employee_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true,
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            },
+            {
+              "TableName": "employee_department",
+              "ColumnName": "department_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true,
+              "ReferencesTable": "department",
+              "ReferencesColumn": "department_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "employee_department",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "department_id"
+              ],
+              "ReferencesTable": "department",
+              "ReferencesColumns": [
+                "department_id"
+              ]
+            },
+            {
+              "TableName": "employee_department",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id"
+              ],
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            },
+            {
+              "TableName": "employee_department",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "employee_department",
+              "IndexName": "employee_department_department_id_idx",
+              "Columns": [
+                "department_id"
+              ],
+              "SQL": "CREATE INDEX employee_department_department_id_idx ON employee_department (department_id);"
+            },
+            {
+              "TableName": "employee_department",
+              "IndexName": "employee_department_employee_id_idx",
+              "Columns": [
+                "employee_id"
+              ],
+              "SQL": "CREATE INDEX employee_department_employee_id_idx ON employee_department (employee_id);"
+            }
+          ]
+        },
+        {
+          "TableName": "film",
+          "SQL": "CREATE TABLE film (\n    film_id INTEGER PRIMARY KEY\n    ,title TEXT NOT NULL\n    ,description TEXT\n    ,release_year INT\n    ,language_id INT NOT NULL\n    ,original_language_id INT\n    ,rental_duration INT NOT NULL DEFAULT 3\n    ,rental_rate REAL NOT NULL DEFAULT 4.99\n    ,length INT\n    ,replacement_cost REAL NOT NULL DEFAULT 19.99\n    ,rating TEXT DEFAULT 'G'\n    ,special_features JSON\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT film_year_check CHECK (release_year \u003e= 1901 AND release_year \u003c= 2155)\n    ,CONSTRAINT film_language_id_fkey FOREIGN KEY (language_id) REFERENCES language (language_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT film_original_language_id_fkey FOREIGN KEY (original_language_id) REFERENCES language (language_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT film_rating_check CHECK (rating IN ('G','PG','PG-13','R','NC-17'))\n);",
+          "Columns": [
+            {
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "description",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "release_year",
+              "ColumnType": "INT"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "language_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "original_language_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "rental_duration",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ColumnDefault": "3"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "rental_rate",
+              "ColumnType": "REAL",
+              "IsNotNull": true,
+              "ColumnDefault": "4.99"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "length",
+              "ColumnType": "INT"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "replacement_cost",
+              "ColumnType": "REAL",
+              "IsNotNull": true,
+              "ColumnDefault": "19.99"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "rating",
+              "ColumnType": "TEXT",
+              "ColumnDefault": "'G'"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "special_features",
+              "ColumnType": "JSON"
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "film",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id"
+              ]
+            },
+            {
+              "TableName": "film",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "language_id"
+              ],
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "original_language_id"
+              ],
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "film",
+              "IndexName": "film_language_id_idx",
+              "Columns": [
+                "language_id"
+              ],
+              "SQL": "CREATE INDEX film_language_id_idx ON film (language_id);"
+            },
+            {
+              "TableName": "film",
+              "IndexName": "film_original_language_id_idx",
+              "Columns": [
+                "original_language_id"
+              ],
+              "SQL": "CREATE INDEX film_original_language_id_idx ON film (original_language_id);"
+            },
+            {
+              "TableName": "film",
+              "IndexName": "film_title_idx",
+              "Columns": [
+                "title"
+              ],
+              "SQL": "CREATE INDEX film_title_idx ON film (title);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "film",
+              "TriggerName": "film_fts5_after_delete_trg",
+              "SQL": "CREATE TRIGGER film_fts5_after_delete_trg AFTER DELETE ON film BEGIN\n    INSERT INTO film_text (film_text, ROWID, title, description) VALUES ('delete', OLD.film_id, OLD.title, OLD.description);\nEND;"
+            },
+            {
+              "TableName": "film",
+              "TriggerName": "film_fts5_after_insert_trg",
+              "SQL": "CREATE TRIGGER film_fts5_after_insert_trg AFTER INSERT ON film BEGIN\n    INSERT INTO film_text (ROWID, title, description) VALUES (NEW.film_id, NEW.title, NEW.description);\nEND;"
+            },
+            {
+              "TableName": "film",
+              "TriggerName": "film_fts5_after_update_trg",
+              "SQL": "CREATE TRIGGER film_fts5_after_update_trg AFTER UPDATE ON film BEGIN\n    INSERT INTO film_text (film_text, ROWID, title, description) VALUES ('delete', OLD.film_id, OLD.title, OLD.description);\n    INSERT INTO film_text (ROWID, title, description) VALUES (NEW.film_id, NEW.title, NEW.description);\nEND;"
+            },
+            {
+              "TableName": "film",
+              "TriggerName": "film_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER film_last_update_after_update_trg AFTER UPDATE ON film BEGIN\n    UPDATE film SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "film_actor",
+          "SQL": "CREATE TABLE film_actor (\n    actor_id INT NOT NULL\n    ,film_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT film_actor_actor_id_film_id_pkey PRIMARY KEY (actor_id, film_id)\n    ,CONSTRAINT film_actor_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES actor (actor_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT film_actor_film_id_fkey FOREIGN KEY (film_id) REFERENCES film (film_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "film_actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_actor",
+              "ColumnName": "film_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_actor",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "film_actor",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "actor_id"
+              ],
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_actor",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id",
+                "film_id"
+              ]
+            },
+            {
+              "TableName": "film_actor",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "film_actor",
+              "IndexName": "film_actor_film_id_idx",
+              "Columns": [
+                "film_id"
+              ],
+              "SQL": "CREATE INDEX film_actor_film_id_idx ON film_actor (film_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "film_actor",
+              "TriggerName": "film_actor_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER film_actor_last_update_after_update_trg AFTER UPDATE ON film_actor BEGIN\n    UPDATE film_actor SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "film_category",
+          "SQL": "CREATE TABLE film_category (\n    film_id INT NOT NULL\n    ,category_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT film_category_film_id_category_id_pkey PRIMARY KEY (film_id, category_id)\n    ,CONSTRAINT film_category_film_id_fkey FOREIGN KEY (film_id) REFERENCES film (film_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT film_category_category_id_fkey FOREIGN KEY (category_id) REFERENCES category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "film_category",
+              "ColumnName": "film_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_category",
+              "ColumnName": "category_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_category",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "film_category",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category_id"
+              ],
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_category",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "film_category",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id",
+                "category_id"
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "film_category",
+              "TriggerName": "film_category_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER film_category_last_update_after_update_trg AFTER UPDATE ON film_category BEGIN\n    UPDATE film_category SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "film_text",
+          "SQL": "CREATE VIRTUAL TABLE film_text USING FTS5 (\n    title\n    ,description\n    ,content='film'\n    ,content_rowid='film_id'\n);",
+          "Columns": [
+            {
+              "TableName": "film_text",
+              "ColumnName": "title"
+            },
+            {
+              "TableName": "film_text",
+              "ColumnName": "description"
+            },
+            {
+              "TableName": "film_text",
+              "ColumnName": "film_text"
+            },
+            {
+              "TableName": "film_text",
+              "ColumnName": "rank"
+            }
+          ]
+        },
+        {
+          "TableName": "inventory",
+          "SQL": "CREATE TABLE inventory (\n    inventory_id INTEGER PRIMARY KEY\n    ,film_id INT NOT NULL\n    ,store_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT inventory_film_id_fkey FOREIGN KEY (film_id) REFERENCES film (film_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT inventory_store_id_fkey FOREIGN KEY (store_id) REFERENCES store (store_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "inventory",
+              "ColumnName": "inventory_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "inventory",
+              "ColumnName": "film_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "inventory",
+              "ColumnName": "store_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "inventory",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "inventory",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "inventory",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "inventory_id"
+              ]
+            },
+            {
+              "TableName": "inventory",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "inventory",
+              "IndexName": "inventory_film_id_idx",
+              "Columns": [
+                "film_id"
+              ],
+              "SQL": "CREATE INDEX inventory_film_id_idx ON inventory (film_id);"
+            },
+            {
+              "TableName": "inventory",
+              "IndexName": "inventory_store_id_film_id_idx",
+              "Columns": [
+                "store_id",
+                "film_id"
+              ],
+              "SQL": "CREATE INDEX inventory_store_id_film_id_idx ON inventory (store_id, film_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "inventory",
+              "TriggerName": "inventory_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER inventory_last_update_after_update_trg AFTER UPDATE ON inventory BEGIN\n    UPDATE inventory SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "language",
+          "SQL": "CREATE TABLE language (\n    language_id INTEGER PRIMARY KEY\n    ,name TEXT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "language",
+              "ColumnName": "language_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "language",
+              "ColumnName": "name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "language",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "language",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "language_id"
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "language",
+              "TriggerName": "language_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER language_last_update_after_update_trg AFTER UPDATE ON language BEGIN\n    UPDATE language SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "payment",
+          "SQL": "CREATE TABLE payment (\n    payment_id INTEGER PRIMARY KEY\n    ,customer_id INT NOT NULL\n    ,staff_id INT NOT NULL\n    ,rental_id INT\n    ,amount REAL NOT NULL\n    ,payment_date TIMESTAMP NOT NULL DEFAULT (unixepoch())\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT payment_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT payment_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental (rental_id) ON UPDATE CASCADE ON DELETE SET NULL\n);",
+          "Columns": [
+            {
+              "TableName": "payment",
+              "ColumnName": "payment_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "customer_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "staff_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "rental_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "rental",
+              "ReferencesColumn": "rental_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "amount",
+              "ColumnType": "REAL",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "payment_date",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            },
+            {
+              "TableName": "payment",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "payment",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "payment",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "payment_id"
+              ]
+            },
+            {
+              "TableName": "payment",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "rental_id"
+              ],
+              "ReferencesTable": "rental",
+              "ReferencesColumns": [
+                "rental_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableName": "payment",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "payment",
+              "IndexName": "payment_customer_id_idx",
+              "Columns": [
+                "customer_id"
+              ],
+              "SQL": "CREATE INDEX payment_customer_id_idx ON payment (customer_id);"
+            },
+            {
+              "TableName": "payment",
+              "IndexName": "payment_rental_id_idx",
+              "Columns": [
+                "rental_id"
+              ],
+              "SQL": "CREATE INDEX payment_rental_id_idx ON payment (rental_id);"
+            },
+            {
+              "TableName": "payment",
+              "IndexName": "payment_staff_id_idx",
+              "Columns": [
+                "staff_id"
+              ],
+              "SQL": "CREATE INDEX payment_staff_id_idx ON payment (staff_id);"
+            }
+          ]
+        },
+        {
+          "TableName": "rental",
+          "SQL": "CREATE TABLE rental (\n    rental_id INTEGER PRIMARY KEY\n    ,rental_date TIMESTAMP NOT NULL DEFAULT (unixepoch())\n    ,inventory_id INT NOT NULL\n    ,customer_id INT NOT NULL\n    ,return_date TIMESTAMP\n    ,staff_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT rental_inventory_id_fkey FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT rental_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT rental_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "rental",
+              "ColumnName": "rental_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "rental_date",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "inventory_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "inventory",
+              "ReferencesColumn": "inventory_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "customer_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "return_date",
+              "ColumnType": "TIMESTAMP"
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "staff_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "rental",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "rental",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "rental",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "inventory_id"
+              ],
+              "ReferencesTable": "inventory",
+              "ReferencesColumns": [
+                "inventory_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "rental",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "rental_id"
+              ]
+            },
+            {
+              "TableName": "rental",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "rental",
+              "IndexName": "rental_customer_id_idx",
+              "Columns": [
+                "customer_id"
+              ],
+              "SQL": "CREATE INDEX rental_customer_id_idx ON rental (customer_id);"
+            },
+            {
+              "TableName": "rental",
+              "IndexName": "rental_inventory_id_customer_id_staff_id_idx",
+              "IsUnique": true,
+              "Columns": [
+                "inventory_id",
+                "customer_id",
+                "staff_id"
+              ],
+              "SQL": "CREATE UNIQUE INDEX rental_inventory_id_customer_id_staff_id_idx ON rental (inventory_id, customer_id, staff_id);"
+            },
+            {
+              "TableName": "rental",
+              "IndexName": "rental_inventory_id_idx",
+              "Columns": [
+                "inventory_id"
+              ],
+              "SQL": "CREATE INDEX rental_inventory_id_idx ON rental (inventory_id);"
+            },
+            {
+              "TableName": "rental",
+              "IndexName": "rental_staff_id_idx",
+              "Columns": [
+                "staff_id"
+              ],
+              "SQL": "CREATE INDEX rental_staff_id_idx ON rental (staff_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "rental",
+              "TriggerName": "rental_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER rental_last_update_after_update_trg AFTER UPDATE ON rental BEGIN\n    UPDATE rental SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "staff",
+          "SQL": "CREATE TABLE staff (\n    staff_id INTEGER PRIMARY KEY\n    ,first_name TEXT NOT NULL\n    ,last_name TEXT NOT NULL\n    ,address_id INT NOT NULL\n    ,picture BLOB\n    ,email TEXT\n    ,store_id INT\n    ,active INT NOT NULL DEFAULT TRUE\n    ,username TEXT NOT NULL\n    ,password TEXT\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT staff_address_id_fkey FOREIGN KEY (address_id) REFERENCES address (address_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT staff_email_key UNIQUE (email)\n    ,CONSTRAINT staff_store_id_fkey FOREIGN KEY (store_id) REFERENCES store (store_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "staff",
+              "ColumnName": "staff_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "first_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "last_name",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "address_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "picture",
+              "ColumnType": "BLOB"
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "email",
+              "ColumnType": "TEXT",
+              "IsUnique": true
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "store_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "active",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ColumnDefault": "TRUE"
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "username",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "password",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "staff",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "staff",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "staff",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableName": "staff",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "staff_id"
+              ]
+            },
+            {
+              "TableName": "staff",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "staff",
+              "IndexName": "staff_address_id_idx",
+              "Columns": [
+                "address_id"
+              ],
+              "SQL": "CREATE INDEX staff_address_id_idx ON staff (address_id);"
+            },
+            {
+              "TableName": "staff",
+              "IndexName": "staff_store_id_idx",
+              "Columns": [
+                "store_id"
+              ],
+              "SQL": "CREATE INDEX staff_store_id_idx ON staff (store_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "staff",
+              "TriggerName": "staff_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER staff_last_update_after_update_trg AFTER UPDATE ON staff BEGIN\n    UPDATE staff SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "store",
+          "SQL": "CREATE TABLE store (\n    store_id INTEGER PRIMARY KEY\n    ,manager_staff_id INT NOT NULL\n    ,address_id INT NOT NULL\n    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())\n\n    ,CONSTRAINT store_manager_staff_id_fkey FOREIGN KEY (manager_staff_id) REFERENCES staff (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT\n    ,CONSTRAINT store_address_id_fkey FOREIGN KEY (address_id) REFERENCES address (address_id) ON UPDATE CASCADE ON DELETE RESTRICT\n);",
+          "Columns": [
+            {
+              "TableName": "store",
+              "ColumnName": "store_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "store",
+              "ColumnName": "manager_staff_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "store",
+              "ColumnName": "address_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "store",
+              "ColumnName": "last_update",
+              "ColumnType": "TIMESTAMP",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "store",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "store",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableName": "store",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "store_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "store",
+              "IndexName": "store_address_id_idx",
+              "Columns": [
+                "address_id"
+              ],
+              "SQL": "CREATE INDEX store_address_id_idx ON store (address_id);"
+            },
+            {
+              "TableName": "store",
+              "IndexName": "store_manager_staff_id_idx",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "SQL": "CREATE INDEX store_manager_staff_id_idx ON store (manager_staff_id);"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableName": "store",
+              "TriggerName": "store_last_update_after_update_trg",
+              "SQL": "CREATE TRIGGER store_last_update_after_update_trg AFTER UPDATE ON store BEGIN\n    UPDATE store SET last_update = unixepoch() WHERE ROWID = NEW.ROWID;\nEND;"
+            }
+          ]
+        },
+        {
+          "TableName": "task",
+          "SQL": "CREATE TABLE task (\n    task_id UUID NOT NULL\n    ,employee_id UUID NOT NULL\n    ,department_id UUID NOT NULL\n    ,task TEXT NOT NULL\n    ,data JSON\n\n    ,CONSTRAINT task_task_id_pkey PRIMARY KEY (task_id)\n    ,CONSTRAINT task_employee_id_department_id_fkey FOREIGN KEY (employee_id, department_id) REFERENCES employee_department (employee_id, department_id)\n);",
+          "Columns": [
+            {
+              "TableName": "task",
+              "ColumnName": "task_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "task",
+              "ColumnName": "employee_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "task",
+              "ColumnName": "department_id",
+              "ColumnType": "UUID",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "task",
+              "ColumnName": "task",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "task",
+              "ColumnName": "data",
+              "ColumnType": "JSON"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "task",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "ReferencesTable": "employee_department",
+              "ReferencesColumns": [
+                "employee_id",
+                "department_id"
+              ]
+            },
+            {
+              "TableName": "task",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "task_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "task",
+              "IndexName": "task_data_idx",
+              "SQL": "CREATE INDEX task_data_idx ON task (json_extract(data, '$.deadline') DESC) WHERE data IS NOT NULL;"
+            },
+            {
+              "TableName": "task",
+              "IndexName": "task_employee_id_department_id_idx",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "SQL": "CREATE INDEX task_employee_id_department_id_idx ON task (employee_id, department_id);"
+            },
+            {
+              "TableName": "task",
+              "IndexName": "task_task_idx",
+              "Columns": [
+                "task"
+              ],
+              "SQL": "CREATE INDEX task_task_idx ON task (task DESC);"
+            }
+          ]
+        }
+      ],
+      "Views": [
+        {
+          "ViewName": "actor_info",
+          "SQL": "CREATE VIEW actor_info AS\nSELECT\n    a.actor_id\n    ,a.first_name\n    ,a.last_name\n    ,json_group_object(c.name, (\n        SELECT\n            json_group_array(f.title)\n        FROM\n            film AS f\n            JOIN film_category AS fc ON fc.film_id = f.film_id\n            JOIN film_actor AS fa ON fa.film_id = f.film_id\n        WHERE fc.category_id = c.category_id AND fa.actor_id = a.actor_id\n        GROUP BY fa.actor_id\n    )) AS film_info\nFROM\n    actor AS a\n    LEFT JOIN film_actor AS fa ON fa.actor_id = a.actor_id\n    LEFT JOIN film_category AS fc ON fc.film_id = fa.film_id\n    LEFT JOIN category AS c ON c.category_id = fc.category_id GROUP BY a.actor_id, a.first_name, a.last_name;",
+          "Columns": [
+            "actor_id",
+            "first_name",
+            "last_name",
+            "film_info"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "TEXT",
+            "TEXT",
+            ""
+          ]
+        },
+        {
+          "ViewName": "customer_list",
+          "SQL": "CREATE VIEW customer_list AS\nSELECT\n    cu.customer_id AS id\n    ,cu.first_name || ' ' || cu.last_name AS name\n    ,a.address, a.postal_code AS \"zip code\"\n    ,a.phone, city.city, country.country\n    ,CASE WHEN cu.active THEN 'active' ELSE '' END AS notes\n    ,cu.store_id AS sid\nFROM\n    customer AS cu\n    JOIN address AS a ON a.address_id = cu.address_id\n    JOIN city ON city.city_id = a.city_id\n    JOIN country ON country.country_id = city.country_id;",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "notes",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "",
+            "INT"
+          ]
+        },
+        {
+          "ViewName": "film_list",
+          "SQL": "CREATE VIEW film_list AS\nSELECT\n    film.film_id AS fid\n    ,film.title\n    ,film.description\n    ,category.name AS category\n    ,film.rental_rate AS price\n    ,film.length\n    ,film.rating\n    ,json_group_array(actor.first_name || ' ' || actor.last_name) AS actors\nFROM\n    category\n    LEFT JOIN film_category ON film_category.category_id = category.category_id\n    LEFT JOIN film ON film.film_id = film_category.film_id\n    JOIN film_actor ON film_actor.film_id = film.film_id\n    JOIN actor ON actor.actor_id = film_actor.actor_id\nGROUP BY\n    film.film_id\n    ,film.title\n    ,film.description\n    ,category.name\n    ,film.rental_rate\n    ,film.length\n    ,film.rating;",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "REAL",
+            "INT",
+            "TEXT",
+            ""
+          ]
+        },
+        {
+          "ViewName": "full_address",
+          "SQL": "CREATE VIEW full_address AS\nSELECT\n    country.country_id\n    ,city.city_id\n    ,address.address_id\n    ,country.country\n    ,city.city\n    ,address.address\n    ,address.address2\n    ,address.district\n    ,address.postal_code\n    ,address.phone\n    ,address.last_update\nFROM\n    address\n    JOIN city ON city.city_id = address.city_id\n    JOIN country ON country.country_id = city.country_id;",
+          "Columns": [
+            "country_id",
+            "city_id",
+            "address_id",
+            "country",
+            "city",
+            "address",
+            "address2",
+            "district",
+            "postal_code",
+            "phone",
+            "last_update"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "INTEGER",
+            "INTEGER",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TIMESTAMP"
+          ]
+        },
+        {
+          "ViewName": "nicer_but_slower_film_list",
+          "SQL": "CREATE VIEW nicer_but_slower_film_list AS\nSELECT\n    film.film_id AS fid\n    ,film.title\n    ,film.description\n    ,category.name AS category\n    ,film.rental_rate AS price\n    ,film.length\n    ,film.rating\n    ,json_group_array(\n        UPPER(SUBSTRING(actor.first_name, 1, 1))\n        || LOWER(SUBSTRING(actor.first_name, 2))\n        || ' '\n        || UPPER(SUBSTRING(actor.last_name, 1, 1))\n        || LOWER(SUBSTRING(actor.last_name, 2))\n    ) AS actors\nFROM\n    category\n    LEFT JOIN film_category ON film_category.category_id = category.category_id\n    LEFT JOIN film ON film.film_id = film_category.film_id\n    JOIN film_actor ON film_actor.film_id = film.film_id\n    JOIN actor ON actor.actor_id = film_actor.actor_id\nGROUP BY\n    film.film_id\n    ,film.title\n    ,film.description\n    ,category.name\n    ,film.rental_rate\n    ,film.length\n    ,film.rating;",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "REAL",
+            "INT",
+            "TEXT",
+            ""
+          ]
+        },
+        {
+          "ViewName": "sales_by_film_category",
+          "SQL": "CREATE VIEW sales_by_film_category AS\nSELECT\n    c.name AS category\n    ,SUM(p.amount) AS total_sales\nFROM\n    payment AS p\n    JOIN rental AS r ON r.rental_id = p.rental_id\n    JOIN inventory AS i ON i.inventory_id = r.inventory_id\n    JOIN film AS f ON f.film_id = i.film_id\n    JOIN film_category AS fc ON fc.film_id = f.film_id\n    JOIN category AS c ON c.category_id = fc.category_id\nGROUP BY\n    c.name;",
+          "Columns": [
+            "category",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "TEXT",
+            ""
+          ]
+        },
+        {
+          "ViewName": "sales_by_store",
+          "SQL": "CREATE VIEW sales_by_store AS\nSELECT\n    ci.city || ',' || co.country AS store\n    ,m.first_name || ' ' || m.last_name AS manager\n    ,SUM(p.amount) AS total_sales\nFROM\n    payment AS p\n    JOIN rental AS r ON r.rental_id = p.rental_id\n    JOIN inventory AS i ON i.inventory_id = r.inventory_id\n    JOIN store AS s ON s.store_id = i.store_id\n    JOIN address AS a ON a.address_id = s.address_id\n    JOIN city AS ci ON ci.city_id = a.city_id\n    JOIN country AS co ON co.country_id = ci.country_id\n    JOIN staff AS m ON m.staff_id = s.manager_staff_id\nGROUP BY\n    co.country\n    ,ci.city\n    ,s.store_id\n    ,m.first_name\n    ,m.last_name;",
+          "Columns": [
+            "store",
+            "manager",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "ViewName": "staff_list",
+          "SQL": "CREATE VIEW staff_list AS\nSELECT\n    s.staff_id AS id\n    ,s.first_name || ' ' || s.last_name AS name\n    ,a.address, a.postal_code AS \"zip code\"\n    ,a.phone\n    ,ci.city\n    ,co.country\n    ,s.store_id AS sid\nFROM\n    staff AS s\n    JOIN address AS a ON a.address_id = s.address_id\n    JOIN city AS ci ON ci.city_id = a.city_id\n    JOIN country AS co ON co.country_id = ci.country_id;",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "INTEGER",
+            "",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "INT"
+          ]
+        }
+      ],
+      "ViewsValid": true
+    }
+  ]
+}

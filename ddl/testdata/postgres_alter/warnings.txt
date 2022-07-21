@@ -1,0 +1,5 @@
+person: column "person_id" changing type from "INT" to "BIGINT" may be unsafe
+person: column "email" changing type from "TEXT" to "VARCHAR(255)" is unsafe
+person: column "bio" decreasing limit from "VARCHAR(1000)" to "VARCHAR(255)" is unsafe
+person: column "height_meters" changing scale from "NUMERIC(3,1)" to "NUMERIC(3,2)" is unsafe
+person: column "weight_kilos" decreasing precision from "NUMERIC(5,2)" to "NUMERIC(3,2)" is unsafe

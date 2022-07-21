@@ -1,0 +1,1 @@
+ALTER TABLE movie_award DROP CONSTRAINT movie_award_best_supporting_actress_fkey;

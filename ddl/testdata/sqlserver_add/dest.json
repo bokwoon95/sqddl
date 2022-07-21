@@ -1,0 +1,206 @@
+{
+  "Dialect": "sqlserver",
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "category",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "category_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ConstraintName": "category_category_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ConstraintName": "category_category_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "category"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "cinema",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "cinema",
+              "ColumnName": "cinema_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "cinema",
+              "ConstraintName": "cinema_cinema_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "cinema_id"
+              ],
+              "IsClustered": true
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "category",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "subcategory",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "metadata",
+              "ColumnType": "nvarchar(MAX)",
+              "CharacterLength": "MAX"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ConstraintName": "movie_category_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ConstraintName": "movie_movie_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "movie_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ConstraintName": "movie_subcategory_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "subcategory"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ConstraintName": "movie_title_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "title"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "IndexName": "movie_category_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "category"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "IndexName": "movie_subcategory_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "subcategory"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

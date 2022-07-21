@@ -1,0 +1,220 @@
+{
+  "Dialect": "mysql",
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "actors",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "actors",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actors",
+              "ColumnName": "name",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "actors",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "movie_awards",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "movies",
+              "ReferencesColumn": "movie_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ColumnName": "best_actor",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ColumnName": "best_supporting_actor",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ColumnName": "best_actress",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ColumnName": "best_supporting_actress",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumn": "actor_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ConstraintName": "movie_awards_best_actor_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_actor"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ConstraintName": "movie_awards_best_actress_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_actress"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ConstraintName": "movie_awards_best_supporting_actor_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_supporting_actor"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ConstraintName": "movie_awards_best_supporting_actress_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_supporting_actress"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actors",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie_awards",
+              "ConstraintName": "movie_awards_movie_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "movie_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "movies",
+              "ReferencesColumns": [
+                "movie_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "movies",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movies",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movies",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movies",
+              "ColumnName": "synopsis",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movies",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "movie_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movies",
+              "IndexName": "movies_title_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "title"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

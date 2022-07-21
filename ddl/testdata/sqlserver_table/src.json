@@ -1,0 +1,222 @@
+{
+  "Dialect": "sqlserver",
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "actor",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "name",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ConstraintName": "actor_actor_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ],
+              "IsClustered": true
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "synopsis",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ConstraintName": "movie_movie_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "movie_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "IndexName": "movie_title_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "title"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "movie_award",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "movie",
+              "ReferencesColumn": "movie_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ColumnName": "best_actor",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ColumnName": "best_supporting_actor",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ColumnName": "best_actress",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ColumnName": "best_supporting_actress",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ConstraintName": "movie_award_best_actor_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_actor"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ConstraintName": "movie_award_best_actress_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_actress"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ConstraintName": "movie_award_best_supporting_actor_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_supporting_actor"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ConstraintName": "movie_award_best_supporting_actress_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "best_supporting_actress"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie_award",
+              "ConstraintName": "movie_award_movie_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "movie_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "movie",
+              "ReferencesColumns": [
+                "movie_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

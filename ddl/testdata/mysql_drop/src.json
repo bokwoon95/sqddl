@@ -1,0 +1,160 @@
+{
+  "Dialect": "mysql",
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ColumnName": "category",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "category",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "subcategory",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "metadata",
+              "ColumnType": "json"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ConstraintName": "movie_category_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ConstraintName": "movie_subcategory_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "subcategory"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ConstraintName": "movie_title_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "title"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "movie_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "IndexName": "movie_category_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "category"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "IndexName": "movie_subcategory_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "subcategory"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

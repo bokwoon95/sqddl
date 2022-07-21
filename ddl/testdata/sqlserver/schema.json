@@ -1,0 +1,2388 @@
+{
+  "Dialect": "sqlserver",
+  "VersionNums": [
+    15,
+    0,
+    2000,
+    5
+  ],
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "DefaultCollation": "Latin1_General_CI_AI",
+  "DefaultCollationValid": true,
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "actor",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "first_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "last_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "full_name",
+              "ColumnType": "nvarchar(91)",
+              "CharacterLength": "91",
+              "IsNotNull": true,
+              "GeneratedExpr": "(concat([first_name],' ',[last_name]))"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "full_name_reversed",
+              "ColumnType": "nvarchar(91)",
+              "CharacterLength": "91",
+              "IsNotNull": true,
+              "GeneratedExpr": "(concat([last_name],' ',[first_name]))",
+              "GeneratedExprStored": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "ConstraintName": "actor_actor_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "IndexName": "actor_last_name_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "last_name"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "actor",
+              "TriggerName": "actor_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER actor_last_update_after_update_trg ON actor AFTER UPDATE AS\nUPDATE actor\nSET last_update = CURRENT_TIMESTAMP\nFROM actor\nJOIN INSERTED ON INSERTED.actor_id = actor.actor_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "address",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "address",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "address2",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "district",
+              "ColumnType": "nvarchar(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "city_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "city",
+              "ReferencesColumn": "city_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "postal_code",
+              "ColumnType": "nvarchar(10)",
+              "CharacterLength": "10"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "phone",
+              "ColumnType": "varchar(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ConstraintName": "address_address_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "ConstraintName": "address_city_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "city_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "city",
+              "ReferencesColumns": [
+                "city_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "IndexName": "address_city_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "city_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "address",
+              "TriggerName": "address_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER address_last_update_after_update_trg ON address AFTER UPDATE AS\nUPDATE address\nSET last_update = CURRENT_TIMESTAMP\nFROM address\nJOIN INSERTED ON INSERTED.address_id = address.address_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "category_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ConstraintName": "category_category_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "TriggerName": "category_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER category_last_update_after_update_trg ON category AFTER UPDATE AS\nUPDATE category\nSET last_update = CURRENT_TIMESTAMP\nFROM category\nJOIN INSERTED ON INSERTED.category_id = category.category_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "city",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ColumnName": "city_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ColumnName": "city",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ConstraintName": "city_city_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "city_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "ConstraintName": "city_country_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "IndexName": "city_country_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "country_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "city",
+              "TriggerName": "city_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER city_last_update_after_update_trg ON city AFTER UPDATE AS\nUPDATE city\nSET last_update = CURRENT_TIMESTAMP\nFROM city\nJOIN INSERTED ON INSERTED.city_id = city.city_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "country",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ConstraintName": "country_country_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "TriggerName": "country_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER country_last_update_after_update_trg ON country AFTER UPDATE AS\nUPDATE country\nSET last_update = CURRENT_TIMESTAMP\nFROM country\nJOIN INSERTED ON INSERTED.country_id = country.country_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "customer",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "first_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "last_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "email",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "active",
+              "ColumnType": "bit",
+              "IsNotNull": true,
+              "ColumnDefault": "1"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "create_date",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ConstraintName": "customer_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ConstraintName": "customer_customer_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ConstraintName": "customer_email_first_name_last_name_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email",
+                "first_name",
+                "last_name"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ConstraintName": "customer_email_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "ConstraintName": "customer_store_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "IndexName": "customer_address_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "IndexName": "customer_last_name_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "last_name"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "IndexName": "customer_store_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "store_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "customer",
+              "TriggerName": "customer_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER customer_last_update_after_update_trg ON customer AFTER UPDATE AS\nUPDATE customer\nSET last_update = CURRENT_TIMESTAMP\nFROM customer\nJOIN INSERTED ON INSERTED.customer_id = customer.customer_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "department",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "department",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "department",
+              "ColumnName": "name",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "department",
+              "ConstraintName": "department_department_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "department_id"
+              ],
+              "IsClustered": true
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "employee",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ColumnName": "name",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ColumnName": "manager_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ConstraintName": "employee_employee_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "ConstraintName": "employee_manager_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee",
+              "IndexName": "employee_manager_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "manager_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "employee_department",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "department",
+              "ReferencesColumn": "department_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "ConstraintName": "employee_department_department_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "department_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "department",
+              "ReferencesColumns": [
+                "department_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "ConstraintName": "employee_department_employee_id_department_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "ConstraintName": "employee_department_employee_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "IndexName": "employee_department_department_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "department_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "employee_department",
+              "IndexName": "employee_department_employee_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "employee_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "film",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "description",
+              "ColumnType": "text"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "release_year",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "language_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "original_language_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "rental_duration",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ColumnDefault": "3"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "rental_rate",
+              "ColumnType": "decimal(4,2)",
+              "NumericPrecision": "4",
+              "NumericScale": "2",
+              "IsNotNull": true,
+              "ColumnDefault": "4.99"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "length",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "replacement_cost",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2",
+              "IsNotNull": true,
+              "ColumnDefault": "19.99"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "rating",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "ColumnDefault": "'G'"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "special_features",
+              "ColumnType": "nvarchar(MAX)",
+              "CharacterLength": "MAX"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ConstraintName": "film_film_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ConstraintName": "film_language_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "language_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ConstraintName": "film_original_language_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "original_language_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ConstraintName": "film_rating_check",
+              "ConstraintType": "CHECK",
+              "CheckExpr": "[rating]='NC-17' OR [rating]='R' OR [rating]='PG-13' OR [rating]='PG' OR [rating]='G'"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ConstraintName": "film_year_check",
+              "ConstraintType": "CHECK",
+              "CheckExpr": "[release_year]\u003e=(1901) AND [release_year]\u003c=(2155)"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "IndexName": "film_language_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "language_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "IndexName": "film_original_language_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "original_language_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "IndexName": "film_title_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "title"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "TriggerName": "film_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER film_last_update_after_update_trg ON film AFTER UPDATE AS\nUPDATE film\nSET last_update = CURRENT_TIMESTAMP\nFROM film\nJOIN INSERTED ON INSERTED.film_id = film.film_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "film_actor",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ConstraintName": "film_actor_actor_id_film_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id",
+                "film_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ConstraintName": "film_actor_actor_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "actor_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "ConstraintName": "film_actor_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "IndexName": "film_actor_film_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "film_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_actor",
+              "TriggerName": "film_actor_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER film_actor_last_update_after_update_trg ON film_actor AFTER UPDATE AS\nUPDATE film_actor\nSET last_update = CURRENT_TIMESTAMP\nFROM film_actor\nJOIN INSERTED ON INSERTED.actor_id = film_actor.actor_id AND INSERTED.film_id = film_actor.film_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "film_category",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ColumnName": "category_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ConstraintName": "film_category_category_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ConstraintName": "film_category_film_id_category_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id",
+                "category_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "ConstraintName": "film_category_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_category",
+              "TriggerName": "film_category_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER film_category_last_update_after_update_trg ON film_category AFTER UPDATE AS\nUPDATE film_category\nSET last_update = CURRENT_TIMESTAMP\nFROM film_category\nJOIN INSERTED ON INSERTED.film_id = film_category.film_id AND INSERTED.category_id = film_category.category_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "inventory",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ColumnName": "inventory_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ConstraintName": "inventory_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ConstraintName": "inventory_inventory_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "inventory_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "ConstraintName": "inventory_store_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "IndexName": "inventory_film_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "film_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "IndexName": "inventory_store_id_film_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "store_id",
+                "film_id"
+              ],
+              "Descending": [
+                false,
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "inventory",
+              "TriggerName": "inventory_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER inventory_last_update_after_update_trg ON inventory AFTER UPDATE AS\nUPDATE inventory\nSET last_update = CURRENT_TIMESTAMP\nFROM inventory\nJOIN INSERTED ON INSERTED.inventory_id = inventory.inventory_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "language",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "language",
+              "ColumnName": "language_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "language",
+              "ColumnName": "name",
+              "ColumnType": "char(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "language",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "language",
+              "ConstraintName": "language_language_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "language_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "language",
+              "TriggerName": "language_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER language_last_update_after_update_trg ON language AFTER UPDATE AS\nUPDATE language\nSET last_update = CURRENT_TIMESTAMP\nFROM language\nJOIN INSERTED ON INSERTED.language_id = language.language_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "payment",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "payment_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "rental_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "rental",
+              "ReferencesColumn": "rental_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "amount",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "payment_date",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ConstraintName": "payment_customer_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ConstraintName": "payment_payment_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "payment_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ConstraintName": "payment_rental_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "rental_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "rental",
+              "ReferencesColumns": [
+                "rental_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "ConstraintName": "payment_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "IndexName": "payment_customer_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "customer_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "IndexName": "payment_rental_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "rental_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "payment",
+              "IndexName": "payment_staff_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "rental",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "rental_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "rental_date",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "inventory_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "inventory",
+              "ReferencesColumn": "inventory_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "return_date",
+              "ColumnType": "datetimeoffset"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ConstraintName": "rental_customer_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ConstraintName": "rental_inventory_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "inventory_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "inventory",
+              "ReferencesColumns": [
+                "inventory_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ConstraintName": "rental_rental_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "rental_id"
+              ],
+              "IsClustered": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "ConstraintName": "rental_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "IndexName": "rental_customer_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "customer_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "IndexName": "rental_inventory_id_customer_id_staff_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "IsUnique": true,
+              "Columns": [
+                "inventory_id",
+                "customer_id",
+                "staff_id"
+              ],
+              "Descending": [
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "IndexName": "rental_inventory_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "inventory_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "IndexName": "rental_staff_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "rental",
+              "TriggerName": "rental_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER rental_last_update_after_update_trg ON rental AFTER UPDATE AS\nUPDATE rental\nSET last_update = CURRENT_TIMESTAMP\nFROM rental\nJOIN INSERTED ON INSERTED.rental_id = rental.rental_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "staff",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "first_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "last_name",
+              "ColumnType": "nvarchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "picture",
+              "ColumnType": "varbinary(MAX)",
+              "CharacterLength": "MAX"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "email",
+              "ColumnType": "nvarchar(50)",
+              "CharacterLength": "50",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "store_id",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "active",
+              "ColumnType": "bit",
+              "IsNotNull": true,
+              "ColumnDefault": "1"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "username",
+              "ColumnType": "nvarchar(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "password",
+              "ColumnType": "nvarchar(40)",
+              "CharacterLength": "40"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ConstraintName": "staff_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ConstraintName": "staff_email_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "ConstraintName": "staff_staff_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "IndexName": "staff_address_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "IndexName": "staff_store_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "store_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "staff",
+              "TriggerName": "staff_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER staff_last_update_after_update_trg ON staff AFTER UPDATE AS\nUPDATE staff\nSET last_update = CURRENT_TIMESTAMP\nFROM staff\nJOIN INSERTED ON INSERTED.staff_id = staff.staff_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "store",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ColumnName": "manager_staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ColumnName": "last_update",
+              "ColumnType": "datetimeoffset",
+              "IsNotNull": true,
+              "ColumnDefault": "(getdate())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ConstraintName": "store_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ConstraintName": "store_manager_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "ConstraintName": "store_store_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "IndexName": "store_address_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "IndexName": "store_manager_staff_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "store",
+              "TriggerName": "store_last_update_after_update_trg",
+              "SQL": "CREATE   TRIGGER store_last_update_after_update_trg ON store AFTER UPDATE AS\nUPDATE store\nSET last_update = CURRENT_TIMESTAMP\nFROM store\nJOIN INSERTED ON INSERTED.store_id = store.store_id;\n"
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "task",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "task_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "task",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "data",
+              "ColumnType": "nvarchar(MAX)",
+              "CharacterLength": "MAX"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ColumnName": "data_deadline",
+              "ColumnType": "char(20)",
+              "CharacterLength": "20",
+              "GeneratedExpr": "(CONVERT([char](20),json_value([data],'$.deadline')))"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ConstraintName": "task_employee_id_department_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "employee_department",
+              "ReferencesColumns": [
+                "employee_id",
+                "department_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "ConstraintName": "task_task_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "task_id"
+              ],
+              "IsClustered": true
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "IndexName": "task_data_deadline_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "data_deadline"
+              ],
+              "Descending": [
+                true
+              ],
+              "Predicate": "([data] IS NOT NULL)"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "IndexName": "task_employee_id_department_id_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "Descending": [
+                false,
+                false
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "task",
+              "IndexName": "task_task_idx",
+              "IndexType": "NONCLUSTERED",
+              "Columns": [
+                "task"
+              ],
+              "IncludeColumns": [
+                "employee_id",
+                "department_id"
+              ],
+              "Descending": [
+                true
+              ]
+            }
+          ]
+        }
+      ],
+      "Views": [
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "customer_list",
+          "SQL": "CREATE   VIEW customer_list AS\nSELECT\n    cu.customer_id AS id\n    ,CONCAT(cu.first_name, ' ', cu.last_name) AS name\n    ,a.address, a.postal_code AS [zip code]\n    ,a.phone\n    ,city.city\n    ,country.country\n    ,CASE WHEN cu.active = 1 THEN 'active' ELSE '' END AS notes\n    ,cu.store_id AS sid\nFROM\n    customer AS cu\n    JOIN address AS a ON a.address_id = cu.address_id\n    JOIN city ON city.city_id = a.city_id\n    JOIN country ON country.country_id = city.country_id\n;\n",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "notes",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "int",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "varchar",
+            "nvarchar",
+            "nvarchar",
+            "varchar",
+            "int"
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "film_list",
+          "SQL": "CREATE   VIEW film_list AS\nSELECT\n    film.film_id AS fid\n    ,film.title\n    ,CAST(film.description AS NVARCHAR(MAX)) AS description\n    ,category.name AS category\n    ,film.rental_rate AS price\n    ,film.length\n    ,film.rating\n    ,(\n        SELECT actor.first_name, actor.last_name\n        FROM actor\n        WHERE actor.actor_id = film_actor.actor_id\n        FOR JSON AUTO\n    ) AS actors\nFROM\n    category\n    LEFT JOIN film_category ON film_category.category_id = category.category_id\n    LEFT JOIN film ON film.film_id = film_category.film_id\n    JOIN film_actor ON film_actor.film_id = film.film_id\nGROUP BY\n    film.film_id\n    ,film.title\n    ,CAST(film.description AS NVARCHAR(MAX))\n    ,category.name\n    ,film.rental_rate\n    ,film.length\n    ,film.rating\n    ,film_actor.actor_id\n;\n",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "int",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "decimal",
+            "int",
+            "nvarchar",
+            "nvarchar"
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film_list",
+              "TriggerName": "update_film_list",
+              "IsViewTrigger": true,
+              "SQL": "CREATE   TRIGGER update_film_list ON film_list INSTEAD OF UPDATE AS\nBEGIN\n    DECLARE\n        -- INSERTED\n        @inserted_fid INT\n        ,@inserted_title NVARCHAR(255)\n        ,@inserted_description NVARCHAR(MAX)\n        ,@inserted_category NVARCHAR(45)\n        ,@inserted_price DECIMAL(4,2)\n        ,@inserted_length INT\n        ,@inserted_rating NVARCHAR(255)\n        ,@inserted_actors NVARCHAR(MAX)\n        -- DELETED\n        ,@deleted_fid INT\n        ,@deleted_title NVARCHAR(255)\n        ,@deleted_description NVARCHAR(MAX)\n        ,@deleted_category NVARCHAR(45)\n        ,@deleted_price DECIMAL(4,2)\n        ,@deleted_length INT\n        ,@deleted_rating NVARCHAR(255)\n        ,@deleted_actors NVARCHAR(MAX)\n    ;\n\n    SELECT\n        @inserted_fid = INSERTED.fid\n        ,@inserted_title = INSERTED.title\n        ,@inserted_description = INSERTED.description\n        ,@inserted_category = INSERTED.category\n        ,@inserted_price = INSERTED.price\n        ,@inserted_length = INSERTED.length\n        ,@inserted_rating = INSERTED.rating\n        ,@inserted_actors = INSERTED.actors\n    FROM\n        INSERTED\n    ;\n\n    SELECT\n        @deleted_fid = DELETED.fid\n        ,@deleted_title = DELETED.title\n        ,@deleted_description = DELETED.description\n        ,@deleted_category = DELETED.category\n        ,@deleted_price = DELETED.price\n        ,@deleted_length = DELETED.length\n        ,@deleted_rating = DELETED.rating\n        ,@deleted_actors = DELETED.actors\n    FROM\n        DELETED\n    ;\n\n    IF @inserted_fid \u003c\u003e @deleted_fid\n        THROW 50001, 'You are not allowed to update film_list.fid', 1;\n\n    IF @inserted_category \u003c\u003e @deleted_category\n        THROW 50001, 'You are not allowed to update film_list.category', 1;\n\n    IF @inserted_actors \u003c\u003e @deleted_actors\n        THROW 50001, 'You are not allowed to update film_list.actors', 1;\n\n    IF @inserted_title \u003c\u003e @deleted_title\n        OR @inserted_description \u003c\u003e @deleted_description\n        OR @inserted_price \u003c\u003e @deleted_price\n        OR @inserted_length \u003c\u003e @deleted_length\n        OR @inserted_rating \u003c\u003e @deleted_rating\n    BEGIN\n        UPDATE film\n        SET\n            title = @inserted_title\n            ,description = @inserted_description\n            ,rental_rate = @inserted_price\n            ,length = @inserted_length\n            ,rating = @inserted_rating\n        WHERE\n            film_id = @inserted_fid\n        ;\n    END;\nEND;\n"
+            }
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "full_address",
+          "SQL": "CREATE   VIEW full_address WITH SCHEMABINDING AS\nSELECT\n    country.country_id\n    ,city.city_id\n    ,address.address_id\n    ,country.country\n    ,city.city\n    ,address.address\n    ,address.address2\n    ,address.district\n    ,address.postal_code\n    ,address.phone\n    ,address.last_update\nFROM\n    dbo.address\n    JOIN dbo.city ON city.city_id = address.city_id\n    JOIN dbo.country ON country.country_id = city.country_id\n;\n",
+          "Columns": [
+            "country_id",
+            "city_id",
+            "address_id",
+            "country",
+            "city",
+            "address",
+            "address2",
+            "district",
+            "postal_code",
+            "phone",
+            "last_update"
+          ],
+          "ColumnTypes": [
+            "int",
+            "int",
+            "int",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "varchar",
+            "datetimeoffset"
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "full_address",
+              "IndexName": "full_address_address_id_idx",
+              "IndexType": "CLUSTERED",
+              "IsViewIndex": true,
+              "IsUnique": true,
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "nicer_but_slower_film_list",
+          "SQL": "CREATE   VIEW nicer_but_slower_film_list AS\nSELECT\n    film.film_id AS fid\n    ,film.title\n    ,CAST(film.description AS NVARCHAR(MAX)) AS description\n    ,category.name AS category\n    ,film.rental_rate AS price\n    ,film.length\n    ,film.rating\n    ,(\n        SELECT\n            CONCAT(\n                UPPER(SUBSTRING(actor.first_name, 1, 1)),\n                LOWER(SUBSTRING(actor.first_name, 2, 999))\n            ) AS first_name\n            ,CONCAT(\n                UPPER(SUBSTRING(actor.last_name, 1, 1)),\n                LOWER(SUBSTRING(actor.last_name, 2, 999))\n            ) AS last_name\n        FROM actor\n        WHERE actor.actor_id = film_actor.actor_id\n        FOR JSON AUTO\n    ) AS actors\nFROM\n    category\n    LEFT JOIN film_category ON film_category.category_id = category.category_id\n    LEFT JOIN film ON film.film_id = film_category.film_id\n    JOIN film_actor ON film_actor.film_id = film.film_id\nGROUP BY\n    film.film_id\n    ,film.title\n    ,CAST(film.description AS NVARCHAR(MAX))\n    ,category.name\n    ,film.rental_rate\n    ,film.length\n    ,film.rating\n    ,film_actor.actor_id\n;\n",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "int",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "decimal",
+            "int",
+            "nvarchar",
+            "nvarchar"
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "sales_by_film_category",
+          "SQL": "CREATE   VIEW sales_by_film_category AS\nSELECT\n    c.name AS category\n    ,SUM(p.amount) AS total_sales\nFROM\n    payment AS p\n    JOIN rental AS r ON r.rental_id = p.rental_id\n    JOIN inventory AS i ON i.inventory_id = r.inventory_id\n    JOIN film AS f ON f.film_id = i.film_id\n    JOIN film_category AS fc ON fc.film_id = f.film_id\n    JOIN category AS c ON c.category_id = fc.category_id\nGROUP BY\n    c.name\n;\n",
+          "Columns": [
+            "category",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "nvarchar",
+            "decimal"
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "sales_by_store",
+          "SQL": "CREATE   VIEW sales_by_store AS\nSELECT\n    CONCAT(ci.city, ',', co.country) AS store\n    ,CONCAT(m.first_name, ' ', m.last_name) AS manager\n    ,SUM(p.amount) AS total_sales\nFROM\n    payment AS p\n    JOIN rental AS r ON r.rental_id = p.rental_id\n    JOIN inventory AS i ON i.inventory_id = r.inventory_id\n    JOIN store AS s ON s.store_id = i.store_id\n    JOIN address AS a ON a.address_id = s.address_id\n    JOIN city AS ci ON ci.city_id = a.city_id\n    JOIN country AS co ON co.country_id = ci.country_id\n    JOIN staff AS m ON m.staff_id = s.manager_staff_id\nGROUP BY\n    co.country\n    ,ci.city\n    ,s.store_id\n    ,m.first_name\n    ,m.last_name\n;\n",
+          "Columns": [
+            "store",
+            "manager",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "nvarchar",
+            "nvarchar",
+            "decimal"
+          ]
+        },
+        {
+          "ViewSchema": "dbo",
+          "ViewName": "staff_list",
+          "SQL": "CREATE   VIEW staff_list AS\nSELECT\n    s.staff_id AS id\n    ,CONCAT(s.first_name, ' ', s.last_name) AS name\n    ,a.address\n    ,a.postal_code AS [zip code]\n    ,a.phone\n    ,ci.city\n    ,co.country\n    ,s.store_id AS sid\nFROM\n    staff AS s\n    JOIN address AS a ON a.address_id = s.address_id\n    JOIN city AS ci ON ci.city_id = a.city_id\n    JOIN country AS co ON co.country_id = ci.country_id\n;\n",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "int",
+            "nvarchar",
+            "nvarchar",
+            "nvarchar",
+            "varchar",
+            "nvarchar",
+            "nvarchar",
+            "int"
+          ]
+        }
+      ],
+      "ViewsValid": true,
+      "Routines": [
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "film_in_stock",
+          "RoutineType": "PROCEDURE",
+          "SQL": "CREATE   PROCEDURE film_in_stock(@p_film_id INT, @p_store_id INT, @p_film_count INT OUTPUT) AS\nBEGIN\n    SELECT @p_film_count = COUNT(*)\n    FROM inventory\n    WHERE\n        film_id = @p_film_id\n        AND store_id = @p_store_id\n        AND dbo.inventory_in_stock(inventory_id) = 1\n    ;\nEND;\n"
+        },
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "film_not_in_stock",
+          "RoutineType": "PROCEDURE",
+          "SQL": "CREATE   PROCEDURE film_not_in_stock(@p_film_id INT, @p_store_id INT, @p_film_count INT OUTPUT) AS\nBEGIN\n    SELECT @p_film_count = COUNT(*)\n    FROM inventory\n    WHERE\n        film_id = @p_film_id\n        AND store_id = @p_store_id\n        AND dbo.inventory_in_stock(inventory_id) = 0\n    ;\nEND;\n"
+        },
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "get_customer_balance",
+          "RoutineType": "FUNCTION",
+          "SQL": "CREATE   FUNCTION get_customer_balance(@p_customer_id INT, @p_effective_date DATETIME) RETURNS DECIMAL(5,2) AS\nBEGIN\n    -- OK, WE NEED TO CALCULATE THE CURRENT BALANCE GIVEN A CUSTOMER_ID AND A DATE\n    -- THAT WE WANT THE BALANCE TO BE EFFECTIVE FOR. THE BALANCE IS:\n    --    1) RENTAL FEES FOR ALL PREVIOUS RENTALS\n    --    2) ONE DOLLAR FOR EVERY DAY THE PREVIOUS RENTALS ARE OVERDUE\n    --    3) IF A FILM IS MORE THAN RENTAL_DURATION * 2 OVERDUE, CHARGE THE REPLACEMENT_COST\n    --    4) SUBTRACT ALL PAYMENTS MADE BEFORE THE DATE SPECIFIED\n    DECLARE @v_rentfees DECIMAL(5,2); -- FEES PAID TO RENT THE VIDEOS INITIALLY\n    DECLARE @v_overfees INT;          -- LATE FEES FOR PRIOR RENTALS\n    DECLARE @v_payments DECIMAL(5,2); -- SUM OF PAYMENTS MADE PREVIOUSLY\n\n    SELECT @v_rentfees = COALESCE(SUM(film.rental_rate),0)\n    FROM film, inventory, rental\n    WHERE\n        film.film_id = inventory.film_id\n        AND inventory.inventory_id = rental.inventory_id\n        AND rental.rental_date \u003c= @p_effective_date\n        AND rental.customer_id = @p_customer_id\n    ;\n\n    SELECT @v_overfees = COALESCE(SUM(IIF(\n        DATEDIFF(DAY, rental.return_date, rental.rental_date) \u003e film.rental_duration,\n        DATEDIFF(DAY, rental.return_date, rental.rental_date) - film.rental_duration,\n        0\n    )), 0)\n    FROM rental, inventory, film\n    WHERE\n        film.film_id = inventory.film_id\n        AND inventory.inventory_id = rental.inventory_id\n        AND rental.rental_date \u003c= @p_effective_date\n        AND rental.customer_id = @p_customer_id\n    ;\n\n    SELECT @v_payments = COALESCE(SUM(payment.amount),0)\n    FROM payment\n    WHERE\n        payment.payment_date \u003c= @p_effective_date\n        AND payment.customer_id = @p_customer_id\n    ;\n\n    RETURN @v_rentfees + @v_overfees - @v_payments;\nEND;\n"
+        },
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "inventory_held_by_customer",
+          "RoutineType": "FUNCTION",
+          "SQL": "CREATE   FUNCTION inventory_held_by_customer(@p_inventory_id INT) RETURNS INT AS\nBEGIN\n    DECLARE @v_customer_id INT;\n\n    SELECT @v_customer_id = customer_id\n    FROM rental\n    WHERE\n        return_date IS NULL\n        AND inventory_id = @p_inventory_id\n    ;\n\n    RETURN @v_customer_id;\nEND;\n"
+        },
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "inventory_in_stock",
+          "RoutineType": "FUNCTION",
+          "SQL": "CREATE   FUNCTION inventory_in_stock(@p_inventory_id INT) RETURNS BIT AS\nBEGIN\n    DECLARE @v_rentals INT;\n    DECLARE @v_out     INT;\n\n    -- AN ITEM IS IN-STOCK IF THERE ARE EITHER NO ROWS IN THE rental TABLE\n    -- FOR THE ITEM OR ALL ROWS HAVE return_date POPULATED\n\n    SELECT @v_rentals = COUNT(*)\n    FROM rental\n    WHERE inventory_id = @p_inventory_id\n    ;\n\n    IF @v_rentals = 0 RETURN 1;\n\n    SELECT @v_out = COUNT(rental_id)\n    FROM\n        inventory\n        LEFT JOIN rental ON rental.inventory_id = inventory.inventory_id\n    WHERE\n        inventory.inventory_id = @p_inventory_id\n        AND rental.return_date IS NULL\n    ;\n\n    IF @v_out \u003e 0 RETURN 0;\n\n    RETURN 1;\nEND;\n"
+        },
+        {
+          "RoutineSchema": "dbo",
+          "RoutineName": "rewards_report",
+          "RoutineType": "PROCEDURE",
+          "SQL": "CREATE   PROCEDURE rewards_report (\n    @min_monthly_purchases INT\n    ,@min_dollar_amount_purchased DECIMAL(10,2)\n    ,@count_rewardees INT OUTPUT\n) AS\nBEGIN\n    DECLARE @last_month_start DATE;\n    DECLARE @last_month_end DATE;\n\n    /* Some sanity checks... */\n    IF @min_monthly_purchases = 0\n        THROW 50001, 'Minimum monthly purchases parameter must be \u003e 0', 1;\n    IF @min_dollar_amount_purchased = 0.00\n        THROW 50001, 'Minimum monthly dollar amount purchased parameter must be \u003e $0.00', 1;\n\n    /* Determine start and end time periods */\n    SELECT @last_month_start = DATEADD(MONTH, 1, CURRENT_TIMESTAMP);\n    SELECT @last_month_start = CONVERT(DATE, CONCAT(YEAR(@last_month_start),'-',MONTH(@last_month_start),'-01'));\n    SELECT @last_month_end = EOMONTH(@last_month_start);\n\n    /*\n    Create a temporary storage area for\n    Customer IDs.\n    */\n    CREATE TABLE ##tmpCustomer (customer_id INT NOT NULL PRIMARY KEY);\n\n    /*\n    Find all customers meeting the\n    monthly purchase requirements\n    */\n    INSERT INTO ##tmpCustomer (customer_id)\n    SELECT p.customer_id\n    FROM payment AS p\n    WHERE CONVERT(DATE, p.payment_date) BETWEEN @last_month_start AND @last_month_end\n    GROUP BY customer_id\n    HAVING SUM(p.amount) \u003e @min_dollar_amount_purchased\n    AND COUNT(customer_id) \u003e @min_monthly_purchases;\n\n    /* Populate OUT parameter with count of found customers */\n    SELECT @count_rewardees = COUNT(*) FROM ##tmpCustomer;\n\n    /*\n    Output ALL customer information of matching rewardees.\n    Customize output as needed.\n    */\n    SELECT c.*\n    FROM ##tmpCustomer AS t\n    INNER JOIN customer AS c ON t.customer_id = c.customer_id;\n\n    /* Clean up */\n    DROP TABLE ##tmpCustomer;\nEND;\n"
+        }
+      ],
+      "RoutinesValid": true
+    }
+  ]
+}

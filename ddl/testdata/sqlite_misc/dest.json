@@ -1,0 +1,263 @@
+{
+  "Dialect": "sqlite",
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "address",
+          "SQL": "CREATE TABLE address (\n    address_id INTEGER PRIMARY KEY\n    ,address TEXT\n    ,city_id INT\n\n    ,CONSTRAINT address_city_id_fkey FOREIGN KEY (city_id) REFERENCES city (city_id) ON UPDATE CASCADE\n);",
+          "Columns": [
+            {
+              "TableName": "address",
+              "ColumnName": "address_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "address",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "address",
+              "ColumnName": "city_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "city",
+              "ReferencesColumn": "city_id",
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "address",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "address_id"
+              ]
+            },
+            {
+              "TableName": "address",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "city_id"
+              ],
+              "ReferencesTable": "city",
+              "ReferencesColumns": [
+                "city_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "address",
+              "IndexName": "address_city_id_idx",
+              "Columns": [
+                "city_id"
+              ],
+              "SQL": "CREATE INDEX address_city_id_idx ON address (city_id);"
+            }
+          ]
+        },
+        {
+          "TableName": "author",
+          "SQL": "CREATE TABLE \"author\" (\n    author_id INTEGER PRIMARY KEY\n    ,name TEXT\n    ,email TEXT NOT NULL\n    ,is_active BOOLEAN\n\n    ,CONSTRAINT author_email_key UNIQUE (email)\n);",
+          "Columns": [
+            {
+              "TableName": "author",
+              "ColumnName": "author_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "name",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "email",
+              "ColumnType": "TEXT",
+              "IsNotNull": true,
+              "IsUnique": true
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "is_active",
+              "ColumnType": "BOOLEAN"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "author",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "author_id"
+              ]
+            },
+            {
+              "TableName": "author",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "author",
+              "IndexName": "author_name_idx",
+              "Columns": [
+                "name"
+              ],
+              "SQL": "CREATE INDEX author_name_idx ON author (name);"
+            }
+          ]
+        },
+        {
+          "TableName": "city",
+          "SQL": "CREATE TABLE city (\n    city_id INTEGER PRIMARY KEY\n    ,city TEXT\n    ,country_id INT\n\n    ,CONSTRAINT city_country_id_fkey FOREIGN KEY (country_id) REFERENCES country (country_id) ON UPDATE CASCADE\n);",
+          "Columns": [
+            {
+              "TableName": "city",
+              "ColumnName": "city_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "city",
+              "ColumnName": "city",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "city",
+              "ColumnName": "country_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id",
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "city",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "city_id"
+              ]
+            },
+            {
+              "TableName": "city",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ],
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "city",
+              "IndexName": "city_country_id_idx",
+              "Columns": [
+                "country_id"
+              ],
+              "SQL": "CREATE INDEX city_country_id_idx ON city (country_id);"
+            }
+          ]
+        },
+        {
+          "TableName": "country",
+          "SQL": "CREATE TABLE country (\n    country_id INTEGER PRIMARY KEY\n    ,country TEXT\n);",
+          "Columns": [
+            {
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "TEXT"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "country",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableName": "post",
+          "SQL": "CREATE TABLE post (\n    post_id INTEGER PRIMARY KEY\n    ,contents TEXT\n    , tags TEXT, author_id INT REFERENCES author (author_id) ON UPDATE CASCADE);",
+          "Columns": [
+            {
+              "TableName": "post",
+              "ColumnName": "post_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "post",
+              "ColumnName": "contents",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "post",
+              "ColumnName": "tags",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "post",
+              "ColumnName": "author_id",
+              "ColumnType": "INT",
+              "ReferencesTable": "author",
+              "ReferencesColumn": "author_id",
+              "UpdateRule": "CASCADE"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "post",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "author_id"
+              ],
+              "ReferencesTable": "author",
+              "ReferencesColumns": [
+                "author_id"
+              ],
+              "UpdateRule": "CASCADE"
+            },
+            {
+              "TableName": "post",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "post_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "post",
+              "IndexName": "post_author_id_idx",
+              "Columns": [
+                "author_id"
+              ],
+              "SQL": "CREATE INDEX post_author_id_idx ON post (author_id);"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

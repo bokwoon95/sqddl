@@ -1,0 +1,132 @@
+{
+  "Dialect": "sqlite",
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "author",
+          "SQL": "CREATE TABLE author (\n    author_id INTEGER PRIMARY KEY\n    ,name TEXT\n    ,email TEXT\n    ,metadata TEXT\n);",
+          "Columns": [
+            {
+              "TableName": "author",
+              "ColumnName": "author_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "name",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "email",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "author",
+              "ColumnName": "metadata",
+              "ColumnType": "TEXT"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "author",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "author_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "author",
+              "IndexName": "author_metadata_idx",
+              "Columns": [
+                "metadata"
+              ],
+              "SQL": "CREATE INDEX author_metadata_idx ON author (metadata);"
+            }
+          ]
+        },
+        {
+          "TableName": "post",
+          "SQL": "CREATE TABLE post (\n    post_id INTEGER PRIMARY KEY\n    ,contents TEXT\n    ,metadata TEXT\n);",
+          "Columns": [
+            {
+              "TableName": "post",
+              "ColumnName": "post_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "post",
+              "ColumnName": "contents",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "post",
+              "ColumnName": "metadata",
+              "ColumnType": "TEXT"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "post",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "post_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "post",
+              "IndexName": "post_metadata_idx",
+              "Columns": [
+                "metadata"
+              ],
+              "SQL": "CREATE INDEX post_metadata_idx ON post (metadata);"
+            }
+          ]
+        },
+        {
+          "TableName": "residence",
+          "SQL": "CREATE TABLE residence (\n    residence_id INTEGER PRIMARY KEY\n    ,country TEXT\n    ,city TEXT\n    ,address TEXT\n);",
+          "Columns": [
+            {
+              "TableName": "residence",
+              "ColumnName": "residence_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "residence",
+              "ColumnName": "country",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "residence",
+              "ColumnName": "city",
+              "ColumnType": "TEXT"
+            },
+            {
+              "TableName": "residence",
+              "ColumnName": "address",
+              "ColumnType": "TEXT"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "residence",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "residence_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

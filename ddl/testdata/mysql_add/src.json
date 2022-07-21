@@ -1,0 +1,71 @@
+{
+  "Dialect": "mysql",
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ColumnName": "category",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "category",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "movie",
+              "ColumnName": "subcategory",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

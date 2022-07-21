@@ -1,0 +1,6 @@
+person: column "person_id" changing type from "VARCHAR(255)" to "INT" may be unsafe
+person: column "bio" changing type from "VARCHAR(1000)" to "VARCHAR(255)" is unsafe (cannot decrease limit from greater than 255 to less than or equal to 255)
+person: column "notes" changing type from "VARCHAR(255)" to "VARCHAR(1000)" is unsafe (cannot increase limit from less than or equal to 255 to greater than 255)
+person: column "height_meters" changing type from "NUMERIC(3,1)" to "NUMERIC(3,2)" may be unsafe
+person: column "weight_kilos" changing type from "NUMERIC(5,2)" to "NUMERIC(3,2)" may be unsafe
+person: column "salary_dollars" changing type from "DECIMAL(5,2)" to "DECIMAL(10,2)" may be unsafe

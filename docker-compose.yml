@@ -1,0 +1,60 @@
+version: '3.9'
+services:
+
+  postgres:
+    container_name: 'postgres_sakila'
+    image: 'postgres'
+    ports:
+      - '5456:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: 'user1'
+      POSTGRES_PASSWORD: 'Hunter2!'
+      POSTGRES_DB: 'sakila'
+
+  mysql:
+    container_name: 'mysql_sakila'
+    image: 'mysql'
+    ports:
+      - '3330:3306'
+    volumes:
+      - 'mysql_data:/var/lib/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Hunter2!'
+      MYSQL_USER: 'user1'
+      MYSQL_PASSWORD: 'Hunter2!'
+      MYSQL_DATABASE: 'sakila'
+    platform: 'linux/amd64'
+
+  sqlserver:
+    container_name: 'sqlserver_sakila'
+    image: 'mcr.microsoft.com/azure-sql-edge'
+    ports:
+      - '1447:1433'
+    volumes:
+      - 'sqlserver_data:/var/opt/mssql'
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: 'Hunter2!'
+      MSSQL_PID: 'Developer'
+
+  # https://github.com/gvenzl/oci-oracle-xe/issues/63
+  # oracle:
+  #   container_name: 'oracle_sakila'
+  #   image: 'gvenzl/oracle-xe'
+  #   ports:
+  #     - '1545:1521'
+  #   volumes:
+  #     - 'oracle_data:/opt/oracle/oradata'
+  #   environment:
+  #     ORACLE_PASSWORD: 'Hunter2!'
+  #     APP_USER: 'user1'
+  #     APP_USER_PASSWORD: 'Hunter2!'
+  #   platform: 'linux/amd64'
+
+volumes:
+  postgres_data:
+  mysql_data:
+  sqlserver_data:
+  # oracle_data:

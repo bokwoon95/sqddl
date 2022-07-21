@@ -1,0 +1,5 @@
+CREATE TABLE a ( a INT );
+
+CREATE TABLE b ( b INT, a INT REFERENCES a (a) );
+
+CREATE TABLE c ( c INT, b INT REFERENCES b (b) );

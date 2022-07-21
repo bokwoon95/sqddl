@@ -1,0 +1,74 @@
+{
+  "Dialect": "sqlserver",
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ColumnName": "category",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "category",
+              "ConstraintName": "category_category_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category"
+              ],
+              "IsClustered": true
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ColumnIdentity": "IDENTITY"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "category",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "movie",
+              "ColumnName": "subcategory",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+*.sqlite*
+!tables.sqlite.sql
+.idea
+coverage.out
+coverage
+test.log

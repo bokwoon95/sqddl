@@ -1,0 +1,158 @@
+{
+  "Dialect": "postgres",
+  "CatalogName": "sakila",
+  "CurrentSchema": "public",
+  "Schemas": [
+    {
+      "SchemaName": "public",
+      "Tables": [
+        {
+          "TableSchema": "public",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "public",
+              "TableName": "category",
+              "ColumnName": "category",
+              "ColumnType": "text",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "public",
+              "TableName": "category",
+              "ConstraintName": "category_category_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "public",
+          "TableName": "movie",
+          "Columns": [
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ColumnName": "movie_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ColumnName": "title",
+              "ColumnType": "text",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ColumnName": "category",
+              "ColumnType": "text",
+              "ReferencesSchema": "public",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ColumnName": "subcategory",
+              "ColumnType": "text",
+              "ReferencesSchema": "public",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category"
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ColumnName": "metadata",
+              "ColumnType": "jsonb"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ConstraintName": "movie_category_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category"
+              ],
+              "ReferencesSchema": "public",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ConstraintName": "movie_movie_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "movie_id"
+              ]
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ConstraintName": "movie_subcategory_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "subcategory"
+              ],
+              "ReferencesSchema": "public",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category"
+              ]
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "ConstraintName": "movie_title_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "title"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "IndexName": "movie_category_idx",
+              "IndexType": "btree",
+              "Columns": [
+                "category"
+              ],
+              "Opclasses": [
+                "text_ops"
+              ],
+              "SQL": "CREATE INDEX movie_category_idx ON movie USING btree (category);"
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "movie",
+              "IndexName": "movie_subcategory_idx",
+              "IndexType": "btree",
+              "Columns": [
+                "subcategory"
+              ],
+              "Opclasses": [
+                "text_ops"
+              ],
+              "SQL": "CREATE INDEX movie_subcategory_idx ON movie USING btree (subcategory);"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

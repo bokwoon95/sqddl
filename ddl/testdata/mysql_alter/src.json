@@ -1,0 +1,160 @@
+{
+  "Dialect": "mysql",
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "country",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "person",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "person_id",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "name",
+              "ColumnType": "varchar(256)",
+              "CharacterLength": "256"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "email",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "password",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "ColumnDefault": "'password'"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "bio",
+              "ColumnType": "varchar(1000)",
+              "CharacterLength": "1000"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "notes",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "height_meters",
+              "ColumnType": "decimal(3,1)",
+              "NumericPrecision": "3",
+              "NumericScale": "1"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "weight_kilos",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "salary_dollars",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "ip_address",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ConstraintName": "person_country_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "person",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "person_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+ALTER TABLE person
+    MODIFY COLUMN person_id INT NOT NULL
+    ,MODIFY COLUMN name VARCHAR(1000)
+    ,MODIFY COLUMN email VARCHAR(200) NOT NULL COLLATE latin1_bin
+    ,MODIFY COLUMN password VARCHAR(255)
+    ,MODIFY COLUMN bio VARCHAR(255) DEFAULT 'lorem ipsum'
+    ,MODIFY COLUMN notes VARCHAR(1000)
+    ,MODIFY COLUMN height_meters NUMERIC(3,2)
+    ,MODIFY COLUMN weight_kilos NUMERIC(3,2)
+    ,MODIFY COLUMN salary_dollars DECIMAL(10,2)
+;

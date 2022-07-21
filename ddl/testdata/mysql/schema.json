@@ -1,0 +1,2433 @@
+{
+  "Dialect": "mysql",
+  "VersionNums": [
+    8,
+    0,
+    28
+  ],
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "DefaultCollation": "utf8mb4_0900_ai_ci",
+  "DefaultCollationValid": true,
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "actor",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "first_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "last_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "full_name",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "GeneratedExpr": "concat(`first_name`,_utf8mb4' ',`last_name`)"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "full_name_reversed",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "GeneratedExpr": "concat(`last_name`,_utf8mb4' ',`first_name`)",
+              "GeneratedExprStored": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "actor",
+              "IndexName": "actor_last_name_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "last_name"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "address",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "address",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "address2",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "district",
+              "ColumnType": "varchar(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "city_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "city",
+              "ReferencesColumn": "city_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "postal_code",
+              "ColumnType": "varchar(10)",
+              "CharacterLength": "10"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "phone",
+              "ColumnType": "varchar(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ConstraintName": "address_city_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "city_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "city",
+              "ReferencesColumns": [
+                "city_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "address_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "address",
+              "IndexName": "address_city_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "city_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "category",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ColumnName": "category_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ColumnName": "name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "category",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "category_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "city",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ColumnName": "city_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ColumnName": "city",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ConstraintName": "city_country_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "city_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "city",
+              "IndexName": "city_country_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "country_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "country",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "country",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "customer",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "first_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "last_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "email",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "active",
+              "ColumnType": "tinyint(1)",
+              "IsNotNull": true,
+              "ColumnDefault": "1"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "create_date",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ConstraintName": "customer_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ConstraintName": "customer_email_first_name_last_name_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email",
+                "first_name",
+                "last_name"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ConstraintName": "customer_email_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ConstraintName": "customer_store_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "customer_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "IndexName": "customer_address_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "IndexName": "customer_last_name_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "last_name"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "customer",
+              "IndexName": "customer_store_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "store_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "department",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "department",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "department",
+              "ColumnName": "name",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "department",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "department_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "employee",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ColumnName": "name",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ColumnName": "manager_id",
+              "ColumnType": "binary(16)",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ConstraintName": "employee_manager_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee",
+              "IndexName": "employee_manager_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "manager_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "employee_department",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "employee",
+              "ReferencesColumn": "employee_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "department",
+              "ReferencesColumn": "department_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "ConstraintName": "employee_department_department_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "department_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "department",
+              "ReferencesColumns": [
+                "department_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "ConstraintName": "employee_department_employee_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "employee",
+              "ReferencesColumns": [
+                "employee_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "IndexName": "employee_department_department_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "department_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "employee_department",
+              "IndexName": "employee_department_employee_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "employee_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "film",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "description",
+              "ColumnType": "text"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "release_year",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "language_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "original_language_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "language",
+              "ReferencesColumn": "language_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "rental_duration",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ColumnDefault": "3"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "rental_rate",
+              "ColumnType": "decimal(4,2)",
+              "NumericPrecision": "4",
+              "NumericScale": "2",
+              "IsNotNull": true,
+              "ColumnDefault": "4.99"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "length",
+              "ColumnType": "int"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "replacement_cost",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2",
+              "IsNotNull": true,
+              "ColumnDefault": "19.99"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "rating",
+              "ColumnType": "enum('G','PG','PG-13','R','NC-17')",
+              "ColumnDefault": "'G'"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "special_features",
+              "ColumnType": "json"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ConstraintName": "film_language_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "language_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ConstraintName": "film_original_language_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "original_language_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "language",
+              "ReferencesColumns": [
+                "language_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ConstraintName": "film_year_check",
+              "ConstraintType": "CHECK",
+              "CheckExpr": "(`release_year` \u003e= 1901) and (`release_year` \u003c= 2155)"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "IndexName": "film_language_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "language_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "IndexName": "film_original_language_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "original_language_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "IndexName": "film_title_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "title"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ],
+          "Triggers": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "TriggerName": "film_after_delete_trg",
+              "SQL": "BEGIN\n    DELETE FROM film_text WHERE film_id = OLD.film_id;\nEND",
+              "Attrs": {
+                "actionTiming": "AFTER",
+                "eventManipulation": "DELETE"
+              }
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "TriggerName": "film_after_insert_trg",
+              "SQL": "BEGIN\n    INSERT INTO film_text (film_id, title, description) VALUES (NEW.film_id, NEW.title, NEW.description);\nEND",
+              "Attrs": {
+                "actionTiming": "AFTER",
+                "eventManipulation": "INSERT"
+              }
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "TriggerName": "film_after_update_trg",
+              "SQL": "BEGIN\n    IF OLD.title \u003c\u003e NEW.title OR OLD.description \u003c\u003e NEW.description THEN\n        UPDATE film_text\n        SET title = NEW.title, description = NEW.description, film_id = NEW.film_id\n        WHERE film_id = OLD.film_id;\n    END IF;\nEND",
+              "Attrs": {
+                "actionTiming": "AFTER",
+                "eventManipulation": "UPDATE"
+              }
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "film_actor",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actor",
+              "ReferencesColumn": "actor_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ConstraintName": "film_actor_actor_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "actor_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "actor",
+              "ReferencesColumns": [
+                "actor_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ConstraintName": "film_actor_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id",
+                "film_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_actor",
+              "IndexName": "film_actor_film_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "film_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "film_category",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ColumnName": "category_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumn": "category_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ConstraintName": "film_category_category_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "category_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "category",
+              "ReferencesColumns": [
+                "category_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ConstraintName": "film_category_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_category",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id",
+                "category_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "film_text",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_text",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_text",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_text",
+              "ColumnName": "description",
+              "ColumnType": "text"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_text",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "film_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film_text",
+              "IndexName": "film_text_title_description_idx",
+              "IndexType": "FULLTEXT",
+              "Columns": [
+                "title",
+                "description"
+              ],
+              "Descending": [
+                false,
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "inventory",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ColumnName": "inventory_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumn": "film_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ConstraintName": "inventory_film_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "film_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "film",
+              "ReferencesColumns": [
+                "film_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ConstraintName": "inventory_store_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "inventory_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "IndexName": "inventory_film_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "film_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "inventory",
+              "IndexName": "inventory_store_id_film_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "store_id",
+                "film_id"
+              ],
+              "Descending": [
+                false,
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "language",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "language",
+              "ColumnName": "language_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "language",
+              "ColumnName": "name",
+              "ColumnType": "char(20)",
+              "CharacterLength": "20",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "language",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "language",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "language_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "payment",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "payment_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "rental_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "rental",
+              "ReferencesColumn": "rental_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "amount",
+              "ColumnType": "decimal(5,2)",
+              "NumericPrecision": "5",
+              "NumericScale": "2",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "payment_date",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ConstraintName": "payment_customer_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ConstraintName": "payment_rental_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "rental_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "rental",
+              "ReferencesColumns": [
+                "rental_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "SET NULL"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ConstraintName": "payment_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "payment_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "IndexName": "payment_customer_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "customer_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "IndexName": "payment_rental_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "rental_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "payment",
+              "IndexName": "payment_staff_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "rental",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "rental_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "rental_date",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "inventory_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "inventory",
+              "ReferencesColumn": "inventory_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "customer_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "customer",
+              "ReferencesColumn": "customer_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "return_date",
+              "ColumnType": "timestamp"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "rental_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ConstraintName": "rental_customer_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "customer_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "customer",
+              "ReferencesColumns": [
+                "customer_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ConstraintName": "rental_inventory_id_customer_id_staff_id_idx",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "inventory_id",
+                "customer_id",
+                "staff_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ConstraintName": "rental_inventory_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "inventory_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "inventory",
+              "ReferencesColumns": [
+                "inventory_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "ConstraintName": "rental_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "staff_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "IndexName": "rental_customer_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "customer_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "IndexName": "rental_inventory_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "inventory_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "rental",
+              "IndexName": "rental_staff_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "staff",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "first_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "last_name",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "picture",
+              "ColumnType": "mediumblob"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "email",
+              "ColumnType": "varchar(50)",
+              "CharacterLength": "50",
+              "IsUnique": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumn": "store_id"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "active",
+              "ColumnType": "tinyint(1)",
+              "IsNotNull": true,
+              "ColumnDefault": "1"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "username",
+              "ColumnType": "varchar(16)",
+              "CharacterLength": "16",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "password",
+              "ColumnType": "varchar(40)",
+              "CharacterLength": "40"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "staff_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ConstraintName": "staff_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ConstraintName": "staff_email_key",
+              "ConstraintType": "UNIQUE",
+              "Columns": [
+                "email"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "ConstraintName": "staff_store_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "store_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "store",
+              "ReferencesColumns": [
+                "store_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "IndexName": "staff_address_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "staff",
+              "IndexName": "staff_store_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "store_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "store",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ColumnName": "store_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true,
+              "IsAutoincrement": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ColumnName": "manager_staff_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumn": "staff_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ColumnName": "address_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumn": "address_id",
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ColumnName": "last_update",
+              "ColumnType": "timestamp",
+              "IsNotNull": true,
+              "ColumnDefault": "CURRENT_TIMESTAMP",
+              "OnUpdateCurrentTimestamp": true
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "store_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ConstraintName": "store_address_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "address_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "address",
+              "ReferencesColumns": [
+                "address_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "ConstraintName": "store_manager_staff_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "staff",
+              "ReferencesColumns": [
+                "staff_id"
+              ],
+              "UpdateRule": "CASCADE",
+              "DeleteRule": "RESTRICT"
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "IndexName": "store_address_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "address_id"
+              ],
+              "Descending": [
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "store",
+              "IndexName": "store_manager_staff_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "manager_staff_id"
+              ],
+              "Descending": [
+                false
+              ]
+            }
+          ]
+        },
+        {
+          "TableSchema": "sakila",
+          "TableName": "task",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ColumnName": "task_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ColumnName": "employee_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ColumnName": "department_id",
+              "ColumnType": "binary(16)",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ColumnName": "task",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ColumnName": "data",
+              "ColumnType": "json"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ConstraintName": "PRIMARY",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "task_id"
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "ConstraintName": "task_employee_id_department_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "ReferencesSchema": "sakila",
+              "ReferencesTable": "employee_department",
+              "ReferencesColumns": [
+                "employee_id",
+                "department_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "IndexName": "task_data_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "(cast(json_unquote(json_extract(`data`,_utf8mb4'$.deadline')) as char(20) charset utf8mb4))"
+              ],
+              "Descending": [
+                true
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "IndexName": "task_employee_id_department_id_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "employee_id",
+                "department_id"
+              ],
+              "Descending": [
+                false,
+                false
+              ]
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "task",
+              "IndexName": "task_task_idx",
+              "IndexType": "BTREE",
+              "Columns": [
+                "task"
+              ],
+              "Descending": [
+                true
+              ]
+            }
+          ]
+        }
+      ],
+      "Views": [
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "actor_info",
+          "SQL": "select `a`.`actor_id` AS `actor_id`,`a`.`first_name` AS `first_name`,`a`.`last_name` AS `last_name`,json_objectagg(`c`.`name`,(select json_arrayagg(`f`.`title`) from ((`sakila`.`film` `f` join `sakila`.`film_category` `fc` on((`fc`.`film_id` = `f`.`film_id`))) join `sakila`.`film_actor` `fa` on((`fa`.`film_id` = `f`.`film_id`))) where ((`fc`.`category_id` = `c`.`category_id`) and (`fa`.`actor_id` = `a`.`actor_id`)) group by `fa`.`actor_id`)) AS `film_info` from (((`sakila`.`actor` `a` left join `sakila`.`film_actor` `fa` on((`fa`.`actor_id` = `a`.`actor_id`))) left join `sakila`.`film_category` `fc` on((`fc`.`film_id` = `fa`.`film_id`))) left join `sakila`.`category` `c` on((`c`.`category_id` = `fc`.`category_id`))) group by `a`.`actor_id`,`a`.`first_name`,`a`.`last_name`",
+          "Columns": [
+            "actor_id",
+            "first_name",
+            "last_name",
+            "film_info"
+          ],
+          "ColumnTypes": [
+            "int",
+            "varchar(45)",
+            "varchar(45)",
+            "json"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "customer_list",
+          "SQL": "select `cu`.`customer_id` AS `id`,concat(`cu`.`first_name`,' ',`cu`.`last_name`) AS `name`,`a`.`address` AS `address`,`a`.`postal_code` AS `zip code`,`a`.`phone` AS `phone`,`sakila`.`city`.`city` AS `city`,`sakila`.`country`.`country` AS `country`,(case when `cu`.`active` then 'active' else '' end) AS `notes`,`cu`.`store_id` AS `sid` from (((`sakila`.`customer` `cu` join `sakila`.`address` `a` on((`a`.`address_id` = `cu`.`address_id`))) join `sakila`.`city` on((`sakila`.`city`.`city_id` = `a`.`city_id`))) join `sakila`.`country` on((`sakila`.`country`.`country_id` = `sakila`.`city`.`country_id`)))",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "notes",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "int",
+            "varchar(91)",
+            "varchar(50)",
+            "varchar(10)",
+            "varchar(20)",
+            "varchar(50)",
+            "varchar(50)",
+            "varchar(6)",
+            "int"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "film_list",
+          "SQL": "select `sakila`.`film`.`film_id` AS `fid`,`sakila`.`film`.`title` AS `title`,`sakila`.`film`.`description` AS `description`,`sakila`.`category`.`name` AS `category`,`sakila`.`film`.`rental_rate` AS `price`,`sakila`.`film`.`length` AS `length`,`sakila`.`film`.`rating` AS `rating`,json_arrayagg(concat(`sakila`.`actor`.`first_name`,' ',`sakila`.`actor`.`last_name`)) AS `actors` from ((((`sakila`.`category` left join `sakila`.`film_category` on((`sakila`.`film_category`.`category_id` = `sakila`.`category`.`category_id`))) left join `sakila`.`film` on((`sakila`.`film`.`film_id` = `sakila`.`film_category`.`film_id`))) join `sakila`.`film_actor` on((`sakila`.`film_actor`.`film_id` = `sakila`.`film`.`film_id`))) join `sakila`.`actor` on((`sakila`.`actor`.`actor_id` = `sakila`.`film_actor`.`actor_id`))) group by `sakila`.`film`.`film_id`,`sakila`.`film`.`title`,`sakila`.`film`.`description`,`sakila`.`category`.`name`,`sakila`.`film`.`rental_rate`,`sakila`.`film`.`length`,`sakila`.`film`.`rating`",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "int",
+            "varchar(255)",
+            "text",
+            "varchar(45)",
+            "decimal(4,2)",
+            "int",
+            "enum('G','PG','PG-13','R','NC-17')",
+            "json"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "full_address",
+          "SQL": "select `sakila`.`country`.`country_id` AS `country_id`,`sakila`.`city`.`city_id` AS `city_id`,`sakila`.`address`.`address_id` AS `address_id`,`sakila`.`country`.`country` AS `country`,`sakila`.`city`.`city` AS `city`,`sakila`.`address`.`address` AS `address`,`sakila`.`address`.`address2` AS `address2`,`sakila`.`address`.`district` AS `district`,`sakila`.`address`.`postal_code` AS `postal_code`,`sakila`.`address`.`phone` AS `phone`,`sakila`.`address`.`last_update` AS `last_update` from ((`sakila`.`address` join `sakila`.`city` on((`sakila`.`city`.`city_id` = `sakila`.`address`.`city_id`))) join `sakila`.`country` on((`sakila`.`country`.`country_id` = `sakila`.`city`.`country_id`)))",
+          "Columns": [
+            "country_id",
+            "city_id",
+            "address_id",
+            "country",
+            "city",
+            "address",
+            "address2",
+            "district",
+            "postal_code",
+            "phone",
+            "last_update"
+          ],
+          "ColumnTypes": [
+            "int",
+            "int",
+            "int",
+            "varchar(50)",
+            "varchar(50)",
+            "varchar(50)",
+            "varchar(50)",
+            "varchar(20)",
+            "varchar(10)",
+            "varchar(20)",
+            "timestamp"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "nicer_but_slower_film_list",
+          "SQL": "select `sakila`.`film`.`film_id` AS `fid`,`sakila`.`film`.`title` AS `title`,`sakila`.`film`.`description` AS `description`,`sakila`.`category`.`name` AS `category`,`sakila`.`film`.`rental_rate` AS `price`,`sakila`.`film`.`length` AS `length`,`sakila`.`film`.`rating` AS `rating`,json_arrayagg(concat(upper(substr(`sakila`.`actor`.`first_name`,1,1)),lower(substr(`sakila`.`actor`.`first_name`,2)),' ',upper(substr(`sakila`.`actor`.`last_name`,1,1)),lower(substr(`sakila`.`actor`.`last_name`,2)))) AS `actors` from ((((`sakila`.`category` left join `sakila`.`film_category` on((`sakila`.`film_category`.`category_id` = `sakila`.`category`.`category_id`))) left join `sakila`.`film` on((`sakila`.`film`.`film_id` = `sakila`.`film_category`.`film_id`))) join `sakila`.`film_actor` on((`sakila`.`film_actor`.`film_id` = `sakila`.`film`.`film_id`))) join `sakila`.`actor` on((`sakila`.`actor`.`actor_id` = `sakila`.`film_actor`.`actor_id`))) group by `sakila`.`film`.`film_id`,`sakila`.`film`.`title`,`sakila`.`film`.`description`,`sakila`.`category`.`name`,`sakila`.`film`.`rental_rate`,`sakila`.`film`.`length`,`sakila`.`film`.`rating`",
+          "Columns": [
+            "fid",
+            "title",
+            "description",
+            "category",
+            "price",
+            "length",
+            "rating",
+            "actors"
+          ],
+          "ColumnTypes": [
+            "int",
+            "varchar(255)",
+            "text",
+            "varchar(45)",
+            "decimal(4,2)",
+            "int",
+            "enum('G','PG','PG-13','R','NC-17')",
+            "json"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "sales_by_film_category",
+          "SQL": "select `c`.`name` AS `category`,sum(`p`.`amount`) AS `total_sales` from (((((`sakila`.`payment` `p` join `sakila`.`rental` `r` on((`r`.`rental_id` = `p`.`rental_id`))) join `sakila`.`inventory` `i` on((`i`.`inventory_id` = `r`.`inventory_id`))) join `sakila`.`film` `f` on((`f`.`film_id` = `i`.`film_id`))) join `sakila`.`film_category` `fc` on((`fc`.`film_id` = `f`.`film_id`))) join `sakila`.`category` `c` on((`c`.`category_id` = `fc`.`category_id`))) group by `c`.`name`",
+          "Columns": [
+            "category",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "varchar(45)",
+            "decimal(27,2)"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "sales_by_store",
+          "SQL": "select concat(`ci`.`city`,',',`co`.`country`) AS `store`,concat(`m`.`first_name`,' ',`m`.`last_name`) AS `manager`,sum(`p`.`amount`) AS `total_sales` from (((((((`sakila`.`payment` `p` join `sakila`.`rental` `r` on((`r`.`rental_id` = `p`.`rental_id`))) join `sakila`.`inventory` `i` on((`i`.`inventory_id` = `r`.`inventory_id`))) join `sakila`.`store` `s` on((`s`.`store_id` = `i`.`store_id`))) join `sakila`.`address` `a` on((`a`.`address_id` = `s`.`address_id`))) join `sakila`.`city` `ci` on((`ci`.`city_id` = `a`.`city_id`))) join `sakila`.`country` `co` on((`co`.`country_id` = `ci`.`country_id`))) join `sakila`.`staff` `m` on((`m`.`staff_id` = `s`.`manager_staff_id`))) group by `co`.`country`,`ci`.`city`,`s`.`store_id`,`m`.`first_name`,`m`.`last_name`",
+          "Columns": [
+            "store",
+            "manager",
+            "total_sales"
+          ],
+          "ColumnTypes": [
+            "varchar(101)",
+            "varchar(91)",
+            "decimal(27,2)"
+          ]
+        },
+        {
+          "ViewSchema": "sakila",
+          "ViewName": "staff_list",
+          "SQL": "select `s`.`staff_id` AS `id`,concat(`s`.`first_name`,' ',`s`.`last_name`) AS `name`,`a`.`address` AS `address`,`a`.`postal_code` AS `zip code`,`a`.`phone` AS `phone`,`ci`.`city` AS `city`,`co`.`country` AS `country`,`s`.`store_id` AS `sid` from (((`sakila`.`staff` `s` join `sakila`.`address` `a` on((`a`.`address_id` = `s`.`address_id`))) join `sakila`.`city` `ci` on((`ci`.`city_id` = `a`.`city_id`))) join `sakila`.`country` `co` on((`co`.`country_id` = `ci`.`country_id`)))",
+          "Columns": [
+            "id",
+            "name",
+            "address",
+            "zip code",
+            "phone",
+            "city",
+            "country",
+            "sid"
+          ],
+          "ColumnTypes": [
+            "int",
+            "varchar(91)",
+            "varchar(50)",
+            "varchar(10)",
+            "varchar(20)",
+            "varchar(50)",
+            "varchar(50)",
+            "int"
+          ]
+        }
+      ],
+      "ViewsValid": true,
+      "Routines": [
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "film_in_stock",
+          "RoutineType": "PROCEDURE",
+          "SQL": "BEGIN\n    SELECT COUNT(*)\n    INTO p_film_count\n    FROM inventory\n    WHERE\n        film_id = p_film_id\n        AND store_id = p_store_id\n        AND inventory_in_stock(inventory_id)\n    ;\nEND",
+          "Attrs": {
+            "isDeterministic": "false",
+            "parameters": "IN p_film_id int|IN p_store_id int|OUT p_film_count int",
+            "returnType": "",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          }
+        },
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "film_not_in_stock",
+          "RoutineType": "PROCEDURE",
+          "SQL": "BEGIN\n    SELECT COUNT(*)\n    INTO p_film_count\n    FROM inventory\n    WHERE\n        film_id = p_film_id\n        AND store_id = p_store_id\n        AND NOT inventory_in_stock(inventory_id)\n    ;\nEND",
+          "Attrs": {
+            "isDeterministic": "false",
+            "parameters": "IN p_film_id int|IN p_store_id int|OUT p_film_count int",
+            "returnType": "",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          }
+        },
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "get_customer_balance",
+          "RoutineType": "FUNCTION",
+          "SQL": "BEGIN\n    -- OK, WE NEED TO CALCULATE THE CURRENT BALANCE GIVEN A CUSTOMER_ID AND A DATE\n    -- THAT WE WANT THE BALANCE TO BE EFFECTIVE FOR. THE BALANCE IS:\n    --    1) RENTAL FEES FOR ALL PREVIOUS RENTALS\n    --    2) ONE DOLLAR FOR EVERY DAY THE PREVIOUS RENTALS ARE OVERDUE\n    --    3) IF A FILM IS MORE THAN RENTAL_DURATION * 2 OVERDUE, CHARGE THE REPLACEMENT_COST\n    --    4) SUBTRACT ALL PAYMENTS MADE BEFORE THE DATE SPECIFIED\n    DECLARE v_rentfees DECIMAL(5,2); -- FEES PAID TO RENT THE VIDEOS INITIALLY\n    DECLARE v_overfees INT;          -- LATE FEES FOR PRIOR RENTALS\n    DECLARE v_payments DECIMAL(5,2); -- SUM OF PAYMENTS MADE PREVIOUSLY\n\n    SELECT COALESCE(SUM(film.rental_rate),0)\n    INTO v_rentfees\n    FROM film, inventory, rental\n    WHERE\n        film.film_id = inventory.film_id\n        AND inventory.inventory_id = rental.inventory_id\n        AND rental.rental_date \u003c= p_effective_date\n        AND rental.customer_id = p_customer_id\n    ;\n\n    SELECT COALESCE(SUM(IF(\n        (TO_DAYS(rental.return_date) - TO_DAYS(rental.rental_date)) \u003e film.rental_duration,\n        (TO_DAYS(rental.return_date) - TO_DAYS(rental.rental_date)) - film.rental_duration,\n        0\n    )), 0)\n    INTO v_overfees\n    FROM rental, inventory, film\n    WHERE\n        film.film_id = inventory.film_id\n        AND inventory.inventory_id = rental.inventory_id\n        AND rental.rental_date \u003c= p_effective_date\n        AND rental.customer_id = p_customer_id\n    ;\n\n    SELECT COALESCE(SUM(payment.amount),0)\n    INTO v_payments\n    FROM payment\n    WHERE\n        payment.payment_date \u003c= p_effective_date\n        AND payment.customer_id = p_customer_id\n    ;\n\n    RETURN v_rentfees + v_overfees - v_payments;\nEND",
+          "Attrs": {
+            "isDeterministic": "true",
+            "parameters": "p_customer_id int|p_effective_date datetime",
+            "returnType": "decimal(5,2)",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          }
+        },
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "inventory_held_by_customer",
+          "RoutineType": "FUNCTION",
+          "SQL": "BEGIN\n    DECLARE v_customer_id INT;\n    DECLARE EXIT HANDLER FOR NOT FOUND RETURN NULL;\n\n    SELECT customer_id\n    INTO v_customer_id\n    FROM rental\n    WHERE\n        return_date IS NULL\n        AND inventory_id = p_inventory_id\n    ;\n\n    RETURN v_customer_id;\nEND",
+          "Attrs": {
+            "isDeterministic": "false",
+            "parameters": "p_inventory_id int",
+            "returnType": "int",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          }
+        },
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "inventory_in_stock",
+          "RoutineType": "FUNCTION",
+          "SQL": "BEGIN\n    DECLARE v_rentals INT;\n    DECLARE v_out     INT;\n\n    -- AN ITEM IS IN-STOCK IF THERE ARE EITHER NO ROWS IN THE rental TABLE\n    -- FOR THE ITEM OR ALL ROWS HAVE return_date POPULATED\n\n    SELECT COUNT(*)\n    INTO v_rentals\n    FROM rental\n    WHERE inventory_id = p_inventory_id\n    ;\n\n    IF v_rentals = 0 THEN\n      RETURN TRUE;\n    END IF;\n\n    SELECT COUNT(rental_id)\n    INTO v_out\n    FROM\n        inventory\n        LEFT JOIN rental USING(inventory_id)\n    WHERE\n        inventory.inventory_id = p_inventory_id\n        AND rental.return_date IS NULL\n    ;\n\n    IF v_out \u003e 0 THEN\n      RETURN FALSE;\n    ELSE\n      RETURN TRUE;\n    END IF;\nEND",
+          "Attrs": {
+            "isDeterministic": "false",
+            "parameters": "p_inventory_id int",
+            "returnType": "tinyint(1)",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          }
+        },
+        {
+          "RoutineSchema": "sakila",
+          "RoutineName": "rewards_report",
+          "RoutineType": "PROCEDURE",
+          "SQL": "BEGIN\n    DECLARE last_month_start DATE;\n    DECLARE last_month_end DATE;\n\n    /* Some sanity checks... */\n    IF min_monthly_purchases = 0 THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Minimum monthly purchases parameter must be \u003e 0';\n    END IF;\n    IF min_dollar_amount_purchased = 0.00 THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Minimum monthly dollar amount purchased parameter must be \u003e $0.00';\n    END IF;\n\n    /* Determine start and end time periods */\n    SET last_month_start = DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH);\n    SET last_month_start = STR_TO_DATE(CONCAT(YEAR(last_month_start),'-',MONTH(last_month_start),'-01'),'%Y-%m-%d');\n    SET last_month_end = LAST_DAY(last_month_start);\n\n    /*\n    Create a temporary storage area for\n    Customer IDs.\n    */\n    CREATE TEMPORARY TABLE tmpCustomer (customer_id SMALLINT UNSIGNED NOT NULL PRIMARY KEY);\n\n    /*\n    Find all customers meeting the\n    monthly purchase requirements\n    */\n    INSERT INTO tmpCustomer (customer_id)\n    SELECT p.customer_id\n    FROM payment AS p\n    WHERE DATE(p.payment_date) BETWEEN last_month_start AND last_month_end\n    GROUP BY customer_id\n    HAVING SUM(p.amount) \u003e min_dollar_amount_purchased\n    AND COUNT(customer_id) \u003e min_monthly_purchases;\n\n    /* Populate OUT parameter with count of found customers */\n    SELECT COUNT(*) INTO count_rewardees FROM tmpCustomer;\n\n    /*\n    Output ALL customer information of matching rewardees.\n    Customize output as needed.\n    */\n    SELECT c.*\n    FROM tmpCustomer AS t\n    INNER JOIN customer AS c ON t.customer_id = c.customer_id;\n\n    /* Clean up */\n    DROP TABLE tmpCustomer;\nEND",
+          "Attrs": {
+            "isDeterministic": "false",
+            "parameters": "IN min_monthly_purchases int|IN min_dollar_amount_purchased decimal(10,2)|OUT count_rewardees int",
+            "returnType": "",
+            "routineBody": "SQL",
+            "securityType": "DEFINER",
+            "sqlDataAccess": "READS SQL DATA"
+          },
+          "Comment": "Provides a customizable report on best customers"
+        }
+      ],
+      "RoutinesValid": true
+    }
+  ]
+}

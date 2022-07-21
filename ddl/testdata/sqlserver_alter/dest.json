@@ -1,0 +1,162 @@
+{
+  "Dialect": "sqlserver",
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "country",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "CollationName": "Latin1_General_100_BIN2_UTF8"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "country",
+              "ConstraintName": "country_country_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "IsClustered": true
+            }
+          ]
+        },
+        {
+          "TableSchema": "dbo",
+          "TableName": "person",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "person_id",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "name",
+              "ColumnType": "text"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "email",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "CollationName": "Latin1_General_100_BIN2_UTF8"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "password",
+              "ColumnType": "text"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "bio",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "ColumnDefault": "'lorem ipsum'"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "notes",
+              "ColumnType": "varchar(1000)",
+              "CharacterLength": "1000"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "height_meters",
+              "ColumnType": "numeric(3,2)",
+              "NumericPrecision": "3",
+              "NumericScale": "2"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "weight_kilos",
+              "ColumnType": "numeric(3,2)",
+              "NumericPrecision": "3",
+              "NumericScale": "2"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "salary_dollars",
+              "ColumnType": "decimal(10,2)",
+              "NumericPrecision": "10",
+              "NumericScale": "2"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "ip_address",
+              "ColumnType": "varchar(45)",
+              "CharacterLength": "45"
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ColumnName": "country_id",
+              "ColumnType": "int",
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "country",
+              "ReferencesColumn": "country_id"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ConstraintName": "person_country_id_fkey",
+              "ConstraintType": "FOREIGN KEY",
+              "Columns": [
+                "country_id"
+              ],
+              "ReferencesSchema": "dbo",
+              "ReferencesTable": "country",
+              "ReferencesColumns": [
+                "country_id"
+              ]
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "person",
+              "ConstraintName": "person_person_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "person_id"
+              ],
+              "IsClustered": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
