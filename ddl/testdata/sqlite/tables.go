@@ -9,7 +9,7 @@ type ACTOR struct {
 	LAST_NAME          sq.StringField `ddl:"notnull index"`
 	FULL_NAME          sq.StringField `ddl:"generated"`
 	FULL_NAME_REVERSED sq.StringField `ddl:"generated"`
-	LAST_UPDATE        sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE        sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type ADDRESS struct {
@@ -21,14 +21,14 @@ type ADDRESS struct {
 	CITY_ID     sq.NumberField `ddl:"notnull references={city onupdate=cascade ondelete=restrict index}"`
 	POSTAL_CODE sq.StringField
 	PHONE       sq.StringField `ddl:"notnull"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type CATEGORY struct {
 	sq.TableStruct
 	CATEGORY_ID sq.NumberField `ddl:"primarykey"`
 	NAME        sq.StringField `ddl:"notnull"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type CITY struct {
@@ -36,14 +36,14 @@ type CITY struct {
 	CITY_ID     sq.NumberField `ddl:"primarykey"`
 	CITY        sq.StringField `ddl:"notnull"`
 	COUNTRY_ID  sq.NumberField `ddl:"notnull references={country onupdate=cascade ondelete=restrict index}"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type COUNTRY struct {
 	sq.TableStruct
 	COUNTRY_ID  sq.NumberField `ddl:"primarykey"`
 	COUNTRY     sq.StringField `ddl:"notnull"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type CUSTOMER struct {
@@ -55,8 +55,8 @@ type CUSTOMER struct {
 	EMAIL       sq.StringField `ddl:"unique"`
 	ADDRESS_ID  sq.NumberField `ddl:"notnull references={address onupdate=cascade ondelete=restrict index}"`
 	ACTIVE      sq.NumberField `ddl:"notnull default=TRUE"`
-	CREATE_DATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	CREATE_DATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 	_           struct{}       `ddl:"unique=email,first_name,last_name"`
 }
 
@@ -94,21 +94,21 @@ type FILM struct {
 	REPLACEMENT_COST     sq.NumberField `ddl:"type=REAL notnull default=19.99"`
 	RATING               sq.StringField `ddl:"default='G'"`
 	SPECIAL_FEATURES     sq.JSONField
-	LAST_UPDATE          sq.TimeField `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE          sq.TimeField `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type FILM_ACTOR struct {
 	sq.TableStruct `ddl:"primarykey=actor_id,film_id"`
 	ACTOR_ID       sq.NumberField `ddl:"notnull references={actor onupdate=cascade ondelete=restrict}"`
 	FILM_ID        sq.NumberField `ddl:"notnull references={film onupdate=cascade ondelete=restrict index}"`
-	LAST_UPDATE    sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE    sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type FILM_CATEGORY struct {
 	sq.TableStruct `ddl:"primarykey=film_id,category_id"`
 	FILM_ID        sq.NumberField `ddl:"notnull references={film onupdate=cascade ondelete=restrict}"`
 	CATEGORY_ID    sq.NumberField `ddl:"notnull references={category onupdate=cascade ondelete=restrict}"`
-	LAST_UPDATE    sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE    sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type FILM_TEXT struct {
@@ -124,7 +124,7 @@ type INVENTORY struct {
 	INVENTORY_ID sq.NumberField `ddl:"primarykey"`
 	FILM_ID      sq.NumberField `ddl:"notnull references={film onupdate=cascade ondelete=restrict index}"`
 	STORE_ID     sq.NumberField `ddl:"notnull references={store onupdate=cascade ondelete=restrict}"`
-	LAST_UPDATE  sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE  sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 	_            struct{}       `ddl:"index=store_id,film_id"`
 }
 
@@ -132,7 +132,7 @@ type LANGUAGE struct {
 	sq.TableStruct
 	LANGUAGE_ID sq.NumberField `ddl:"primarykey"`
 	NAME        sq.StringField `ddl:"notnull"`
-	LAST_UPDATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type PAYMENT struct {
@@ -142,19 +142,19 @@ type PAYMENT struct {
 	STAFF_ID     sq.NumberField `ddl:"notnull references={staff onupdate=cascade ondelete=restrict index}"`
 	RENTAL_ID    sq.NumberField `ddl:"references={rental onupdate=cascade ondelete=setnull index}"`
 	AMOUNT       sq.NumberField `ddl:"type=REAL notnull"`
-	PAYMENT_DATE sq.TimeField   `ddl:"notnull default=unixepoch()"`
-	LAST_UPDATE  sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	PAYMENT_DATE sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
+	LAST_UPDATE  sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type RENTAL struct {
 	sq.TableStruct
 	RENTAL_ID    sq.NumberField `ddl:"primarykey"`
-	RENTAL_DATE  sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	RENTAL_DATE  sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 	INVENTORY_ID sq.NumberField `ddl:"notnull references={inventory onupdate=cascade ondelete=restrict index}"`
 	CUSTOMER_ID  sq.NumberField `ddl:"notnull references={customer onupdate=cascade ondelete=restrict index}"`
-	RETURN_DATE  sq.TimeField
+	RETURN_DATE  sq.TimeField   `ddl:"type=DATETIME"`
 	STAFF_ID     sq.NumberField `ddl:"notnull references={staff onupdate=cascade ondelete=restrict index}"`
-	LAST_UPDATE  sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE  sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 	_            struct{}       `ddl:"index={inventory_id,customer_id,staff_id unique}"`
 }
 
@@ -170,7 +170,7 @@ type STAFF struct {
 	ACTIVE      sq.NumberField `ddl:"notnull default=TRUE"`
 	USERNAME    sq.StringField `ddl:"notnull"`
 	PASSWORD    sq.StringField
-	LAST_UPDATE sq.TimeField `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE sq.TimeField `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type STORE struct {
@@ -178,7 +178,7 @@ type STORE struct {
 	STORE_ID         sq.NumberField `ddl:"primarykey"`
 	MANAGER_STAFF_ID sq.NumberField `ddl:"notnull references={staff.staff_id onupdate=cascade ondelete=restrict index}"`
 	ADDRESS_ID       sq.NumberField `ddl:"notnull references={address onupdate=cascade ondelete=restrict index}"`
-	LAST_UPDATE      sq.TimeField   `ddl:"notnull default=unixepoch()"`
+	LAST_UPDATE      sq.TimeField   `ddl:"type=DATETIME notnull default=unixepoch()"`
 }
 
 type TASK struct {

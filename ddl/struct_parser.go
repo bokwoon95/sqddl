@@ -251,7 +251,7 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 				case sq.DialectSQLServer:
 					columnType = "DATETIMEOFFSET"
 				default:
-					columnType = "TIMESTAMP"
+					columnType = "DATETIME"
 				}
 			case "sq.UUIDField":
 				switch p.dialect {

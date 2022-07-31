@@ -167,7 +167,7 @@ This is the history table schema in case you are interested.
 CREATE TABLE sqddl_history (
     filename VARCHAR(255) PRIMARY KEY NOT NULL,
     checksum VARCHAR(64),
-    started_at TIMESTAMP, -- postgres uses TIMESTAMPTZ, sqlserver uses DATETIMEOFFSET
+    started_at DATETIME, -- postgres uses TIMESTAMPTZ, sqlserver uses DATETIMEOFFSET
     time_taken_ns BIGINT,
     success BOOLEAN -- sqlserver uses BIT
 );
@@ -1123,7 +1123,7 @@ You will need to import the [sq package](https://github.com/bokwoon95/sq) in ord
 <tr>
 <td><strong>sq.TimeField</strong></td>
 <td>
-<p>SQLite, MySQL - TIMESTAMP</p>
+<p>SQLite, MySQL - DATETIME</p>
 <p>Postgres - TIMESTAMPTZ</p>
 <p>SQL Server - DATETIMEOFFSET</p>
 </td>

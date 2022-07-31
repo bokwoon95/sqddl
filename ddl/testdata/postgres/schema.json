@@ -6,7 +6,7 @@
   ],
   "CatalogName": "sakila",
   "CurrentSchema": "public",
-  "DefaultCollation": "English_Singapore.utf8",
+  "DefaultCollation": "en_US.utf8",
   "DefaultCollationValid": true,
   "Extensions": [
     "btree_gist",

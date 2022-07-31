@@ -63,7 +63,7 @@
               "TableSchema": "sakila",
               "TableName": "actor",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -162,7 +162,7 @@
               "TableSchema": "sakila",
               "TableName": "address",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -235,7 +235,7 @@
               "TableSchema": "sakila",
               "TableName": "category",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -290,7 +290,7 @@
               "TableSchema": "sakila",
               "TableName": "city",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -363,7 +363,7 @@
               "TableSchema": "sakila",
               "TableName": "country",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -454,7 +454,7 @@
               "TableSchema": "sakila",
               "TableName": "customer",
               "ColumnName": "create_date",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP"
             },
@@ -462,7 +462,7 @@
               "TableSchema": "sakila",
               "TableName": "customer",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -880,7 +880,7 @@
               "TableSchema": "sakila",
               "TableName": "film",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1039,7 +1039,7 @@
               "TableSchema": "sakila",
               "TableName": "film_actor",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1136,7 +1136,7 @@
               "TableSchema": "sakila",
               "TableName": "film_category",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1282,7 +1282,7 @@
               "TableSchema": "sakila",
               "TableName": "inventory",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1385,7 +1385,7 @@
               "TableSchema": "sakila",
               "TableName": "language",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1464,7 +1464,7 @@
               "TableSchema": "sakila",
               "TableName": "payment",
               "ColumnName": "payment_date",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP"
             },
@@ -1472,7 +1472,7 @@
               "TableSchema": "sakila",
               "TableName": "payment",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1593,7 +1593,7 @@
               "TableSchema": "sakila",
               "TableName": "rental",
               "ColumnName": "rental_date",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP"
             },
@@ -1625,7 +1625,7 @@
               "TableSchema": "sakila",
               "TableName": "rental",
               "ColumnName": "return_date",
-              "ColumnType": "timestamp"
+              "ColumnType": "datetime"
             },
             {
               "TableSchema": "sakila",
@@ -1643,7 +1643,7 @@
               "TableSchema": "sakila",
               "TableName": "rental",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1849,7 +1849,7 @@
               "TableSchema": "sakila",
               "TableName": "staff",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -1973,7 +1973,7 @@
               "TableSchema": "sakila",
               "TableName": "store",
               "ColumnName": "last_update",
-              "ColumnType": "timestamp",
+              "ColumnType": "datetime",
               "IsNotNull": true,
               "ColumnDefault": "CURRENT_TIMESTAMP",
               "OnUpdateCurrentTimestamp": true
@@ -2257,7 +2257,7 @@
             "varchar(20)",
             "varchar(10)",
             "varchar(20)",
-            "timestamp"
+            "datetime"
           ]
         },
         {

@@ -2,7 +2,7 @@ CREATE TABLE actor (
     actor_id INTEGER PRIMARY KEY
     ,first_name TEXT NOT NULL
     ,last_name TEXT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE INDEX actor_last_name_idx ON actor (last_name);
@@ -15,7 +15,7 @@ CREATE TABLE address (
     ,city_id INT NOT NULL
     ,postal_code TEXT
     ,phone TEXT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT address_city_id_fkey FOREIGN KEY (city_id) REFERENCES city (city_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
@@ -25,14 +25,14 @@ CREATE INDEX address_city_id_idx ON address (city_id);
 CREATE TABLE category (
     category_id INTEGER PRIMARY KEY
     ,name TEXT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE TABLE city (
     city_id INTEGER PRIMARY KEY
     ,city TEXT NOT NULL
     ,country_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT city_country_id_fkey FOREIGN KEY (country_id) REFERENCES country (country_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
@@ -42,7 +42,7 @@ CREATE INDEX city_country_id_idx ON city (country_id);
 CREATE TABLE country (
     country_id INTEGER PRIMARY KEY
     ,country TEXT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE TABLE customer (
@@ -53,8 +53,8 @@ CREATE TABLE customer (
     ,email TEXT
     ,address_id INT NOT NULL
     ,active INT NOT NULL DEFAULT TRUE
-    ,create_date TIMESTAMP NOT NULL DEFAULT (unixepoch())
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,create_date DATETIME NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT customer_store_id_fkey FOREIGN KEY (store_id) REFERENCES store (store_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT customer_email_key UNIQUE (email)
@@ -109,7 +109,7 @@ CREATE TABLE film (
     ,replacement_cost REAL NOT NULL DEFAULT 19.99
     ,rating TEXT DEFAULT 'G'
     ,special_features JSON
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT film_language_id_fkey FOREIGN KEY (language_id) REFERENCES language (language_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT film_original_language_id_fkey FOREIGN KEY (original_language_id) REFERENCES language (language_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -124,7 +124,7 @@ CREATE INDEX film_original_language_id_idx ON film (original_language_id);
 CREATE TABLE film_actor (
     actor_id INT NOT NULL
     ,film_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT film_actor_actor_id_film_id_pkey PRIMARY KEY (actor_id, film_id)
     ,CONSTRAINT film_actor_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES actor (actor_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -136,7 +136,7 @@ CREATE INDEX film_actor_film_id_idx ON film_actor (film_id);
 CREATE TABLE film_category (
     film_id INT NOT NULL
     ,category_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT film_category_film_id_category_id_pkey PRIMARY KEY (film_id, category_id)
     ,CONSTRAINT film_category_film_id_fkey FOREIGN KEY (film_id) REFERENCES film (film_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -147,7 +147,7 @@ CREATE TABLE inventory (
     inventory_id INTEGER PRIMARY KEY
     ,film_id INT NOT NULL
     ,store_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT inventory_film_id_fkey FOREIGN KEY (film_id) REFERENCES film (film_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT inventory_store_id_fkey FOREIGN KEY (store_id) REFERENCES store (store_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -158,7 +158,7 @@ CREATE INDEX inventory_film_id_idx ON inventory (film_id);
 CREATE TABLE language (
     language_id INTEGER PRIMARY KEY
     ,name TEXT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 );
 
 CREATE TABLE payment (
@@ -167,8 +167,8 @@ CREATE TABLE payment (
     ,staff_id INT NOT NULL
     ,rental_id INT
     ,amount REAL NOT NULL
-    ,payment_date TIMESTAMP NOT NULL DEFAULT (unixepoch())
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,payment_date DATETIME NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT payment_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT payment_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -183,12 +183,12 @@ CREATE INDEX payment_rental_id_idx ON payment (rental_id);
 
 CREATE TABLE rental (
     rental_id INTEGER PRIMARY KEY
-    ,rental_date TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,rental_date DATETIME NOT NULL DEFAULT (unixepoch())
     ,inventory_id INT NOT NULL
     ,customer_id INT NOT NULL
-    ,return_date TIMESTAMP
+    ,return_date DATETIME
     ,staff_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT rental_inventory_id_fkey FOREIGN KEY (inventory_id) REFERENCES inventory (inventory_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT rental_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -212,7 +212,7 @@ CREATE TABLE staff (
     ,active INT NOT NULL DEFAULT TRUE
     ,username TEXT NOT NULL
     ,password TEXT
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT staff_address_id_fkey FOREIGN KEY (address_id) REFERENCES address (address_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT staff_email_key UNIQUE (email)
@@ -227,7 +227,7 @@ CREATE TABLE store (
     store_id INTEGER PRIMARY KEY
     ,manager_staff_id INT NOT NULL
     ,address_id INT NOT NULL
-    ,last_update TIMESTAMP NOT NULL DEFAULT (unixepoch())
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
 
     ,CONSTRAINT store_manager_staff_id_fkey FOREIGN KEY (manager_staff_id) REFERENCES staff (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT
     ,CONSTRAINT store_address_id_fkey FOREIGN KEY (address_id) REFERENCES address (address_id) ON UPDATE CASCADE ON DELETE RESTRICT

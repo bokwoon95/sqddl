@@ -254,7 +254,7 @@ func ensureHistoryTableExists(dialect string, db *sql.DB, historyTable string) e
 		return nil
 	}
 	pkeyDefinition := "CONSTRAINT sqddl_filename_pkey PRIMARY KEY (filename)"
-	timeType := "TIMESTAMP"
+	timeType := "DATETIME"
 	boolType := "BOOLEAN"
 	switch dialect {
 	case sq.DialectPostgres:

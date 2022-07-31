@@ -4,11 +4,11 @@
     15,
     0,
     2000,
-    5
+    1562
   ],
   "CatalogName": "master",
   "CurrentSchema": "dbo",
-  "DefaultCollation": "Latin1_General_CI_AI",
+  "DefaultCollation": "SQL_Latin1_General_CP1_CI_AS",
   "DefaultCollationValid": true,
   "Schemas": [
     {
