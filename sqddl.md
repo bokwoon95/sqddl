@@ -276,7 +276,7 @@ If a migration filename ends in \*.txoff.sql, it will be run outside a transacti
 - [https://github.com/amacneil/dbmate/issues/285](https://github.com/amacneil/dbmate/issues/285)
 - [https://github.com/golang-migrate/migrate/issues/284](https://github.com/golang-migrate/migrate/issues/284)
 
-As a workaround, if you need to run an SQL statement outside of a transaction (Postgres and SQL Server only) make sure that the statement is the only statement in a \*.txoff.sql file. In practice this is not really a big deal, as the only time you need to disable transactional DDL is if you run CREATE INDEX CONCURRENTLY in Postgres.
+As a workaround, if you need to disable transactions for Postgres and SQL Server make sure there is only one statement in the \*.txoff.sql file. In practice this is not really a big deal, as the only time you need to disable transactional DDL is if you run CREATE INDEX CONCURRENTLY in Postgres.
 
 ### Undo migrations #undo-migrations
 
