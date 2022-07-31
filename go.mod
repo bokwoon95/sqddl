@@ -3,7 +3,7 @@ module github.com/bokwoon95/sqddl
 go 1.18
 
 require (
-	github.com/bokwoon95/sq v0.0.0-20220721180728-b77031f29894
+	github.com/bokwoon95/sq v0.1.0
 	github.com/denisenkom/go-mssqldb v0.12.2
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/go-cmp v0.5.8
