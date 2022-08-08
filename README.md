@@ -180,7 +180,7 @@ The views [subcommand](#subcommands) generates view structs from the database.
 
 ```shell
 # sqddl views -db <DATABASE_URL> [FLAGS]
-$ sqddl views -db 'postgres://user:pass@localhost:5432/sakila' -pkg tables -file tables/tables.go
+$ sqddl views -db 'postgres://user:pass@localhost:5432/sakila' -pkg tables -file tables/views.go
 ```
 
 ## generate
