@@ -1,5 +1,5 @@
 [![GoDoc](https://img.shields.io/badge/pkg.go.dev-ddl-blue)](https://pkg.go.dev/github.com/bokwoon95/sqddl/ddl)
-![tests](https://github.com/bokwoon95/sqddl/actions/workflows/tests.yml/badge.svg?branch=main)
+[![tests](https://github.com/bokwoon95/sqddl/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/bokwoon95/sqddl/actions/workflows/tests.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bokwoon95/sqddl)](https://goreportcard.com/report/github.com/bokwoon95/sqddl)
 [![Coverage Status](https://coveralls.io/repos/github/bokwoon95/sqddl/badge.svg?branch=main)](https://coveralls.io/github/bokwoon95/sqddl?branch=main)
 
@@ -34,77 +34,257 @@ Notable features:
 $ go install -tags=fts5 github.com/bokwoon95/sqddl/sqddl@latest
 ```
 
+## Example migrations.
+
+To view what a sample migration directory would look like, click the following links:
+
+- [sqlite\_migrations](https://github.com/bokwoon95/sqddl/tree/main/ddl/sqlite_migrations)
+- [postgres\_migrations](https://github.com/bokwoon95/sqddl/tree/main/ddl/postgres_migrations)
+- [mysql\_migrations](https://github.com/bokwoon95/sqddl/tree/main/ddl/mysql_migrations)
+- [sqlserver\_migrations](https://github.com/bokwoon95/sqddl/tree/main/ddl/sqlserver_migrations)
+
 ## Subcommands
 
 sqddl has 12 subcommands. Click on each of them to find out more.
 
-- [migrate](https://bokwoon.neocities.org/sqddl.html#migrate) - Run pending migrations and add them to the history table.
-- [ls](https://bokwoon.neocities.org/sqddl.html#ls) - Show pending migrations.
-- [touch](https://bokwoon.neocities.org/sqddl.html#touch) - Upsert migrations into to the history table. Does not run them.
-- [rm](https://bokwoon.neocities.org/sqddl.html#rm) - Remove migrations from the history table.
-- [mv](https://bokwoon.neocities.org/sqddl.html#mv) - Rename migrations in the history table.
-- [tables](https://bokwoon.neocities.org/sqddl.html#tables) - Generate table structs from database.
-- [views](https://bokwoon.neocities.org/sqddl.html#views) - Generate view structs from database.
-- [generate](https://bokwoon.neocities.org/sqddl.html#generate) - Generate migrations from a declarative schema (defined as [table structs](https://bokwoon.neocities.org/sqddl.html#table-structs)).
-- [wipe](https://bokwoon.neocities.org/sqddl.html#wipe) - Wipe a database of all views, tables, routines, enums, domains and extensions.
-- [dump](https://bokwoon.neocities.org/sqddl.html#dump) - Dump the database schema as SQL scripts and data as CSV files.
-- [load](https://bokwoon.neocities.org/sqddl.html#load) - Load SQL scripts and CSV files into a database.
-- [automigrate](https://bokwoon.neocities.org/sqddl.html#automigrate) - Automatically migrate a database based on a declarative schema (defined as [table structs](https://bokwoon.neocities.org/sqddl.html#table-structs)).
+- [migrate](#migrate) - Run pending migrations and add them to the [history table](#history-table).
+- [ls](#ls) - Show pending migrations.
+- [touch](#touch) - Upsert migrations into to the [history table](#history-table). Does not run them.
+- [rm](#rm) - Remove migrations from the [history table](#history-table).
+- [mv](#mv) - Rename migrations in the [history table](#history-table).
+- [tables](#tables) - Generate table structs from database.
+- [views](#views) - Generate view structs from database.
+- [generate](#generate) - Generate migrations from a declarative schema (defined as [table structs](https://bokwoon.neocities.org/sqddl.html#table-structs)).
+- [wipe](#wipe) - Wipe a database of all views, tables, routines, enums, domains and extensions.
+- [dump](#dump) - Dump the database schema as SQL scripts and data as CSV files.
+- [load](#load) - Load SQL scripts and CSV files into a database.
+- [automigrate](#automigrate) - Automatically migrate a database based on a declarative schema (defined as [table structs](https://bokwoon.neocities.org/sqddl.html#table-structs)).
 
-## -db flag
+## History table
 
--db is the database url needed to connect to your database. For sqlite this is a file path.
+The history table stores the history of the applied migrations. The default name of the table is "sqddl\_history". You can override it with the -history-table flag, but try not to do so unless you really have a table name that conflicts with the default.
 
-**SQLite examples**
+This is the schema for the history table.
 
-```shell
-# <filename>.{sqlite,sqlite3,db,db3}
-relative/path/to/file.sqlite
-./relative/path/to/file.sqlite3
-/absolute/path/to/file.db
-file:/absolute/path/to/file.db3
-
-# sqlite:<filepath>
-sqlite:relative/path/to/file
-sqlite:./relative/path/to/file
-sqlite:/absolute/path/to/file
-sqlite:file:/absolute/path/to/file
+```sql
+CREATE TABLE sqddl_history (
+    filename VARCHAR(255) PRIMARY KEY NOT NULL,
+    checksum VARCHAR(64),
+    started_at DATETIME, -- postgres uses TIMESTAMPTZ, sqlserver uses DATETIMEOFFSET
+    time_taken_ns BIGINT,
+    success BOOLEAN -- sqlserver uses BIT
+);
 ```
 
-**Postgres examples**
+## migrate
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#migrate](https://bokwoon.neocities.org/sqddl.html#migrate).
+
+The migrate [subcommand](#subcommands) runs pending migrations in some directory (specified with -dir). No output means no pending migrations. Once a migration has been run, it will be recorded in a [history table](#history-table) so that it doesn't get run again.
+
+Any top-level \*.sql file in the migration directory is considered a migration. You are free to use any naming convention for your migrations, but keep in mind that they will be run in alphabetical order.
+
+Check out [https://bokwoon.neocities.org/sqddl.html#db-flag](https://bokwoon.neocities.org/sqddl.html#db-flag) for more -db flag examples.
 
 ```shell
-# postgres://<username>:<password>@<host>:<port>/<database>
-postgres://user:pass@localhost:5432/sakila
-postgres://admin1:Hunter2!@127.0.0.1:5433/mydatabase
+# sqddl migrate -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS] [FILENAMES...]
+$ sqddl migrate -db 'postgres://user:pass@localhost:5432/sakila' -dir ./migrations
+BEGIN
+[OK] 01_extensions_types.sql (22.4397ms)
+[OK] 02_sakila.sql (194.1385ms)
+[OK] 03_webpage.sql (29.5218ms)
+[OK] 04_extras.sql (20.1678ms)
+COMMIT
 ```
 
-**MySQL examples**
+## ls
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#ls](https://bokwoon.neocities.org/sqddl.html#ls).
+
+The ls [subcommand](#subcommands) shows the pending migrations to be run. No output means no pending migrations.
 
 ```shell
-# <username>:<password>@tcp(<host>:<port>)/<database>
-user:pass@tcp(localhost:3306)/sakila
-root:Hunter2!@tcp(127.0.0.1:3307)/mydatabase
-
-# mysql://<username>:<password>@<host>:<port>/<database>
-mysql://user:pass@localhost:3306/sakila
-mysql://root:Hunter2!@127.0.0.1:3307/mydatabase
-
-# mysql://<username>:<password>@tcp(<host>:<port>)/<database>
-mysql://user:pass@tcp(localhost:3306)/sakila
-mysql://root:Hunter2!@tcp(127.0.0.1:3307)/mydatabase
+# sqddl ls -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS]
+$ sqddl ls -db 'postgres://user:pass@localhost:5432/sakila' -dir ./migrations
+[pending] 01_extensions_types.sql
+[pending] 02_sakila.sql
+[pending] 03_webpage.sql
+[pending] 04_extras.sql
 ```
 
-**SQL Server examples**
+## touch
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#touch](https://bokwoon.neocities.org/sqddl.html#touch).
+
+The touch [subcommand](#subcommands) upserts migrations into the [history table](#history-table) without running them.
+
+- The SHA256 checksum for [repeatable migrations](https://bokwoon.neocities.org/sqddl.html#repeatable-migrations) will be updated.
+- started\_at will be set to the current time.
+- time\_taken\_ns will be set to 0.
 
 ```shell
-# sqlserver://<username>:<password>@<host>:<port>?database=<database>
-sqlserver://user:pass@localhost:1433?database=sakila
-sqlserver://sa:Hunter2!@127.0.0.1:1434?database=mydatabase
+# sqddl touch -db <DATABASE_URL> -dir <MIGRATION_DIR> [FILENAMES...]
+$ sqddl touch \
+    -db 'postgres://user:pass@localhost:5432/sakila' \
+    -dir ./migrations \
+    02_sakila.sql 04_extras.sql # add 02_sakila.sql and 04_extras.sql to the history table without running them
+2 rows affected
+```
 
-# sqlserver://<username>:<password>@<host>:<port>/<database>
-sqlserver://user:pass@localhost:1433/sakila
-sqlserver://sa:Hunter2!@127.0.0.1:1434/mydatabase
+## rm
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#rm](https://bokwoon.neocities.org/sqddl.html#rm).
+
+The rm [subcommand](#subcommands) removes migrations from the [history table](#history-table) (it does not remove the actual migration files from the directory). This is useful if you accidentally added migrations to the history table using [touch](#touch), or if you want to deregister the migration from the history table so that [migrate](#migrate) will run it again.
+
+```shell
+# sqddl rm -db <DATABASE_URL> [FILENAMES...]
+$ sqddl rm \
+    -db 'postgres://user:pass@localhost:5432/sakila' \
+    -dir ./migrations \
+    02_sakila.sql 04_extras.sql # remove 02_sakila.sql and 04_extras.sql from the history table
+2 rows affected
+```
+
+## mv
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#mv](https://bokwoon.neocities.org/sqddl.html#mv).
+
+The mv [subcommand](#subcommands) renames migrations in the [history table](#history-table). This is useful if you manually renamed the filename of a migration that was already run (for example a repeatable migration) and you want to update its entry in the history table.
+
+```shell
+# sqddl mv -db <DATABASE_URL> <OLD_FILENAME> <NEW_FILENAME>
+$ sqddl mv \
+    -db 'postgres://user:pass@localhost:5432/sakila' \
+    -dir ./migrations \
+    old_name.sql new_name.sql # renames old_name.sql to new_name.sql in the history table
+1 row affected
+```
+
+## tables
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#tables](https://bokwoon.neocities.org/sqddl.html#tables).
+
+The tables [subcommand](#subcommands) generates table structs from the database.
+
+```shell
+# sqddl tables -db <DATABASE_URL> [FLAGS]
+$ sqddl tables -db 'postgres://user:pass@localhost:5432/sakila' -pkg tables -file tables/tables.go
+```
+
+## views
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#views](https://bokwoon.neocities.org/sqddl.html#views).
+
+The views [subcommand](#subcommands) generates view structs from the database.
+
+```shell
+# sqddl views -db <DATABASE_URL> [FLAGS]
+$ sqddl views -db 'postgres://user:pass@localhost:5432/sakila' -pkg tables -file tables/tables.go
+```
+
+## generate
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#generate](https://bokwoon.neocities.org/sqddl.html#generate).
+
+The generate [subcommand](#subcommands) generates migrations needed to get from a source schema to a destination schema. The source is typically a database URL/DSN ([same as the -db flag](https://bokwoon.neocities.org/sqddl.html#db-flag)), while the destination is typically a Go source file containing [table structs](https://bokwoon.neocities.org/sqddl.html#table-structs). No output means no migrations were generated.
+
+```shell
+# sqddl generate -src <SRC_SCHEMA> -dest <DEST_SCHEMA> [FLAGS]
+$ sqddl generate \
+    -src 'postgres://user:pass@localhost:5432/mydatabase' \
+    -dest tables/tables.go \
+    -output-dir ./migrations
+./migrations/20060102150405_01_schemas.sql
+./migrations/20060102150405_02_tables.sql
+./migrations/20060102150405_03_add_person_country_fkeys.tx.sql
+```
+
+## wipe
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#wipe](https://bokwoon.neocities.org/sqddl.html#wipe).
+
+The wipe [subcommand](#subcommands) wipes a database of all views, tables, routines, enums, domains and extensions.
+
+```shell
+# sqddl wipe -db <DATABASE_URL> [FLAGS]
+$ sqddl wipe -db 'postgres://user:pass@localhost:5432/sakila'
+```
+
+## dump
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#dump](https://bokwoon.neocities.org/sqddl.html#dump).
+
+The dump [subcommand](#subcommands) can dump a database's schema and data.
+
+- The schema is dumped as 4 files:
+    - schema.json
+    - schema.sql
+    - indexes.sql
+    - constraints.sql
+- The data is dumped as a CSV file per table.
+    - e.g. if the table is called `actor`, the CSV file will be called `actor.csv`.
+
+```shell
+# sqddl dump -db <DATABASE_URL> [FLAGS]
+$ sqddl dump -db 'postgres://user:pass@localhost:5432/sakila' -output-dir ./db
+./db/schema.json
+./db/schema.sql
+./db/indexes.sql
+./db/constraints.sql
+./db/actor.csv
+./db/address.csv
+./db/category.csv
+./db/city.csv
+./db/country.csv
+./db/customer.csv
+./db/data.csv
+./db/film.csv
+./db/film_actor.csv
+./db/film_category.csv
+./db/inventory.csv
+./db/language.csv
+./db/payment.csv
+./db/rental.csv
+./db/staff.csv
+./db/store.csv
+```
+
+## load
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#load](https://bokwoon.neocities.org/sqddl.html#load).
+
+The load [subcommand](#subcommands) loads SQL scripts and CSV files into a database. It can also load [directories](https://bokwoon.neocities.org/sqddl.html#dump) and [zip/tar gzip archives](https://bokwoon.neocities.org/sqddl.html#dump-zip-tgz-archive) created by the [dump](#dump) subcommand.
+
+```shell
+# sqddl load -db <DATABASE_URL> [FLAGS] [FILENAMES...]
+$ sqddl load \
+    -db 'postgres://user:pass@localhost:5432/sakila' \
+    ./db/schema.sql ./db/actor.csv ./db/language.csv ./db/indexes.sql ./db/constraints.sql
+
+$ sqddl load -db 'postgres://user:pass@localhost:5432/sakila' ./db
+
+$ sqddl load -db 'postgres://user:pass@localhost:5432/sakila' ./db/sakila.zip
+
+$ sqddl load -db 'postgres://user:pass@localhost:5432/sakila' ./db/sakila.tgz
+```
+
+## automigrate
+
+Docs: [https://bokwoon.neocities.org/sqddl.html#automigrate](https://bokwoon.neocities.org/sqddl.html#automigrate).
+
+The automigrate [subcommand](#subcommands) automatically migrates a database based on a declarative schema ([defined as table structs](https://bokwoon.neocities.org/sqddl.html#table-structs)). It is equivalent to running [generate](#generate) followed by [migrate](#migrate), except the generated migrations are created in-memory and will not be added to the [history table](#history-table).
+
+```shell
+# sqddl automigrate -db <DATABASE_URL> -dest <DEST_SCHEMA> [FLAGS]
+$ sqddl automigrate -db 'postgres://user:pass@localhost:5432/sakila' -dest tables/tables.go
+BEGIN
+[OK] automigrate_01_schemas.sql (604.834µs)
+[OK] automigrate_02_tables.sql (6.896833ms)
+COMMIT
+BEGIN
+[OK] automigrate_03_add_person_country_fkeys.tx.sql (1.40075ms)
+COMMIT
 ```
 
 ## Contributing

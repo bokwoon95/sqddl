@@ -35,11 +35,11 @@ $ go install -tags=fts5 github.com/bokwoon95/sqddl/sqddl@latest
 
 sqddl has 12 subcommands. Click on each of them to find out more.
 
-- [migrate](#migrate) - Run pending migrations and add them to the history table.
+- [migrate](#migrate) - Run pending migrations and add them to the [history table](#history-table).
 - [ls](#ls) - Show pending migrations.
-- [touch](#touch) - Upsert migrations into to the history table. Does not run them.
-- [rm](#rm) - Remove migrations from the history table.
-- [mv](#mv) - Rename migrations in the history table.
+- [touch](#touch) - Upsert migrations into to the [history table](#history-table). Does not run them.
+- [rm](#rm) - Remove migrations from the [history table](#history-table).
+- [mv](#mv) - Rename migrations in the [history table](#history-table).
 - [tables](#tables) - Generate table structs from database.
 - [views](#views) - Generate view structs from database.
 - [generate](#generate) - Generate migrations from a declarative schema (defined as [table structs](#table-structs)).
@@ -60,7 +60,7 @@ $ sqddl -db 'postgres://user:pass@localhost:5432/sakila' ls
 #                                                        ^ subcommand
 ```
 
-### -db flag #db-flag
+## -db flag #db-flag
 
 -db is the database url needed to connect to your database. For sqlite this is a file path.
 
@@ -116,7 +116,7 @@ sqlserver://user:pass@localhost:1433/sakila
 sqlserver://sa:Hunter2!@127.0.0.1:1434/mydatabase
 ```
 
-### -db flag with file #db-flag-file
+### -db flag file: prefix #db-flag-file-prefix
 
 If you don't want to include the database URL directly in the command, you can pass in a filename (prefixed with `file:`) where the file contains the database URL.
 
@@ -140,13 +140,25 @@ postgres://user:pass@localhost:5432/sakila
 
 `file:<filepath>` may also reference an SQLite database. The first [16 bytes of the file](https://www.sqlite.org/fileformat.html#the_database_header) are inspected to differentiate between an SQLite database and a plaintext file.
 
-### -history-table flag #history-table-flag
+## History table #history-table
 
-The -history-table flag indicates the name of the history table to be used by the subcommand. By default it is "sqddl\_history". Try to avoid using a custom history table name unless you really have a table name that conflicts with the default.
+The history table stores the history of the applied migrations. The default name of the table is "sqddl\_history". You can override it with the -history-table flag, but try not to do so unless you really have a table name that conflicts with the default.
+
+This is the schema for the history table.
+
+```sql
+CREATE TABLE sqddl_history (
+    filename VARCHAR(255) PRIMARY KEY NOT NULL,
+    checksum VARCHAR(64),
+    started_at DATETIME, -- postgres uses TIMESTAMPTZ, sqlserver uses DATETIMEOFFSET
+    time_taken_ns BIGINT,
+    success BOOLEAN -- sqlserver uses BIT
+);
+```
 
 ## migrate #migrate
 
-The migrate [subcommand](#subcommands) runs pending migrations in some directory (specified with -dir). No output means no pending migrations. Once a migration has been run, it will be recorded in a history table so that it doesn't get run again.
+The migrate [subcommand](#subcommands) runs pending migrations in some directory (specified with -dir). No output means no pending migrations. Once a migration has been run, it will be recorded in a [history table](#history-table) so that it doesn't get run again.
 
 Any top-level \*.sql file in the migration directory is considered a migration. You are free to use any naming convention for your migrations, but keep in mind that they will be run in alphabetical order.
 
@@ -159,18 +171,6 @@ BEGIN
 [OK] 03_webpage.sql (29.5218ms)
 [OK] 04_extras.sql (20.1678ms)
 COMMIT
-```
-
-This is the history table schema in case you are interested.
-
-```sql
-CREATE TABLE sqddl_history (
-    filename VARCHAR(255) PRIMARY KEY NOT NULL,
-    checksum VARCHAR(64),
-    started_at DATETIME, -- postgres uses TIMESTAMPTZ, sqlserver uses DATETIMEOFFSET
-    time_taken_ns BIGINT,
-    success BOOLEAN -- sqlserver uses BIT
-);
 ```
 
 ### schema.sql, indexes.sql and constraints.sql #schema-indexes-constraints-sql
@@ -297,7 +297,7 @@ Undo migrations are not down migrations. They are run only when a migration fail
 
 ### Repeatable migrations #repeatable-migrations
 
-Any migration inside a special `repeatable` subdirectory is considered a repeatable migration. They are re-run whenever the contents of their file changes (based on a SHA256 checksum stored in the history table). Unlike normal migrations, repeatable migrations are sourced recursively inside the `repeatable` subdirectory. This allows you to organize your repeatable migrations into further subdirectories as you wish.
+Any migration inside a special `repeatable` subdirectory is considered a repeatable migration. They are re-run whenever the contents of their file changes (based on a SHA256 checksum stored in the [history table](#history-table)). Unlike normal migrations, repeatable migrations are sourced recursively inside the `repeatable` subdirectory. This allows you to organize your repeatable migrations into further subdirectories as you wish.
 
 ```shell
 01_extensions_types.sql    # ┐
@@ -316,7 +316,7 @@ repeatable/                # ┐
 
 By default, an aggressive table lock timeout of 1 second is applied when running migrations. This means if an ALTER TABLE command cannot acquire a lock within 1 second it will fail. That is for your own good, as ALTER TABLE commands are extremely dangerous if they are left waiting for a lock (it will freeze all SQL queries running against the table).
 
-<blockquote><em>(NOTE: an ALTER TABLE is allowed to run for more than 1 second, it is just not allowed to wait for more than 1 second for some other query to finish touching the table)</em></blockquote>
+> *(NOTE: an ALTER TABLE is allowed to run for more than 1 second, it is just not allowed to wait for more than 1 second for some other query to finish touching the table)*
 
 To mitigate this, retryable migrations that time out waiting for a lock are automatically retried (up to 10 times). A migration is considered retryable if it is a [transactional migration](#transactional-migrations) or consists of a single SQL statement (which is naturally transactional). An exponentially-increasing random delay (up to 5 minutes) is inserted between attempts to maximize the chances of successfully acquiring a lock with the minimum number of attempts. If a retryable migration fails for any other reason not due to a lock timeout, it will fail normally and no further retries will be made.
 
@@ -399,7 +399,7 @@ $ sqddl ls -db 'postgres://user:pass@localhost:5432/sakila' -dir ./migrations
 
 ## touch #touch
 
-The touch [subcommand](#subcommands) upserts migrations into the history table without running them.
+The touch [subcommand](#subcommands) upserts migrations into the [history table](#history-table) without running them.
 
 - The SHA256 checksum for [repeatable migrations](#repeatable-migrations) will be updated.
 - started\_at will be set to the current time.
@@ -432,7 +432,7 @@ $ sqddl touch \
 
 ## rm #rm
 
-The rm [subcommand](#subcommands) removes migrations from the history table (it does not remove the actual migration files from the directory). This is useful if you accidentally added migrations to the history table using [touch](#touch), or if you want to deregister the migration from the history table so that [migrate](#migrate) will run it again.
+The rm [subcommand](#subcommands) removes migrations from the [history table](#history-table) (it does not remove the actual migration files from the directory). This is useful if you accidentally added migrations to the history table using [touch](#touch), or if you want to deregister the migration from the history table so that [migrate](#migrate) will run it again.
 
 ```shell
 # sqddl rm -db <DATABASE_URL> [FILENAMES...]
@@ -457,7 +457,7 @@ $ sqddl rm \
 
 ## mv #mv
 
-The mv [subcommand](#subcommands) renames migrations in the history table. This is useful if you manually renamed the filename of a migration that was already run (for example a repeatable migration) and you want to update its entry in the history table.
+The mv [subcommand](#subcommands) renames migrations in the [history table](#history-table). This is useful if you manually renamed the filename of a migration that was already run (for example a repeatable migration) and you want to update its entry in the history table.
 
 ```shell
 # sqddl mv -db <DATABASE_URL> <OLD_FILENAME> <NEW_FILENAME>
@@ -477,7 +477,7 @@ The tables [subcommand](#subcommands) generates table structs from the database.
 $ sqddl tables -db 'postgres://user:pass@localhost:5432/sakila' -pkg tables
 ```
 
-You can include and exclude specific schemas and tables in the output. The [history table](#history-table-flag) (default "sqddl\_history") is always excluded.
+You can include and exclude specific schemas and tables in the output. The [history table](#history-table) (default "sqddl\_history") is always excluded.
 
 ```shell
 # sqddl tables -db <DATABASE_URL> [FLAGS]
@@ -1051,7 +1051,7 @@ err = loadCmd.Run()
 
 ## automigrate #automigrate
 
-The automigrate [subcommand](#subcommands) automatically migrates a database based on a declarative schema ([defined as table structs](#table-structs)). It is equivalent to running [generate](#generate) followed by [migrate](#migrate), except the generated migrations are created in-memory and will not be added to the history table.
+The automigrate [subcommand](#subcommands) automatically migrates a database based on a declarative schema ([defined as table structs](#table-structs)). It is equivalent to running [generate](#generate) followed by [migrate](#migrate), except the generated migrations are created in-memory and will not be added to the [history table](#history-table).
 
 ```shell
 # sqddl automigrate -db <DATABASE_URL> -dest <DEST_SCHEMA> [FLAGS]
