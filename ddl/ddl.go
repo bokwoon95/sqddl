@@ -36,6 +36,15 @@ const (
 	SET_DEFAULT = "SET DEFAULT"
 )
 
+// The dialects supported by ddl.
+const (
+	DialectSQLite    = sq.DialectSQLite
+	DialectPostgres  = sq.DialectPostgres
+	DialectMySQL     = sq.DialectMySQL
+	DialectSQLServer = sq.DialectSQLServer
+	DialectOracle    = "oracle"
+)
+
 var bufpool = sync.Pool{
 	New: func() any { return &bytes.Buffer{} },
 }

@@ -1,0 +1,20 @@
+version: '3.9'
+services:
+
+  # https://github.com/gvenzl/oci-oracle-xe/issues/63
+  # Doesn't work for M1 macs without workaround.
+  oracle:
+    container_name: 'oracle_sakila'
+    image: 'gvenzl/oracle-xe:11'
+    ports:
+      - '1545:1521'
+    volumes:
+      - 'oracle_data:/opt/oracle/oradata'
+    environment:
+      ORACLE_PASSWORD: 'Hunter2!'
+      APP_USER: 'user1'
+      APP_USER_PASSWORD: 'Hunter2!'
+    platform: 'linux/amd64'
+
+volumes:
+  oracle_data:

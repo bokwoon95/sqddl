@@ -11,6 +11,7 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/lib/pq v1.10.6
 	github.com/mattn/go-sqlite3 v1.14.14
+	github.com/sijms/go-ora/v2 v2.5.3
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 	golang.org/x/tools v0.1.11
 )

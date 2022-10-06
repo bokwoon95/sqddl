@@ -44,11 +44,7 @@ func Register() {
 			line := 1
 			pos, posErr := strconv.Atoi(pqerr.Position)
 			if posErr == nil {
-				for _, char := range query[:pos] {
-					if char == '\n' {
-						line++
-					}
-				}
+				line = strings.Count(query[:pos], "\n") + 1
 			}
 			if posErr != nil && pqerr.Detail == "" && pqerr.Hint == "" {
 				return originalErr
