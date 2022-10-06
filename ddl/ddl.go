@@ -1008,6 +1008,8 @@ func normalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 		dialect = DialectMySQL
 	} else if strings.HasPrefix(dsn, "sqlserver://") {
 		dialect = DialectSQLServer
+	} else if strings.HasPrefix(dsn, "oracle://") {
+		dialect = DialectOracle
 	} else if strings.Contains(dsn, "@tcp(") || strings.Contains(dsn, "@unix(") {
 		dialect = DialectMySQL
 	} else if strings.HasSuffix(trimmedDSN, ".sqlite") ||
@@ -1034,6 +1036,8 @@ func normalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 		return dialect, "mysql", strings.TrimPrefix(dsn, "mysql://")
 	case DialectSQLServer:
 		return dialect, "sqlserver", dsn
+	case DialectOracle:
+		return dialect, "oracle", dsn
 	}
 	return "", "", ""
 }
