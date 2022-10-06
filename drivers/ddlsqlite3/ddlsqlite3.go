@@ -4,7 +4,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -13,7 +12,7 @@ import (
 // github.com/mattn/go-sqlite3.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectSQLite,
+		Dialect:    ddl.DialectSQLite,
 		DriverName: "sqlite3",
 		PreprocessDSN: func(dsn string) string {
 			dsn = strings.TrimPrefix(strings.TrimPrefix(dsn, "sqlite:"), "//")

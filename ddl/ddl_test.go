@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/internal/testutil"
 
 	_ "github.com/denisenkom/go-mssqldb"
@@ -230,7 +229,7 @@ func Test_normalizeColumnType(t *testing.T) {
 	}
 
 	// SQLite
-	runTests(sq.DialectSQLite, []TT{{
+	runTests(DialectSQLite, []TT{{
 		inputs:   []string{"lorem ipsum"},
 		wantType: "LOREM IPSUM",
 	}, {
@@ -242,7 +241,7 @@ func Test_normalizeColumnType(t *testing.T) {
 	}})
 
 	// Postgres
-	runTests(sq.DialectPostgres, []TT{{
+	runTests(DialectPostgres, []TT{{
 		inputs:   []string{"integer", "serial", "serial4", "int4", "int"},
 		wantType: "INT",
 	}, {
@@ -320,7 +319,7 @@ func Test_normalizeColumnType(t *testing.T) {
 	}})
 
 	// MySQL
-	runTests(sq.DialectMySQL, []TT{{
+	runTests(DialectMySQL, []TT{{
 		inputs:   []string{"integer", "int"},
 		wantType: "INT",
 	}, {
@@ -386,7 +385,7 @@ func Test_normalizeColumnType(t *testing.T) {
 	}})
 
 	// SQLServer
-	runTests(sq.DialectSQLServer, []TT{{
+	runTests(DialectSQLServer, []TT{{
 		inputs:   []string{"binary varying (16)", "varbinary(16)"},
 		wantType: "VARBINARY", wantArg1: "16",
 	}, {
@@ -463,7 +462,7 @@ func Test_normalizeColumnDefault(t *testing.T) {
 	}
 
 	// SQLite
-	runTests(sq.DialectSQLite, []TT{{
+	runTests(DialectSQLite, []TT{{
 		inputs:      []string{"1", "'1'", "true"},
 		wantDefault: "'1'",
 	}, {
@@ -475,7 +474,7 @@ func Test_normalizeColumnDefault(t *testing.T) {
 	}})
 
 	// Postgres
-	runTests(sq.DialectPostgres, []TT{{
+	runTests(DialectPostgres, []TT{{
 		inputs:      []string{"1", "'1'", "true"},
 		wantDefault: "'1'",
 	}, {
@@ -490,7 +489,7 @@ func Test_normalizeColumnDefault(t *testing.T) {
 	}})
 
 	// MySQL
-	runTests(sq.DialectMySQL, []TT{{
+	runTests(DialectMySQL, []TT{{
 		inputs:      []string{"1", "'1'", "true"},
 		wantDefault: "'1'",
 	}, {
@@ -502,7 +501,7 @@ func Test_normalizeColumnDefault(t *testing.T) {
 	}})
 
 	// SQLServer
-	runTests(sq.DialectSQLServer, []TT{{
+	runTests(DialectSQLServer, []TT{{
 		inputs:      []string{"1", "'1'", "true"},
 		wantDefault: "'1'",
 	}, {

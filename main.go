@@ -8,6 +8,7 @@ import (
 
 	"github.com/bokwoon95/sqddl/ddl"
 	"github.com/bokwoon95/sqddl/drivers/ddlmysql"
+	"github.com/bokwoon95/sqddl/drivers/ddloracle"
 	"github.com/bokwoon95/sqddl/drivers/ddlpgx"
 	"github.com/bokwoon95/sqddl/drivers/ddlsqlite3"
 	"github.com/bokwoon95/sqddl/drivers/ddlsqlserver"
@@ -18,6 +19,7 @@ func init() {
 	ddlpgx.Register()
 	ddlmysql.Register()
 	ddlsqlserver.Register()
+	ddloracle.Register()
 }
 
 const helptext = `Usage:

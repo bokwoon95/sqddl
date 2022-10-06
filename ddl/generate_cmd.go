@@ -15,8 +15,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // GenerateCmd implements the `sqddl generate` subcommand.
@@ -218,16 +216,16 @@ func (cmd *GenerateCmd) Results() (files []fs.File, warnings []string, err error
 	var filenames []string
 	var bufs []*bytes.Buffer
 	switch cmd.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		m := newSQLiteMigration(cmd.SrcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		m := newPostgresMigration(cmd.SrcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		m := newMySQLMigration(cmd.SrcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		m := newSQLServerMigration(cmd.SrcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
 	default:

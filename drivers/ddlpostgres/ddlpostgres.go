@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	"github.com/lib/pq"
 )
@@ -16,7 +15,7 @@ import (
 // github.com/lib/pq.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectPostgres,
+		Dialect:    ddl.DialectPostgres,
 		DriverName: "postgres",
 		IsLockTimeout: func(err error) bool {
 			var pqerr *pq.Error

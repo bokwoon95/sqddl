@@ -8,9 +8,10 @@ import (
 	"github.com/sijms/go-ora/v2/network"
 )
 
+// Register registers a ddl.Driver for Oracle using github.com/sijms/go-ora.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    "oracle",
+		Dialect:    ddl.DialectOracle,
 		DriverName: "oracle",
 		IsLockTimeout: func(err error) bool {
 			var oracleErr *network.OracleError

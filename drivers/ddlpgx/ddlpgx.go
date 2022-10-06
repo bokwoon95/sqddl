@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	"github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -15,7 +14,7 @@ import (
 // github.com/jackc/pgx/v4/stdlib.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectPostgres,
+		Dialect:    ddl.DialectPostgres,
 		DriverName: "pgx",
 		IsLockTimeout: func(err error) bool {
 			var pgerr *pgconn.PgError

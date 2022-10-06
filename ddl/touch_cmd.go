@@ -196,7 +196,7 @@ func (cmd *TouchCmd) Run() error {
 func historyTableExists(dialect string, db *sql.DB, tableName string) (bool, error) {
 	var exists bool
 	switch dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		err := db.QueryRow(`SELECT EXISTS`+
 			` (SELECT 1`+
 			` FROM sqlite_schema`+
@@ -206,7 +206,7 @@ func historyTableExists(dialect string, db *sql.DB, tableName string) (bool, err
 		if err != nil {
 			return false, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		err := db.QueryRow(`SELECT EXISTS`+
 			` (SELECT 1`+
 			` FROM pg_class AS tables`+
@@ -218,7 +218,7 @@ func historyTableExists(dialect string, db *sql.DB, tableName string) (bool, err
 		if err != nil {
 			return false, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		err := db.QueryRow(`SELECT EXISTS`+
 			` (SELECT 1`+
 			` FROM information_schema.tables`+
@@ -229,7 +229,7 @@ func historyTableExists(dialect string, db *sql.DB, tableName string) (bool, err
 		if err != nil {
 			return false, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		err := db.QueryRow(`IF EXISTS`+
 			` (SELECT 1`+
 			` FROM sys.tables`+
@@ -257,11 +257,11 @@ func ensureHistoryTableExists(dialect string, db *sql.DB, historyTable string) e
 	timeType := "DATETIME"
 	boolType := "BOOLEAN"
 	switch dialect {
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		timeType = "TIMESTAMPTZ"
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		pkeyDefinition = "PRIMARY KEY (filename)"
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		timeType = "DATETIMEOFFSET"
 		boolType = "BIT"
 	}

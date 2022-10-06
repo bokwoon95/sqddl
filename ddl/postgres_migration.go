@@ -57,7 +57,7 @@ type postgresAlterTable struct {
 }
 
 func newPostgresMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) postgresMigration {
-	const dialect = sq.DialectPostgres
+	const dialect = DialectPostgres
 	m := postgresMigration{
 		versionNums:      srcCatalog.VersionNums,
 		currentSchema:    srcCatalog.CurrentSchema,
@@ -332,7 +332,7 @@ func newPostgresMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) po
 }
 
 func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*bytes.Buffer, warnings []string) {
-	const dialect = sq.DialectPostgres
+	const dialect = DialectPostgres
 	n := 0
 
 	// DROP FOREIGN KEY.
