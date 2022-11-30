@@ -140,8 +140,8 @@ func TestLoadCmd(t *testing.T) {
 
 	assertOrderedCSV := func(t *testing.T, db *sql.DB) {
 		wantA := []int{1, 2, 3}
-		gotA, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM a"), func(row *sq.Row) (int, error) {
-			return row.Int("a"), nil
+		gotA, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM a"), func(row *sq.Row) int {
+			return row.Int("a")
 		})
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
@@ -151,8 +151,8 @@ func TestLoadCmd(t *testing.T) {
 		}
 
 		wantB := [][2]int{{1, 1}, {2, 2}, {3, 3}}
-		gotB, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM b"), func(row *sq.Row) ([2]int, error) {
-			return [2]int{row.Int("b"), row.Int("a")}, nil
+		gotB, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM b"), func(row *sq.Row) [2]int {
+			return [2]int{row.Int("b"), row.Int("a")}
 		})
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
@@ -162,8 +162,8 @@ func TestLoadCmd(t *testing.T) {
 		}
 
 		wantC := [][2]int{{1, 1}, {2, 2}, {3, 3}}
-		gotC, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM c"), func(row *sq.Row) ([2]int, error) {
-			return [2]int{row.Int("c"), row.Int("b")}, nil
+		gotC, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM c"), func(row *sq.Row) [2]int {
+			return [2]int{row.Int("c"), row.Int("b")}
 		})
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)

@@ -23,8 +23,8 @@ func TestTouchCmd(t *testing.T) {
 	assertHistoryTable := func(t *testing.T, db *sql.DB, wantFilenames ...string) {
 		gotFilenames, err := sq.FetchAll(db, sq.
 			Queryf("SELECT {*} FROM sqddl_history ORDER BY filename"),
-			func(row *sq.Row) (string, error) {
-				return row.String("filename"), nil
+			func(row *sq.Row) string {
+				return row.String("filename")
 			},
 		)
 		if err != nil {

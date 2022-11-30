@@ -2,8 +2,8 @@
   "Dialect": "sqlite",
   "VersionNums": [
     3,
-    38,
-    5
+    39,
+    4
   ],
   "DefaultCollationValid": true,
   "Schemas": [

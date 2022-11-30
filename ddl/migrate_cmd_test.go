@@ -19,11 +19,11 @@ func TestMigrateCmd(t *testing.T) {
 	assertHistoryTable := func(t *testing.T, db sq.DB, wantEntries []historyTableEntry) {
 		gotEntries, err := sq.FetchAll(db, sq.
 			Queryf("SELECT {*} FROM sqddl_history ORDER BY filename"),
-			func(row *sq.Row) (historyTableEntry, error) {
+			func(row *sq.Row) historyTableEntry {
 				return historyTableEntry{
 					filename: row.String("filename"),
 					success:  row.Bool("success"),
-				}, nil
+				}
 			},
 		)
 		if err != nil {
@@ -37,8 +37,8 @@ func TestMigrateCmd(t *testing.T) {
 	assertTables := func(t *testing.T, db sq.DB, wantTables []string) {
 		gotTables, err := sq.FetchAll(db, sq.
 			Queryf("SELECT {*} FROM sqlite_schema WHERE type = 'table' ORDER BY tbl_name"),
-			func(row *sq.Row) (string, error) {
-				return row.String("tbl_name"), nil
+			func(row *sq.Row) string {
+				return row.String("tbl_name")
 			},
 		)
 		if err != nil {

@@ -321,14 +321,14 @@ type migration struct {
 	success     bool          // Whether the migration was successful.
 }
 
-func (m migration) rowmapper(row *sq.Row) (migration, error) {
+func (m migration) rowmapper(row *sq.Row) migration {
 	m.valid = true
 	m.filename = row.String("filename")
 	m.checksum = row.String("checksum")
 	m.startedAt = row.NullTime("started_at")
 	m.timeTakenNs = row.NullInt64("time_taken_ns")
 	m.success = row.Bool("success")
-	return m, nil
+	return m
 }
 
 // https://www.reddit.com/r/golang/comments/ntyi7i/what_is_the_reason_go_chose_to_use_a_constant_as/h0w0tu7/

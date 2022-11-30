@@ -155,7 +155,7 @@ func (cmd *LsCmd) Run() error {
 		cursor, err := sq.FetchCursor(cmd.DB, sq.
 			Queryf("SELECT {*} FROM {} WHERE filename IN ({})", historyTable, filenames).
 			SetDialect(cmd.Dialect),
-			new(migration).rowmapper,
+			migration{}.rowmapper,
 		)
 		if err != nil {
 			return err
@@ -226,7 +226,7 @@ func (cmd *LsCmd) Run() error {
 		cursor, err := sq.FetchCursor(cmd.DB, sq.
 			Queryf("SELECT {*} FROM {} WHERE filename NOT IN ({}) ORDER BY CASE WHEN filename LIKE 'repeatable/%' THEN 1 ELSE 0 END, filename", historyTable, filenames).
 			SetDialect(cmd.Dialect),
-			new(migration).rowmapper,
+			migration{}.rowmapper,
 		)
 		if err != nil {
 			return err
