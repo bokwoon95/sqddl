@@ -174,6 +174,7 @@ func (cmd *GenerateCmd) Run() error {
 		if err != nil {
 			return err
 		}
+		fmt.Fprintln(cmd.Stderr, name)
 	}
 	return nil
 }
