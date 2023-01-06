@@ -118,8 +118,13 @@ Flags:
 			return nil, err
 		}
 	}
-	if cmd.Dialect == "" && cmd.SrcCatalog.Dialect != "" {
-		cmd.Dialect = cmd.SrcCatalog.Dialect
+	if cmd.SrcCatalog.Dialect != "" {
+		if cmd.Dialect == "" {
+			cmd.Dialect = cmd.SrcCatalog.Dialect
+		}
+		if cmd.DestCatalog.Dialect == "" {
+			cmd.DestCatalog.Dialect = cmd.SrcCatalog.Dialect
+		}
 	}
 	if dest != "" {
 		for _, s := range strings.Split(dest, ",") {
@@ -128,9 +133,6 @@ Flags:
 				return nil, err
 			}
 		}
-	}
-	if cmd.Dialect == "" && cmd.DestCatalog.Dialect != "" {
-		cmd.Dialect = cmd.DestCatalog.Dialect
 	}
 	return &cmd, nil
 }
@@ -337,6 +339,7 @@ func writeCatalog(catalog *Catalog, fsys fs.FS, historyTable, s string) error {
 	dbi := NewDatabaseIntrospector(dialect, db)
 	dbi.ObjectTypes = []string{"TABLES"}
 	dbi.ExcludeTables = []string{historyTable}
+	catalog.Dialect = dialect
 	err = dbi.WriteCatalog(catalog)
 	if err != nil {
 		return err
