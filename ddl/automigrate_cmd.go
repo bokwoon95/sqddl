@@ -12,8 +12,6 @@ import (
 	"strings"
 	"testing/fstest"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // AutomigrateCmd implements the `sqddl automigrate` subcommand.
@@ -208,16 +206,16 @@ func (cmd *AutomigrateCmd) Run() error {
 	var bufs []*bytes.Buffer
 	prefix := "automigrate"
 	switch cmd.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		m := newSQLiteMigration(srcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		m := newPostgresMigration(srcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		m := newMySQLMigration(srcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		m := newSQLServerMigration(srcCatalog, cmd.DestCatalog, cmd.DropObjects)
 		filenames, bufs, warnings = m.sql(prefix)
 	default:

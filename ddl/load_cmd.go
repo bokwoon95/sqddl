@@ -192,7 +192,7 @@ func (cmd *LoadCmd) Run() error {
 	defer conn.Close()
 
 	restoreSessionValue := func() error { return nil }
-	if cmd.Dialect == sq.DialectSQLite {
+	if cmd.Dialect == DialectSQLite {
 		restoreSessionValue, err = setSessionValue(cmd.Ctx, conn, "PRAGMA foreign_keys", "PRAGMA foreign_keys = %s", "0")
 		if err != nil {
 			return err
@@ -292,7 +292,7 @@ func (cmd *LoadCmd) loadSQL(conn *sql.Conn, filename string, r io.Reader) error 
 		fmt.Fprintln(cmd.Stderr, timestamp()+"[START] "+filename)
 	}
 	restoreSessionValue := func() error { return nil }
-	if cmd.Dialect == sq.DialectMySQL && filepath.Base(filename) == "constraints.sql" {
+	if cmd.Dialect == DialectMySQL && filepath.Base(filename) == "constraints.sql" {
 		restoreSessionValue, err = setSessionValue(cmd.Ctx, conn, "SELECT @@foreign_key_checks", "SET foreign_key_checks = %s", "0")
 		if err != nil {
 			return err
@@ -393,7 +393,7 @@ func (cmd *LoadCmd) loadCSV(ctx context.Context, tx *sql.Tx, filename string, r 
 
 	restoreSessionValue := func() error { return nil }
 	switch cmd.Dialect {
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		// If inserting a timezone-less timestamp like '2006-01-02 15:04:05'
 		// into a TIMESTAMPTZ column, Postgres will attach the session timezone
 		// to the timestamp. That is not what we want. SQLite doesn't do that,
@@ -401,7 +401,7 @@ func (cmd *LoadCmd) loadCSV(ctx context.Context, tx *sql.Tx, filename string, r 
 		// a timestamp in UTC timezone. Make Postgres behave like the other
 		// database by temporarily setting the session timezone to UTC.
 		restoreSessionValue, err = setSessionValue(ctx, tx, "SHOW timezone", "SET timezone = '%s'", "UTC")
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		// MySQL inserts are too damn slow if foreign keys are enabled, disable
 		// them first before inserting. Assume the data is always valid.
 		restoreSessionValue, err = setSessionValue(ctx, tx, "SELECT @@foreign_key_checks", "SET foreign_key_checks = %s", "0")
@@ -445,7 +445,7 @@ func (cmd *LoadCmd) loadCSV(ctx context.Context, tx *sql.Tx, filename string, r 
 				if err != nil {
 					return fmt.Errorf("record %d %#v: %s is not a valid binary literal", recordNo, record, field)
 				}
-				if cmd.Dialect == sq.DialectPostgres && columnType == "UUID" {
+				if cmd.Dialect == DialectPostgres && columnType == "UUID" {
 					// (Postgres only) Convert UUID bytes into UUID string if
 					// the column type is UUID.
 					if len(b) != 16 {
@@ -467,13 +467,13 @@ func (cmd *LoadCmd) loadCSV(ctx context.Context, tx *sql.Tx, filename string, r 
 				rowvalue[i] = b
 				continue
 			}
-			if cmd.Dialect == sq.DialectPostgres && strings.HasSuffix(columnType, "[]") && len(field) > 2 && field[0] == '[' && field[len(field)-1] == ']' {
+			if cmd.Dialect == DialectPostgres && strings.HasSuffix(columnType, "[]") && len(field) > 2 && field[0] == '[' && field[len(field)-1] == ']' {
 				// (Postgres only) Convert JSON arrays into Postgres arrays if
 				// the column is an array type (e.g. TEXT[], INT[]).
 				rowvalue[i] = "{" + field[1:len(field)-1] + "}"
 				continue
 			}
-			if cmd.Dialect == sq.DialectSQLite && cmd.TimestampAsInteger && (columnType == "TIMESTAMP" || columnType == "DATETIME" || columnType == "DATE") {
+			if cmd.Dialect == DialectSQLite && cmd.TimestampAsInteger && (columnType == "TIMESTAMP" || columnType == "DATETIME" || columnType == "DATE") {
 				s := strings.TrimSuffix(field, "Z")
 				var timeVal sql.NullTime
 				for _, format := range sqliteTimestampFormats {
@@ -633,7 +633,7 @@ func (cmd *LoadCmd) loadZip(conn *sql.Conn, zipName string) error {
 	// one writer at a time).
 	var g *errgroup.Group
 	var ctx context.Context
-	if cmd.Dialect != sq.DialectSQLite {
+	if cmd.Dialect != DialectSQLite {
 		g, ctx = errgroup.WithContext(cmd.Ctx)
 	}
 	for _, f := range zipReader.File {
@@ -924,7 +924,7 @@ func (cmd *LoadCmd) loadDir(conn *sql.Conn, dirname string) error {
 	// one writer at a time).
 	var g *errgroup.Group
 	var ctx context.Context
-	if cmd.Dialect != sq.DialectSQLite {
+	if cmd.Dialect != DialectSQLite {
 		g, ctx = errgroup.WithContext(cmd.Ctx)
 	}
 	for _, filename := range csvFilenames {
@@ -1005,14 +1005,14 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 	identityColumns = make([]string, 0, len(columns))
 	var query string
 	switch dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		query = "SELECT" +
 			" name AS column_name" +
 			", type AS column_type" +
 			", pk > 0 AS is_key_column" +
 			" FROM pragma_table_info($1)" +
 			" ORDER BY cid"
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		query = "SELECT" +
 			" columns.attname AS column_name" +
 			", format_type(columns.atttypid, columns.atttypmod) AS column_type" +
@@ -1024,7 +1024,7 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 			" LEFT JOIN pg_constraint ON pg_constraint.contype = 'p' AND pg_constraint.conrelid = tables.oid" +
 			" WHERE columns.attnum > 0 AND schemas.nspname = $1 AND tables.relname = $2" +
 			" ORDER BY columns.attnum"
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		query = "SELECT" +
 			" columns.column_name" +
 			", columns.column_type" +
@@ -1034,7 +1034,7 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 			" LEFT JOIN information_schema.key_column_usage USING (constraint_schema, constraint_name, table_name, column_name)" +
 			" WHERE table_constraints.constraint_type = 'PRIMARY KEY' AND columns.table_schema = ? AND columns.table_name = ?" +
 			" ORDER BY columns.ordinal_position"
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		query = "SELECT" +
 			" columns.name AS column_name" +
 			", COALESCE(TYPE_NAME(columns.system_type_id), '') AS column_type" +
@@ -1051,7 +1051,7 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 		return columnTypes, nil, nil, nil
 	}
 	var rows *sql.Rows
-	if dialect == sq.DialectSQLite {
+	if dialect == DialectSQLite {
 		rows, err = tx.QueryContext(ctx, query, tableName)
 	} else {
 		rows, err = tx.QueryContext(ctx, query, tableSchema, tableName)
@@ -1063,7 +1063,7 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 	for rows.Next() {
 		var columnName, columnType string
 		var isKeyColumn, isIdentityColumn bool
-		if dialect == sq.DialectPostgres || dialect == sq.DialectSQLServer {
+		if dialect == DialectPostgres || dialect == DialectSQLServer {
 			err = rows.Scan(&columnName, &columnType, &isKeyColumn, &isIdentityColumn)
 		} else {
 			err = rows.Scan(&columnName, &columnType, &isKeyColumn)

@@ -12,7 +12,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/bokwoon95/sq"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -184,51 +183,51 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 			case "sq.AnyField":
 			case "sq.ArrayField":
 				switch p.dialect {
-				case sq.DialectSQLite, sq.DialectMySQL:
+				case DialectSQLite, DialectMySQL:
 					columnType = "JSON"
-				case sq.DialectPostgres:
+				case DialectPostgres:
 					columnType = "TEXT[]"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType, characterLength = "NVARCHAR(MAX)", "MAX"
 				default:
 					columnType, characterLength = "VARCHAR(255)", "255"
 				}
 			case "sq.BinaryField":
 				switch p.dialect {
-				case sq.DialectSQLite:
+				case DialectSQLite:
 					columnType = "BLOB"
-				case sq.DialectPostgres:
+				case DialectPostgres:
 					columnType = "BYTEA"
-				case sq.DialectMySQL:
+				case DialectMySQL:
 					columnType = "MEDIUMBLOB"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType, characterLength = "VARBINARY(MAX)", "MAX"
 				default:
 					columnType = "BINARY"
 				}
 			case "sq.BooleanField":
 				switch p.dialect {
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType = "BIT"
 				default:
 					columnType = "BOOLEAN"
 				}
 			case "sq.EnumField":
 				switch p.dialect {
-				case sq.DialectSQLite, sq.DialectPostgres:
+				case DialectSQLite, DialectPostgres:
 					columnType = "TEXT"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType, characterLength = "NVARCHAR(255)", "255"
 				default:
 					columnType, characterLength = "VARCHAR(255)", "255"
 				}
 			case "sq.JSONField":
 				switch p.dialect {
-				case sq.DialectSQLite, sq.DialectMySQL:
+				case DialectSQLite, DialectMySQL:
 					columnType = "JSON"
-				case sq.DialectPostgres:
+				case DialectPostgres:
 					columnType = "JSONB"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType, characterLength = "NVARCHAR(MAX)", "MAX"
 				default:
 					columnType = "VARCHAR(255)"
@@ -237,25 +236,25 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 				columnType = "INT"
 			case "sq.StringField":
 				switch p.dialect {
-				case sq.DialectSQLite, sq.DialectPostgres:
+				case DialectSQLite, DialectPostgres:
 					columnType = "TEXT"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType, characterLength = "NVARCHAR(255)", "255"
 				default:
 					columnType, characterLength = "VARCHAR(255)", "255"
 				}
 			case "sq.TimeField":
 				switch p.dialect {
-				case sq.DialectPostgres:
+				case DialectPostgres:
 					columnType = "TIMESTAMPTZ"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					columnType = "DATETIMEOFFSET"
 				default:
 					columnType = "DATETIME"
 				}
 			case "sq.UUIDField":
 				switch p.dialect {
-				case sq.DialectSQLite, sq.DialectPostgres:
+				case DialectSQLite, DialectPostgres:
 					columnType = "UUID"
 				default:
 					columnType = "BINARY(16)"
@@ -296,7 +295,7 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 			switch constraint.ConstraintType {
 			case PRIMARY_KEY:
 				column.IsPrimaryKey = true
-				if catalog.Dialect == sq.DialectSQLite && strings.EqualFold(column.ColumnType, "INT") {
+				if catalog.Dialect == DialectSQLite && strings.EqualFold(column.ColumnType, "INT") {
 					if _, ok := p.columnExplicitType[[3]string{table.TableSchema, table.TableName, columnName}]; !ok {
 						column.ColumnType = "INTEGER"
 					}
@@ -336,7 +335,7 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 				if column == nil {
 					continue
 				}
-				if catalog.Dialect == sq.DialectSQLite && column.ColumnType == "INTEGER" && column.IsPrimaryKey {
+				if catalog.Dialect == DialectSQLite && column.ColumnType == "INTEGER" && column.IsPrimaryKey {
 					// SQLite forbids INTEGER PRIMARY KEY (alias for ROWID) columns
 					// from being marked as NOT NULL (since they can never be NULL).
 					continue
@@ -419,7 +418,7 @@ func (p *StructParser) parseIndexModifier(table *Table, columnNames []string, lo
 		case "unique":
 			index.IsUnique = true
 		case "using":
-			if p.dialect != sq.DialectPostgres && p.dialect != sq.DialectMySQL {
+			if p.dialect != DialectPostgres && p.dialect != DialectMySQL {
 				continue
 			}
 			index.IndexType = submodifier.RawValue
@@ -446,7 +445,7 @@ func (p *StructParser) parsePrimaryKeyUniqueModifier(table *Table, columnNames [
 		p.report(loc, "no column provided")
 	}
 	constraintName := generateName(constraintType, table.TableName, columnNames)
-	if p.dialect == sq.DialectMySQL && constraintType == PRIMARY_KEY {
+	if p.dialect == DialectMySQL && constraintType == PRIMARY_KEY {
 		constraintName = "PRIMARY"
 	}
 	p.locations[[2]string{table.TableSchema, constraintName}] = loc
@@ -461,12 +460,12 @@ func (p *StructParser) parsePrimaryKeyUniqueModifier(table *Table, columnNames [
 		}
 		switch submodifier.Name {
 		case "deferrable":
-			if p.dialect != sq.DialectSQLite && p.dialect != sq.DialectPostgres {
+			if p.dialect != DialectSQLite && p.dialect != DialectPostgres {
 				continue
 			}
 			constraint.IsDeferrable = true
 		case "deferred":
-			if p.dialect != sq.DialectSQLite && p.dialect != sq.DialectPostgres {
+			if p.dialect != DialectSQLite && p.dialect != DialectPostgres {
 				continue
 			}
 			constraint.IsDeferrable = true
@@ -522,7 +521,7 @@ func (p *StructParser) parseForeignKeyModifier(table *Table, loc location, m *Mo
 			case "cascade":
 				constraint.UpdateRule = CASCADE
 			case "restrict":
-				if p.dialect == sq.DialectSQLServer {
+				if p.dialect == DialectSQLServer {
 					constraint.UpdateRule = NO_ACTION
 				} else {
 					constraint.UpdateRule = RESTRICT
@@ -544,7 +543,7 @@ func (p *StructParser) parseForeignKeyModifier(table *Table, loc location, m *Mo
 			case "cascade":
 				constraint.DeleteRule = CASCADE
 			case "restrict":
-				if p.dialect == sq.DialectSQLServer {
+				if p.dialect == DialectSQLServer {
 					constraint.DeleteRule = NO_ACTION
 				} else {
 					constraint.DeleteRule = RESTRICT
@@ -562,12 +561,12 @@ func (p *StructParser) parseForeignKeyModifier(table *Table, loc location, m *Mo
 				p.report(loc, "unknown value "+strconv.Quote(submodifier.RawValue))
 			}
 		case "deferrable":
-			if p.dialect != sq.DialectSQLite && p.dialect != sq.DialectPostgres {
+			if p.dialect != DialectSQLite && p.dialect != DialectPostgres {
 				continue
 			}
 			constraint.IsDeferrable = true
 		case "deferred":
-			if p.dialect != sq.DialectSQLite && p.dialect != sq.DialectPostgres {
+			if p.dialect != DialectSQLite && p.dialect != DialectPostgres {
 				continue
 			}
 			constraint.IsDeferrable = true
@@ -620,7 +619,7 @@ func (p *StructParser) parseReferencesModifier(table *Table, columnName string, 
 			case "cascade":
 				constraint.UpdateRule = CASCADE
 			case "restrict":
-				if p.dialect == sq.DialectSQLServer {
+				if p.dialect == DialectSQLServer {
 					constraint.UpdateRule = NO_ACTION
 				} else {
 					constraint.UpdateRule = RESTRICT
@@ -642,7 +641,7 @@ func (p *StructParser) parseReferencesModifier(table *Table, columnName string, 
 			case "cascade":
 				constraint.DeleteRule = CASCADE
 			case "restrict":
-				if p.dialect == sq.DialectSQLServer {
+				if p.dialect == DialectSQLServer {
 					constraint.DeleteRule = NO_ACTION
 				} else {
 					constraint.DeleteRule = RESTRICT
@@ -660,11 +659,11 @@ func (p *StructParser) parseReferencesModifier(table *Table, columnName string, 
 				p.report(loc, "unknown value "+strconv.Quote(submodifier.RawValue))
 			}
 		case "deferrable":
-			if p.dialect == sq.DialectSQLite || p.dialect == sq.DialectPostgres {
+			if p.dialect == DialectSQLite || p.dialect == DialectPostgres {
 				constraint.IsDeferrable = true
 			}
 		case "deferred":
-			if p.dialect == sq.DialectSQLite || p.dialect == sq.DialectPostgres {
+			if p.dialect == DialectSQLite || p.dialect == DialectPostgres {
 				constraint.IsDeferrable = true
 				constraint.IsInitiallyDeferred = true
 			}
@@ -720,52 +719,52 @@ func (p *StructParser) parseColumnModifiers(table *Table, columnName, columnType
 			column.CharacterLength = modifier.RawValue
 			if column.CharacterLength != "" {
 				switch p.dialect {
-				case sq.DialectPostgres, sq.DialectMySQL:
+				case DialectPostgres, DialectMySQL:
 					column.ColumnType = "VARCHAR(" + column.CharacterLength + ")"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					column.ColumnType = "NVARCHAR(" + column.CharacterLength + ")"
 				}
 			}
 		case "auto_increment":
-			if p.dialect != sq.DialectMySQL {
+			if p.dialect != DialectMySQL {
 				continue
 			}
 			column.IsAutoincrement = true
 		case "autoincrement":
-			if p.dialect != sq.DialectSQLite {
+			if p.dialect != DialectSQLite {
 				continue
 			}
 			column.IsAutoincrement = true
 		case "identity":
 			switch p.dialect {
-			case sq.DialectPostgres:
+			case DialectPostgres:
 				column.ColumnIdentity = DEFAULT_IDENTITY
-			case sq.DialectSQLServer:
+			case DialectSQLServer:
 				column.ColumnIdentity = IDENTITY
 			}
 		case "alwaysidentity":
 			switch p.dialect {
-			case sq.DialectPostgres:
+			case DialectPostgres:
 				column.ColumnIdentity = ALWAYS_IDENTITY
-			case sq.DialectSQLServer:
+			case DialectSQLServer:
 				column.ColumnIdentity = IDENTITY
 			}
 		case "notnull":
 			column.IsNotNull = true
 		case "onupdatecurrenttimestamp":
-			if p.dialect != sq.DialectMySQL {
+			if p.dialect != DialectMySQL {
 				continue
 			}
 			column.OnUpdateCurrentTimestamp = true
 		case "collate":
 			column.CollationName = modifier.RawValue
 		case "default":
-			if p.dialect != sq.DialectPostgres && !isLiteral(modifier.RawValue) {
+			if p.dialect != DialectPostgres && !isLiteral(modifier.RawValue) {
 				column.ColumnDefault = wrapBrackets(modifier.RawValue)
 				continue
 			}
 			column.ColumnDefault = modifier.RawValue
-			if p.dialect == sq.DialectSQLServer {
+			if p.dialect == DialectSQLServer {
 				if strings.EqualFold(column.ColumnDefault, "TRUE") {
 					column.ColumnDefault = "1"
 				} else if strings.EqualFold(column.ColumnDefault, "FALSE") {
@@ -838,7 +837,7 @@ func (p *StructParser) parseTableModifiers(table *Table, loc location, modifiers
 			loc.keys = []string{modifier.Name}
 			p.parseForeignKeyModifier(table, loc, modifier)
 		case "virtual":
-			if p.dialect != sq.DialectSQLite {
+			if p.dialect != DialectSQLite {
 				continue
 			}
 			table.IsVirtual = true

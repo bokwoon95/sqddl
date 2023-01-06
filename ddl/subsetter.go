@@ -163,7 +163,7 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 		}
 		b.WriteString(sq.QuoteIdentifier(ss.dialect, baseTable.TableName) + "." + sq.QuoteIdentifier(ss.dialect, columnName))
 		columnType, _, _ := normalizeColumnType(ss.dialect, column.ColumnType)
-		if ss.dialect == sq.DialectMySQL {
+		if ss.dialect == DialectMySQL {
 			if strings.HasSuffix(columnType, " UNSIGNED") {
 				columnType = strings.TrimSuffix(columnType, " UNSIGNED")
 			} else {
@@ -171,7 +171,7 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 			}
 		}
 		result.columnTypes = append(result.columnTypes, columnType)
-		if ss.dialect == sq.DialectSQLite {
+		if ss.dialect == DialectSQLite {
 			scanDest = append(scanDest, &sql.NullString{})
 			continue
 		}
@@ -216,9 +216,9 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 					continue
 				}
 				switch ss.dialect {
-				case sq.DialectPostgres:
+				case DialectPostgres:
 					record[i] = "'\\x" + hex.EncodeToString(*value) + "'"
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					record[i] = "0x" + hex.EncodeToString(*value)
 				default:
 					record[i] = "x'" + hex.EncodeToString(*value) + "'"
@@ -229,7 +229,7 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 					continue
 				}
 				switch ss.dialect {
-				case sq.DialectSQLServer:
+				case DialectSQLServer:
 					if value.Bool {
 						record[i] = "1"
 					} else {
@@ -259,7 +259,7 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 					record[i] = "NULL"
 					continue
 				}
-				if ss.dialect == sq.DialectSQLite {
+				if ss.dialect == DialectSQLite {
 					columnType := result.columnTypes[i]
 					switch columnType {
 					case "BINARY", "VARBINARY", "TINYBLOB", "BLOB", "MEDIUMBLOB", "LONGBLOB":
@@ -507,7 +507,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			resultColumns = b.String()
 		}
 		buf.WriteString("query" + strconv.Itoa(num+1) + "_ ")
-		if ss.dialect == sq.DialectSQLServer {
+		if ss.dialect == DialectSQLServer {
 			buf.WriteString(" AS (\n    SELECT * FROM (VALUES ")
 		} else {
 			buf.WriteString("(" + resultColumns + ") AS (\n    VALUES ")
@@ -521,7 +521,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			if j > 0 {
 				buf.WriteString(",")
 			}
-			if ss.dialect == sq.DialectMySQL {
+			if ss.dialect == DialectMySQL {
 				buf.WriteString("ROW")
 			}
 			buf.WriteString("(")
@@ -533,7 +533,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			}
 			buf.WriteString(")")
 		}
-		if ss.dialect == sq.DialectSQLServer {
+		if ss.dialect == DialectSQLServer {
 			buf.WriteString(") AS tmp (" + resultColumns + ")")
 		}
 		buf.WriteString("\n)\n")
@@ -634,7 +634,7 @@ func (ss *Subsetter) tempSchemas() []string {
 	sort.Strings(schemas)
 	tempDir := os.TempDir()
 	for i, schema := range schemas {
-		if ss.dialect == sq.DialectSQLite {
+		if ss.dialect == DialectSQLite {
 			schemas[i] = tempDir + string(filepath.Separator) + schema + "_" + ss.suffix + ".sqlite3"
 		} else {
 			schemas[i] = schema + "_" + ss.suffix

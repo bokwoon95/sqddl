@@ -119,7 +119,7 @@ func (cmd *WipeCmd) Run() error {
 			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, view.ViewSchema) + ".")
 		}
 		cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, view.ViewName))
-		if cmd.Dialect == sq.DialectPostgres || cmd.Dialect == sq.DialectMySQL {
+		if cmd.Dialect == DialectPostgres || cmd.Dialect == DialectMySQL {
 			cmd.buf.WriteString(" CASCADE")
 		}
 		cmd.buf.WriteString(";\n")
@@ -128,7 +128,7 @@ func (cmd *WipeCmd) Run() error {
 	// ALTER TABLE DROP CONSTRAINT (Foreign keys). We drop all foreign keys
 	// first before dropping tables so that we don't get tripped by by circular
 	// table dependencies later.
-	if cmd.Dialect != sq.DialectSQLite {
+	if cmd.Dialect != DialectSQLite {
 		dbi.ConstraintTypes = []string{FOREIGN_KEY}
 		constraints, err := dbi.GetConstraints()
 		if err != nil {
@@ -143,7 +143,7 @@ func (cmd *WipeCmd) Run() error {
 				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, constraint.TableSchema) + ".")
 			}
 			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, constraint.TableName) + " DROP CONSTRAINT " + sq.QuoteIdentifier(cmd.Dialect, constraint.ConstraintName))
-			if cmd.Dialect == sq.DialectPostgres {
+			if cmd.Dialect == DialectPostgres {
 				cmd.buf.WriteString(" CASCADE")
 			}
 			cmd.buf.WriteString(";\n")
@@ -155,7 +155,7 @@ func (cmd *WipeCmd) Run() error {
 	if err != nil {
 		return err
 	}
-	if cmd.Dialect == sq.DialectSQLite && len(tables) > 0 {
+	if cmd.Dialect == DialectSQLite && len(tables) > 0 {
 		if cmd.buf.Len() > 0 {
 			cmd.buf.WriteString("\n")
 		}
@@ -170,14 +170,14 @@ func (cmd *WipeCmd) Run() error {
 			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableSchema) + ".")
 		}
 		cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableName))
-		if cmd.Dialect == sq.DialectPostgres || cmd.Dialect == sq.DialectMySQL {
+		if cmd.Dialect == DialectPostgres || cmd.Dialect == DialectMySQL {
 			cmd.buf.WriteString(" CASCADE")
 		}
 		cmd.buf.WriteString(";\n")
 	}
 
 	// DROP PROCEDURE and DROP FUNCTION.
-	if cmd.Dialect != sq.DialectSQLite {
+	if cmd.Dialect != DialectSQLite {
 		routines, err := dbi.GetRoutines()
 		if err != nil {
 			return err
@@ -197,14 +197,14 @@ func (cmd *WipeCmd) Run() error {
 				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, routine.RoutineSchema) + ".")
 			}
 			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, routine.RoutineName))
-			if cmd.Dialect == sq.DialectPostgres {
+			if cmd.Dialect == DialectPostgres {
 				cmd.buf.WriteString(" CASCADE")
 			}
 			cmd.buf.WriteString(";\n")
 		}
 	}
 
-	if cmd.Dialect == sq.DialectPostgres {
+	if cmd.Dialect == DialectPostgres {
 		// DROP TYPE.
 		enums, err := dbi.GetEnums()
 		if err != nil {
@@ -269,7 +269,7 @@ func (cmd *WipeCmd) Run() error {
 
 	// If MySQL, run the queries using DB.Exec because MySQL doesn't support
 	// running DDL in transactions.
-	if cmd.Dialect == sq.DialectMySQL {
+	if cmd.Dialect == DialectMySQL {
 		_, err = cmd.DB.ExecContext(cmd.Ctx, queries)
 		if err != nil {
 			return err

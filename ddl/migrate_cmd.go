@@ -247,11 +247,11 @@ func (cmd *MigrateCmd) Run() error {
 	seconds := strconv.Itoa(int(math.Ceil(cmd.LockTimeout.Seconds())))
 	milliseconds := strconv.FormatInt(cmd.LockTimeout.Milliseconds(), 10)
 	switch cmd.Dialect {
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		restoreSessionValue, err = setSessionValue(cmd.Ctx, conn, "SHOW lock_timeout", "SET lock_timeout = %s", milliseconds)
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		restoreSessionValue, err = setSessionValue(cmd.Ctx, conn, "SELECT @@lock_wait_timeout", "SET lock_wait_timeout = %s", seconds)
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		restoreSessionValue, err = setSessionValue(cmd.Ctx, conn, "SELECT @@LOCK_TIMEOUT", "SET LOCK_TIMEOUT %s", milliseconds)
 	}
 	if err != nil {
@@ -288,7 +288,7 @@ func (cmd *MigrateCmd) Run() error {
 			queue = append(queue, m)
 			continue
 		}
-		if cmd.Dialect == sq.DialectMySQL ||
+		if cmd.Dialect == DialectMySQL ||
 			strings.HasSuffix(queue[0].filename, ".tx.sql") ||
 			strings.HasSuffix(queue[0].filename, ".txoff.sql") ||
 			strings.HasSuffix(m.filename, ".tx.sql") ||
@@ -321,21 +321,21 @@ type migration struct {
 	success     bool          // Whether the migration was successful.
 }
 
-func (m migration) rowmapper(row *sq.Row) (migration, error) {
+func (m migration) rowmapper(row *sq.Row) migration {
 	m.valid = true
 	m.filename = row.String("filename")
 	m.checksum = row.String("checksum")
 	m.startedAt = row.NullTime("started_at")
 	m.timeTakenNs = row.NullInt64("time_taken_ns")
 	m.success = row.Bool("success")
-	return m, nil
+	return m
 }
 
 // https://www.reddit.com/r/golang/comments/ntyi7i/what_is_the_reason_go_chose_to_use_a_constant_as/h0w0tu7/
 var rng = rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
 
 func (cmd *MigrateCmd) runWithRetry(conn *sql.Conn, queue []migration) error {
-	isTx := len(queue) > 1 || (!strings.HasSuffix(queue[0].filename, ".txoff.sql") && cmd.Dialect != sq.DialectMySQL) || strings.HasSuffix(queue[0].filename, ".tx.sql")
+	isTx := len(queue) > 1 || (!strings.HasSuffix(queue[0].filename, ".txoff.sql") && cmd.Dialect != DialectMySQL) || strings.HasSuffix(queue[0].filename, ".tx.sql")
 	isStmt := false
 	if !isTx && len(queue) == 1 {
 		file, err := cmd.DirFS.Open(queue[0].filename)
@@ -402,7 +402,7 @@ func (cmd *MigrateCmd) runWithRetry(conn *sql.Conn, queue []migration) error {
 				row[0] = m.filename  // filename
 				row[1] = m.checksum  // checksum
 				row[2] = m.startedAt // started_at
-				if cmd.Dialect == sq.DialectSQLite && m.startedAt.Valid {
+				if cmd.Dialect == DialectSQLite && m.startedAt.Valid {
 					row[2] = m.startedAt.Time.UTC().Format("2006-01-02 15:04:05")
 				}
 				row[3] = m.timeTakenNs // time_taken_ns
@@ -421,7 +421,7 @@ func (cmd *MigrateCmd) runWithRetry(conn *sql.Conn, queue []migration) error {
 
 func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt int, err error) {
 	var tx *sql.Tx
-	if len(migrations) > 1 || (!strings.HasSuffix(migrations[0].filename, ".txoff.sql") && cmd.Dialect != sq.DialectMySQL) || strings.HasSuffix(migrations[0].filename, ".tx.sql") {
+	if len(migrations) > 1 || (!strings.HasSuffix(migrations[0].filename, ".txoff.sql") && cmd.Dialect != DialectMySQL) || strings.HasSuffix(migrations[0].filename, ".tx.sql") {
 		var err error
 		if cmd.Verbose {
 			fmt.Fprintln(cmd.Stderr, timestamp()+"BEGIN")
@@ -512,7 +512,7 @@ func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt in
 			row[0] = m.filename
 			row[1] = m.checksum
 			row[2] = m.startedAt
-			if cmd.Dialect == sq.DialectSQLite && m.startedAt.Valid {
+			if cmd.Dialect == DialectSQLite && m.startedAt.Valid {
 				row[2] = m.startedAt.Time.UTC().Format("2006-01-02 15:04:05")
 			}
 			row[3] = m.timeTakenNs

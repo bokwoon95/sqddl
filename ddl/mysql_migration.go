@@ -35,7 +35,7 @@ type mysqlAlterTable struct {
 }
 
 func newMySQLMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) mysqlMigration {
-	const dialect = sq.DialectMySQL
+	const dialect = DialectMySQL
 	m := mysqlMigration{
 		versionNums:      srcCatalog.VersionNums,
 		currentSchema:    srcCatalog.CurrentSchema,
@@ -234,7 +234,7 @@ func newMySQLMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) mysql
 }
 
 func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.Buffer, warnings []string) {
-	const dialect = sq.DialectMySQL
+	const dialect = DialectMySQL
 	n := 0
 
 	// DROP FOREIGN KEY.

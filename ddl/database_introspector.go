@@ -268,22 +268,22 @@ func (dbi *DatabaseIntrospector) GetVersionNums() (versionNums VersionNums, err 
 	ctx := context.Background()
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT sqlite_version()")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT current_setting('server_version')") // alternatively, "SHOW server_version"
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT version()")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT SERVERPROPERTY('ProductVersion')")
 		if err != nil {
 			return nil, err
@@ -298,7 +298,7 @@ func (dbi *DatabaseIntrospector) GetVersionNums() (versionNums VersionNums, err 
 		if err != nil {
 			return nil, fmt.Errorf("scanning versionString: %w", err)
 		}
-		if dbi.Dialect == sq.DialectPostgres {
+		if dbi.Dialect == DialectPostgres {
 			versionStr, _, _ = strings.Cut(versionStr, " ")
 		}
 	}
@@ -319,19 +319,19 @@ func (dbi *DatabaseIntrospector) GetDatabaseName() (databaseName string, err err
 	ctx := context.Background()
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		return "", nil
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT current_database()")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT database()")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT DB_NAME()")
 		if err != nil {
 			return "", err
@@ -354,19 +354,19 @@ func (dbi *DatabaseIntrospector) GetCurrentSchema() (currentSchema string, err e
 	ctx := context.Background()
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		return "", nil
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT current_schema()")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT database()")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT SCHEMA_NAME()")
 		if err != nil {
 			return "", err
@@ -389,19 +389,19 @@ func (dbi *DatabaseIntrospector) GetDefaultCollation() (defaultCollation string,
 	ctx := context.Background()
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		return "", nil
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT datcollate AS collation FROM pg_database WHERE datname = current_database()")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT @@collation_database")
 		if err != nil {
 			return "", err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT SERVERPROPERTY('collation')")
 		if err != nil {
 			return "", err
@@ -430,22 +430,22 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_columns.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_columns.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_columns.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_columns.sql")
 		if err != nil {
 			return nil, err
@@ -458,7 +458,7 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 	for rows.Next() {
 		var column Column
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			err = rows.Scan(
 				&column.TableName,
 				&column.ColumnName,
@@ -479,7 +479,7 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 					column.ColumnDefault = wrapBrackets(column.ColumnDefault)
 				}
 			}
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			err = rows.Scan(
 				&column.TableSchema,
 				&column.TableName,
@@ -535,7 +535,7 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 			} else {
 				column.ColumnType = strings.ToLower(normalizedType)
 			}
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			err = rows.Scan(
 				&column.TableSchema,
 				&column.TableName,
@@ -580,7 +580,7 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 			if column.ColumnDefault != "" && !isLiteral(column.ColumnDefault) && !wrappedInBrackets(column.ColumnDefault) {
 				column.ColumnDefault = `'` + sq.EscapeQuote(column.ColumnDefault, '\'') + `'`
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			err = rows.Scan(
 				&column.TableSchema,
 				&column.TableName,
@@ -644,22 +644,22 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_constraints.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_constraints.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_constraints.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_constraints.sql")
 		if err != nil {
 			return nil, err
@@ -672,7 +672,7 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 	for rows.Next() {
 		var constraint Constraint
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			var columns, referencesColumns string
 			err = rows.Scan(
 				&constraint.TableName,
@@ -692,7 +692,7 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 			if referencesColumns != "" {
 				constraint.ReferencesColumns = strings.Split(referencesColumns, ",")
 			}
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			var columns, referencesColumns, operators []byte
 			err = rows.Scan(
 				&constraint.TableSchema,
@@ -730,7 +730,7 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 				return nil, fmt.Errorf("unmarshaling %s into %T: %w", operators, constraint.ExclusionOperators, err)
 			}
 			constraint.CheckExpr = unwrapBrackets(strings.TrimPrefix(constraint.CheckExpr, "CHECK "))
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			var columns, referencesColumns string
 			err = rows.Scan(
 				&constraint.TableSchema,
@@ -756,7 +756,7 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 				constraint.ReferencesColumns = strings.Split(referencesColumns, ",")
 			}
 			constraint.CheckExpr = unwrapBrackets(constraint.CheckExpr)
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			var columns, referencesColumns string
 			err = rows.Scan(
 				&constraint.TableSchema,
@@ -820,7 +820,7 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 // into the DatabaseIntrospector.Filter.Schemas slice.
 func (dbi *DatabaseIntrospector) GetDomains() ([]Domain, error) {
 	ctx := context.Background()
-	if dbi.Dialect != sq.DialectPostgres {
+	if dbi.Dialect != DialectPostgres {
 		return nil, nil
 	}
 	var domains []Domain
@@ -882,7 +882,7 @@ func (dbi *DatabaseIntrospector) GetDomains() ([]Domain, error) {
 // the DatabaseIntrospector.Filter.Schemas slice.
 func (dbi *DatabaseIntrospector) GetEnums() ([]Enum, error) {
 	ctx := context.Background()
-	if dbi.Dialect != sq.DialectPostgres {
+	if dbi.Dialect != DialectPostgres {
 		return nil, nil
 	}
 	var enums []Enum
@@ -915,7 +915,7 @@ func (dbi *DatabaseIntrospector) GetEnums() ([]Enum, error) {
 // DatabaseIntrospector.Filter.ExcludeExtensions slice.
 func (dbi *DatabaseIntrospector) GetExtensions() (extensions []string, err error) {
 	ctx := context.Background()
-	if dbi.Dialect != sq.DialectPostgres {
+	if dbi.Dialect != DialectPostgres {
 		return nil, nil
 	}
 	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_extensions.sql")
@@ -944,22 +944,22 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_indexes.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_indexes.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_indexes.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_indexes.sql")
 		if err != nil {
 			return nil, err
@@ -972,7 +972,7 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 	for rows.Next() {
 		var index Index
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			var columns string
 			err = rows.Scan(
 				&index.TableName,
@@ -987,7 +987,7 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 			if columns != "" {
 				index.Columns = strings.Split(columns, ",")
 			}
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			var columns, opclasses []byte
 			var numKeyColumns int
 			err = rows.Scan(
@@ -1015,7 +1015,7 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 				return nil, fmt.Errorf("unmarshaling %s into %T: %w", opclasses, index.Opclasses, err)
 			}
 			index.Columns, index.IncludeColumns = index.Columns[:numKeyColumns], index.Columns[numKeyColumns:]
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			var columns, descending string
 			err = rows.Scan(
 				&index.TableSchema,
@@ -1037,7 +1037,7 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 					index.Descending = append(index.Descending, b)
 				}
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			var columns, descending, included string
 			err = rows.Scan(
 				&index.TableSchema,
@@ -1116,19 +1116,19 @@ func (dbi *DatabaseIntrospector) GetRoutines() ([]Routine, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		return nil, nil
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_routines.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_routines.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_routines.sql")
 		if err != nil {
 			return nil, err
@@ -1144,7 +1144,7 @@ func (dbi *DatabaseIntrospector) GetRoutines() ([]Routine, error) {
 	for rows.Next() {
 		var routine Routine
 		switch dbi.Dialect {
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			var returnType string
 			err = rows.Scan(
 				&routine.RoutineSchema,
@@ -1161,7 +1161,7 @@ func (dbi *DatabaseIntrospector) GetRoutines() ([]Routine, error) {
 			routine.Attrs = map[string]string{
 				"returnType": returnType,
 			}
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			var returnType, parameters, routineBody, sqlDataAccess, securityType string
 			var isDeterministic bool
 			err = rows.Scan(
@@ -1188,7 +1188,7 @@ func (dbi *DatabaseIntrospector) GetRoutines() ([]Routine, error) {
 			if err != nil {
 				return nil, fmt.Errorf("scanning Routine: %w", err)
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			err = rows.Scan(
 				&routine.RoutineSchema,
 				&routine.RoutineName,
@@ -1222,22 +1222,22 @@ func (dbi *DatabaseIntrospector) GetTables() ([]Table, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_tables.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_tables.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_tables.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_tables.sql")
 		if err != nil {
 			return nil, err
@@ -1250,17 +1250,17 @@ func (dbi *DatabaseIntrospector) GetTables() ([]Table, error) {
 	for rows.Next() {
 		var table Table
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			err = rows.Scan(&table.TableName, &table.SQL)
 			if err != nil {
 				return nil, fmt.Errorf("scanning Table: %w", err)
 			}
-		case sq.DialectPostgres, sq.DialectMySQL:
+		case DialectPostgres, DialectMySQL:
 			err = rows.Scan(&table.TableSchema, &table.TableName, &table.Comment)
 			if err != nil {
 				return nil, fmt.Errorf("scanning Table: %w", err)
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			err = rows.Scan(&table.TableSchema, &table.TableName)
 			if err != nil {
 				return nil, fmt.Errorf("scanning Table: %w", err)
@@ -1282,22 +1282,22 @@ func (dbi *DatabaseIntrospector) GetTriggers() ([]Trigger, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_triggers.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_triggers.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_triggers.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_triggers.sql")
 		if err != nil {
 			return nil, err
@@ -1310,12 +1310,12 @@ func (dbi *DatabaseIntrospector) GetTriggers() ([]Trigger, error) {
 	for rows.Next() {
 		var trigger Trigger
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			err = rows.Scan(&trigger.TableName, &trigger.TriggerName, &trigger.SQL)
 			if err != nil {
 				return nil, fmt.Errorf("scanning Trigger: %w", err)
 			}
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			err = rows.Scan(
 				&trigger.TableSchema,
 				&trigger.TableName,
@@ -1327,7 +1327,7 @@ func (dbi *DatabaseIntrospector) GetTriggers() ([]Trigger, error) {
 			if err != nil {
 				return nil, fmt.Errorf("scanning Trigger: %w", err)
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			err = rows.Scan(
 				&trigger.TableSchema,
 				&trigger.TableName,
@@ -1338,7 +1338,7 @@ func (dbi *DatabaseIntrospector) GetTriggers() ([]Trigger, error) {
 			if err != nil {
 				return nil, fmt.Errorf("scanning Trigger: %w", err)
 			}
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			var actionTiming, eventManipulation string
 			err = rows.Scan(
 				&trigger.TableSchema,
@@ -1376,22 +1376,22 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 	var err error
 	var rows *sql.Rows
 	switch dbi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_views.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_views.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_views.sql")
 		if err != nil {
 			return nil, err
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_views.sql")
 		if err != nil {
 			return nil, err
@@ -1407,7 +1407,7 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 	for rows.Next() {
 		var view View
 		switch dbi.Dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			var s1, s2 string
 			err = rows.Scan(&view.ViewName, &view.SQL, &s1, &s2)
 			if err != nil {
@@ -1419,7 +1419,7 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 			if s2 != "" {
 				view.ColumnTypes = strings.Split(s2, "|")
 			}
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			var s1, s2, s3 string
 			err = rows.Scan(
 				&view.ViewSchema,
@@ -1448,7 +1448,7 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 					}
 				}
 			}
-		case sq.DialectMySQL, sq.DialectSQLServer:
+		case DialectMySQL, DialectSQLServer:
 			var s1, s2 string
 			err = rows.Scan(&view.ViewSchema, &view.ViewName, &view.SQL, &s1, &s2)
 			if err != nil {

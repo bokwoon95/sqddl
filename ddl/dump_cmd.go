@@ -253,7 +253,7 @@ func (cmd *DumpCmd) Run() error {
 				schema := &cmd.catalog.Schemas[i]
 				for j := range schema.Tables {
 					table := &schema.Tables[j]
-					if cmd.Dialect == sq.DialectSQLite && isVirtualTable(table) {
+					if cmd.Dialect == DialectSQLite && isVirtualTable(table) {
 						continue
 					}
 					buf.Reset()
@@ -772,7 +772,7 @@ func (cmd *DumpCmd) dumpConstraints(w io.Writer) error {
 		defer bufpool.Put(buf)
 	}
 	// SQLite doesn't support ALTER TABLE ADD CONSTRAINT.
-	if cmd.Dialect == sq.DialectSQLite {
+	if cmd.Dialect == DialectSQLite {
 		return nil
 	}
 	for i := range cmd.catalog.Schemas {
@@ -790,7 +790,7 @@ func (cmd *DumpCmd) dumpConstraints(w io.Writer) error {
 			buf.WriteString(table.TableName + "\n")
 			for k := range table.Constraints {
 				constraint := &table.Constraints[k]
-				if constraint.ConstraintType == PRIMARY_KEY && (cmd.Dialect == sq.DialectMySQL || cmd.Dialect == sq.DialectSQLServer) {
+				if constraint.ConstraintType == PRIMARY_KEY && (cmd.Dialect == DialectMySQL || cmd.Dialect == DialectSQLServer) {
 					continue
 				}
 				if constraint.ConstraintType == FOREIGN_KEY {
@@ -850,7 +850,7 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 		}
 		headers = append(headers, column.ColumnName)
 		columnType, _, _ := normalizeColumnType(cmd.Dialect, column.ColumnType)
-		if cmd.Dialect == sq.DialectMySQL {
+		if cmd.Dialect == DialectMySQL {
 			if strings.HasSuffix(columnType, " UNSIGNED") {
 				columnType = strings.TrimSuffix(columnType, " UNSIGNED")
 			} else {
@@ -858,7 +858,7 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 			}
 		}
 		columnTypes = append(columnTypes, columnType)
-		if cmd.Dialect == sq.DialectSQLite {
+		if cmd.Dialect == DialectSQLite {
 			switch columnType {
 			case "DATETIME", "TIMESTAMP":
 				scanDest = append(scanDest, &sql.NullTime{})
@@ -867,7 +867,7 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 			}
 			continue
 		}
-		if cmd.Dialect == sq.DialectPostgres && cmd.ArrayAsJSON {
+		if cmd.Dialect == DialectPostgres && cmd.ArrayAsJSON {
 			matched := true
 			switch columnType {
 			case "BOOLEAN[]":
@@ -959,11 +959,11 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 					record[i] = cmd.Binaryprefix + hex.EncodeToString([]byte(value.String))
 					continue
 				case "UUID":
-					if cmd.Dialect == sq.DialectSQLite && len(value.String) == 16 {
+					if cmd.Dialect == DialectSQLite && len(value.String) == 16 {
 						record[i] = cmd.Binaryprefix + hex.EncodeToString([]byte(value.String))
 						continue
 					}
-					if cmd.Dialect == sq.DialectPostgres && cmd.UUIDAsBytes {
+					if cmd.Dialect == DialectPostgres && cmd.UUIDAsBytes {
 						record[i] = cmd.Binaryprefix + strings.ReplaceAll(value.String, "-", "")
 						continue
 					}
@@ -1003,9 +1003,9 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 
 func writeCreateSchema(dialect string, buf *bytes.Buffer, schemaName string) {
 	switch dialect {
-	case sq.DialectPostgres, sq.DialectMySQL:
+	case DialectPostgres, DialectMySQL:
 		buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		// SQLServer doesn't allow CREATE SCHEMA to exist with other
 		// SQL statements so we wrap it in an EXEC() in order to get
 		// around that restriction
@@ -1038,7 +1038,7 @@ func writeCreateTable(dialect string, buf *bytes.Buffer, currentSchema, defaultC
 		}
 		writeColumnDefinition(dialect, buf, defaultCollation, column, false)
 	}
-	if dialect == sq.DialectSQLite {
+	if dialect == DialectSQLite {
 		newlineSeparatorWritten := false
 		for i := range table.Constraints {
 			constraint := &table.Constraints[i]
@@ -1060,7 +1060,7 @@ func writeCreateTable(dialect string, buf *bytes.Buffer, currentSchema, defaultC
 		return
 	}
 	if !includeConstraints {
-		if dialect == sq.DialectMySQL || dialect == sq.DialectSQLServer {
+		if dialect == DialectMySQL || dialect == DialectSQLServer {
 			for i := range table.Constraints {
 				constraint := &table.Constraints[i]
 				if constraint.ConstraintType == PRIMARY_KEY && !constraint.Ignore {
@@ -1096,7 +1096,7 @@ func writeCreateTable(dialect string, buf *bytes.Buffer, currentSchema, defaultC
 func writeCreateIndex(dialect string, buf *bytes.Buffer, currentSchema string, index *Index, createConcurrently bool) {
 	if index.SQL != "" {
 		sql := index.SQL
-		if createConcurrently && dialect == sq.DialectPostgres {
+		if createConcurrently && dialect == DialectPostgres {
 			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
 			sql = strings.Replace(sql, "CREATE INDEX "+indexName, "CREATE INDEX CONCURRENTLY "+indexName, 1)
 		}
@@ -1111,7 +1111,7 @@ func writeCreateIndex(dialect string, buf *bytes.Buffer, currentSchema string, i
 
 func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema string, index *Index, createConcurrently, createInline bool) {
 	var isFulltextOrSpatialIndex bool
-	if dialect == sq.DialectMySQL {
+	if dialect == DialectMySQL {
 		if strings.EqualFold(index.IndexType, "FULLTEXT") || strings.EqualFold(index.IndexName, "SPATIAL") {
 			isFulltextOrSpatialIndex = true
 		}
@@ -1123,11 +1123,11 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 		buf.WriteString(index.IndexType + " ")
 	}
 	buf.WriteString("INDEX ")
-	if createConcurrently && dialect == sq.DialectPostgres {
+	if createConcurrently && dialect == DialectPostgres {
 		buf.WriteString("CONCURRENTLY ")
 	}
 	buf.WriteString(indexName)
-	if index.IndexType != "" && dialect == sq.DialectMySQL && !strings.EqualFold(index.IndexType, "BTREE") && !isFulltextOrSpatialIndex {
+	if index.IndexType != "" && dialect == DialectMySQL && !strings.EqualFold(index.IndexType, "BTREE") && !isFulltextOrSpatialIndex {
 		if !createInline {
 			buf.WriteString(" USING")
 		}
@@ -1140,7 +1140,7 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 		}
 		buf.WriteString(sq.QuoteIdentifier(dialect, index.TableName))
 	}
-	if index.IndexType != "" && dialect == sq.DialectPostgres && !strings.EqualFold(index.IndexType, "BTREE") {
+	if index.IndexType != "" && dialect == DialectPostgres && !strings.EqualFold(index.IndexType, "BTREE") {
 		buf.WriteString(" USING " + index.IndexType)
 	}
 	buf.WriteString(" (")
@@ -1158,18 +1158,18 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 		}
 	}
 	buf.WriteString(")")
-	if len(index.IncludeColumns) > 0 && (dialect == sq.DialectPostgres || dialect == sq.DialectSQLServer) {
+	if len(index.IncludeColumns) > 0 && (dialect == DialectPostgres || dialect == DialectSQLServer) {
 		buf.WriteString(" INCLUDE (")
 		writeColumnNames(dialect, buf, index.IncludeColumns)
 		buf.WriteString(")")
 	}
-	if index.Predicate != "" && (dialect == sq.DialectSQLite || dialect == sq.DialectPostgres || dialect == sq.DialectSQLServer) {
+	if index.Predicate != "" && (dialect == DialectSQLite || dialect == DialectPostgres || dialect == DialectSQLServer) {
 		buf.WriteString(" WHERE " + index.Predicate)
 	}
 }
 
 func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation string, column *Column, columnLevelConstraint bool) {
-	isSQLServerGeneratedColumn := dialect == sq.DialectSQLServer && column.GeneratedExpr != ""
+	isSQLServerGeneratedColumn := dialect == DialectSQLServer && column.GeneratedExpr != ""
 	// ColumnName
 	buf.WriteString(sq.QuoteIdentifier(dialect, column.ColumnName))
 	// ColumnType
@@ -1181,7 +1181,7 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 		buf.WriteString(" " + strings.ToUpper(column.ColumnType))
 	}
 	// PRIMARY KEY
-	if column.IsPrimaryKey && (columnLevelConstraint || dialect == sq.DialectSQLite) {
+	if column.IsPrimaryKey && (columnLevelConstraint || dialect == DialectSQLite) {
 		buf.WriteString(" PRIMARY KEY")
 	}
 	// NOT NULL
@@ -1195,14 +1195,14 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	// AUTO_INCREMENT
 	if column.IsAutoincrement {
 		switch dialect {
-		case sq.DialectSQLite:
+		case DialectSQLite:
 			buf.WriteString(" AUTOINCREMENT")
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			buf.WriteString(" AUTO_INCREMENT")
 		}
 	}
 	// IDENTITY
-	if column.ColumnIdentity != "" && (dialect == sq.DialectPostgres || dialect == sq.DialectSQLServer) {
+	if column.ColumnIdentity != "" && (dialect == DialectPostgres || dialect == DialectSQLServer) {
 		buf.WriteString(" " + column.ColumnIdentity)
 	}
 	// DEFAULT
@@ -1210,12 +1210,12 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 		buf.WriteString(" DEFAULT " + column.ColumnDefault)
 	}
 	// ON UPDATE CURRENT TIMESTAMP
-	if column.OnUpdateCurrentTimestamp && dialect == sq.DialectMySQL {
+	if column.OnUpdateCurrentTimestamp && dialect == DialectMySQL {
 		buf.WriteString(" ON UPDATE CURRENT_TIMESTAMP")
 	}
 	// COLLATE
 	if column.CollationName != "" && column.CollationName != defaultCollation {
-		if dialect == sq.DialectPostgres {
+		if dialect == DialectPostgres {
 			buf.WriteString(` COLLATE "` + sq.EscapeQuote(column.CollationName, '"') + `"`)
 		} else {
 			buf.WriteString(` COLLATE ` + column.CollationName)
@@ -1225,14 +1225,14 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	if column.GeneratedExpr != "" {
 		generatedExpr := wrapBrackets(column.GeneratedExpr)
 		switch dialect {
-		case sq.DialectPostgres:
+		case DialectPostgres:
 			buf.WriteString(" GENERATED ALWAYS AS " + generatedExpr + " STORED")
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			buf.WriteString(" AS " + generatedExpr)
 			if column.GeneratedExprStored {
 				buf.WriteString(" STORED")
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			buf.WriteString(" AS " + generatedExpr)
 			if column.GeneratedExprStored {
 				buf.WriteString(" PERSISTED")
@@ -1252,7 +1252,7 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 		if column.DeleteRule != "" && column.DeleteRule != NO_ACTION {
 			buf.WriteString(" ON DELETE " + column.DeleteRule)
 		}
-		if column.IsDeferrable && (dialect == sq.DialectSQLite || dialect == sq.DialectPostgres) {
+		if column.IsDeferrable && (dialect == DialectSQLite || dialect == DialectPostgres) {
 			buf.WriteString(" DEFERRABLE")
 			if column.IsInitiallyDeferred {
 				buf.WriteString(" INITIALLY DEFERRED")
@@ -1272,7 +1272,7 @@ func writeColumnNames(dialect string, buf *bytes.Buffer, columns []string) {
 
 func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema string, constraint *Constraint) {
 	// Is it a MySQL primary key constraint?
-	if constraint.ConstraintType == PRIMARY_KEY && dialect == sq.DialectMySQL {
+	if constraint.ConstraintType == PRIMARY_KEY && dialect == DialectMySQL {
 		buf.WriteString("PRIMARY KEY (")
 		writeColumnNames(dialect, buf, constraint.Columns)
 		buf.WriteString(")")
@@ -1302,7 +1302,7 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 		referencesTable := sq.QuoteIdentifier(dialect, constraint.ReferencesTable)
 		if constraint.ReferencesSchema != "" && constraint.ReferencesSchema != currentSchema {
 			referencesTable = sq.QuoteIdentifier(dialect, constraint.ReferencesSchema) + "." + referencesTable
-		} else if dialect == sq.DialectMySQL && constraint.TableSchema != constraint.ReferencesSchema {
+		} else if dialect == DialectMySQL && constraint.TableSchema != constraint.ReferencesSchema {
 			// If dialect is mysql and the foreign key reference crosses schema
 			// boundaries, we have to always qualify it with a schema (even if
 			// the schema is the current schema). If not MySQL may do the wrong
@@ -1325,7 +1325,7 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 	}
 
 	// Is it an exclude constraint?
-	if constraint.ConstraintType == EXCLUDE && dialect == sq.DialectPostgres {
+	if constraint.ConstraintType == EXCLUDE && dialect == DialectPostgres {
 		if constraint.ExclusionIndexType != "" {
 			buf.WriteString(" USING " + constraint.ExclusionIndexType)
 		}
@@ -1346,7 +1346,7 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 	}
 
 	// Is it a deferrable constraint?
-	if constraint.IsDeferrable && (dialect == sq.DialectSQLite || dialect == sq.DialectPostgres) {
+	if constraint.IsDeferrable && (dialect == DialectSQLite || dialect == DialectPostgres) {
 		buf.WriteString(" DEFERRABLE")
 		if constraint.IsInitiallyDeferred {
 			buf.WriteString(" INITIALLY DEFERRED")

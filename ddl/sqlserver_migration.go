@@ -57,7 +57,7 @@ type sqlserverAlterTable struct {
 }
 
 func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqlserverMigration {
-	const dialect = sq.DialectSQLServer
+	const dialect = DialectSQLServer
 	m := sqlserverMigration{
 		versionNums:      srcCatalog.VersionNums,
 		currentSchema:    srcCatalog.CurrentSchema,
@@ -405,7 +405,7 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 }
 
 func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*bytes.Buffer, warnings []string) {
-	const dialect = sq.DialectSQLServer
+	const dialect = DialectSQLServer
 	warnings = m.warnings
 	n := 0
 	getTablesName := func(fkey *Constraint) string {
@@ -594,7 +594,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 				buf.WriteString("\n")
 			}
 			buf.WriteString("ALTER TABLE " + tableName + " ADD ")
-			if dialect != sq.DialectSQLServer {
+			if dialect != DialectSQLServer {
 				buf.WriteString("COLUMN ")
 			}
 			writeColumnDefinition(dialect, buf, m.defaultCollation, column, false)

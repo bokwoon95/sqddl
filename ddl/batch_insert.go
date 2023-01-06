@@ -134,7 +134,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	if batchsize <= 0 {
 		batchsize = 500
 	}
-	if bi.Dialect == sq.DialectSQLServer && batchsize > 25 {
+	if bi.Dialect == DialectSQLServer && batchsize > 25 {
 		// SQLServer should be capped to a batchsize of 25, beyond that
 		// performance will drop.
 		// https://www.red-gate.com/simple-talk/databases/sql-server/performance-sql-server/comparing-multiple-rows-insert-vs-single-row-insert-with-three-data-load-methods/
@@ -145,13 +145,13 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	// https://www.jooq.org/doc/3.12/manual/sql-building/dsl-context/custom-settings/settings-inline-threshold/
 	var paramlimit int
 	switch bi.Dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		paramlimit = 32766 // prior to v3.32.0 the limit was 999 https://www.sqlite.org/limits.html
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		paramlimit = 65535 // https://stackoverflow.com/a/49379324
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		paramlimit = 65535
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		paramlimit = 2100
 	}
 	if paramlimit > 0 {
@@ -185,7 +185,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	columnNames := buf.String()
 
 	// SET IDENTITY_INSERT <table> ON
-	if len(identityColumns) > 0 && bi.Dialect == sq.DialectSQLServer {
+	if len(identityColumns) > 0 && bi.Dialect == DialectSQLServer {
 		_, err = db.ExecContext(ctx, "SET IDENTITY_INSERT "+tableName+" ON")
 		if err != nil {
 			return 0, err
@@ -198,9 +198,9 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	// insertStart
 	buf.Reset()
 	buf.WriteString("INSERT INTO " + tableName + " (" + columnNames + ")")
-	if len(identityColumns) > 0 && bi.Dialect == sq.DialectPostgres {
+	if len(identityColumns) > 0 && bi.Dialect == DialectPostgres {
 		buf.WriteString(" OVERRIDING SYSTEM VALUE VALUES ")
-	} else if len(keyColumns) > 0 && bi.Dialect == sq.DialectSQLServer {
+	} else if len(keyColumns) > 0 && bi.Dialect == DialectSQLServer {
 		buf.WriteString(" SELECT " + columnNames + " FROM (VALUES ")
 	} else {
 		buf.WriteString(" VALUES ")
@@ -217,7 +217,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	if len(keyColumns) > 0 {
 		buf.Reset()
 		switch bi.Dialect {
-		case sq.DialectSQLite, sq.DialectPostgres:
+		case DialectSQLite, DialectPostgres:
 			buf.WriteString(" ON CONFLICT (")
 			for i, column := range keyColumns {
 				if i > 0 {
@@ -238,7 +238,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 			} else {
 				buf.WriteString("DO NOTHING")
 			}
-		case sq.DialectMySQL:
+		case DialectMySQL:
 			buf.WriteString(" ON DUPLICATE KEY UPDATE ")
 			if len(nonKeyColumns) > 0 {
 				for i, column := range nonKeyColumns {
@@ -252,7 +252,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 				columnName := sq.QuoteIdentifier(bi.Dialect, keyColumns[0])
 				buf.WriteString(columnName + " = " + columnName)
 			}
-		case sq.DialectSQLServer:
+		case DialectSQLServer:
 			buf.WriteString(") AS " + tempTableName + " (" + columnNames + ") WHERE NOT EXISTS (SELECT 1 FROM " + tableName + " WHERE ")
 			for i, column := range keyColumns {
 				if i > 0 {
@@ -276,7 +276,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	// updateStart, updateEnd (SQLServer only)
 	var updateStart, updateEnd string
 	var updateStmt *sql.Stmt
-	if len(keyColumns) > 0 && len(nonKeyColumns) > 0 && bi.Dialect == sq.DialectSQLServer {
+	if len(keyColumns) > 0 && len(nonKeyColumns) > 0 && bi.Dialect == DialectSQLServer {
 		buf.Reset()
 		buf.WriteString("UPDATE " + tableName + " WITH (UPDLOCK, SERIALIZABLE) SET ")
 		written := false
@@ -403,7 +403,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	}
 
 	// SET IDENTITY_INSERT <table> OFF
-	if len(identityColumns) > 0 && bi.Dialect == sq.DialectSQLServer {
+	if len(identityColumns) > 0 && bi.Dialect == DialectSQLServer {
 		_, err = db.ExecContext(ctx, "SET IDENTITY_INSERT "+tableName+" OFF")
 		if err != nil {
 			return rowsAffected, err
@@ -411,7 +411,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	}
 
 	// SELECT setval(pg_get_serial_sequence('table', 'id'), max(id)) FROM table;
-	if len(identityColumns) > 0 && bi.Dialect == sq.DialectPostgres {
+	if len(identityColumns) > 0 && bi.Dialect == DialectPostgres {
 		for _, column := range identityColumns {
 			columnName := sq.QuoteIdentifier(bi.Dialect, column)
 			_, err = db.ExecContext(ctx,
@@ -439,9 +439,9 @@ func writeRowValues(ctx context.Context, dialect string, buf *bytes.Buffer, batc
 			}
 			counter++
 			switch dialect {
-			case sq.DialectPostgres:
+			case DialectPostgres:
 				buf.WriteString("$" + strconv.Itoa(counter))
-			case sq.DialectSQLServer:
+			case DialectSQLServer:
 				buf.WriteString("@p" + strconv.Itoa(counter))
 			default:
 				buf.WriteString("?")

@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	"github.com/go-sql-driver/mysql"
 )
@@ -14,7 +13,7 @@ import (
 // github.com/go-sql-driver/mysql.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectMySQL,
+		Dialect:    ddl.DialectMySQL,
 		DriverName: "mysql",
 		IsLockTimeout: func(err error) bool {
 			var mysqlerr *mysql.MySQLError

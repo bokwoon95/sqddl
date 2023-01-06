@@ -36,6 +36,15 @@ const (
 	SET_DEFAULT = "SET DEFAULT"
 )
 
+// The dialects supported by ddl.
+const (
+	DialectSQLite    = sq.DialectSQLite
+	DialectPostgres  = sq.DialectPostgres
+	DialectMySQL     = sq.DialectMySQL
+	DialectSQLServer = sq.DialectSQLServer
+	DialectOracle    = "oracle"
+)
+
 var bufpool = sync.Pool{
 	New: func() any { return &bytes.Buffer{} },
 }
@@ -765,12 +774,12 @@ func normalizeColumnType(dialect string, columnType string) (normalizedType, arg
 		}
 	}
 	isPostgresArray := false
-	if dialect == sq.DialectPostgres && strings.HasSuffix(normalizedType, "[]") {
+	if dialect == DialectPostgres && strings.HasSuffix(normalizedType, "[]") {
 		isPostgresArray = true
 		normalizedType = normalizedType[:len(normalizedType)-2]
 	}
 	switch dialect {
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		// https://www.postgresql.org/docs/current/datatype.html
 		switch strings.ReplaceAll(normalizedType, " ", "") {
 		// Numeric
@@ -815,7 +824,7 @@ func normalizeColumnType(dialect string, columnType string) (normalizedType, arg
 		case "BOOL":
 			normalizedType = "BOOLEAN"
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		isUnsigned := strings.HasSuffix(normalizedType, " UNSIGNED")
 		if isUnsigned {
 			normalizedType = strings.TrimSuffix(normalizedType, " UNSIGNED")
@@ -842,7 +851,7 @@ func normalizeColumnType(dialect string, columnType string) (normalizedType, arg
 		if isUnsigned {
 			normalizedType += " UNSIGNED"
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		switch strings.ReplaceAll(normalizedType, " ", "") {
 		case "BINARYVARYING":
 			normalizedType = "VARBINARY"
@@ -881,22 +890,22 @@ func normalizeColumnDefault(dialect string, columnDefault string) (normalizedDef
 		return upperDefault
 	}
 	switch dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		if upperDefault == "DATETIME()" || upperDefault == "DATETIME('NOW')" {
 			return "CURRENT_TIMESTAMP"
 		}
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		if upperDefault == "NOW()" {
 			return "CURRENT_TIMESTAMP"
 		}
 		if before, _, found := strings.Cut(columnDefault, "::"); found {
 			return before
 		}
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		if upperDefault == "NOW()" {
 			return "CURRENT_TIMESTAMP"
 		}
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		if upperDefault == "GETDATE()" {
 			return "CURRENT_TIMESTAMP"
 		}
@@ -992,20 +1001,22 @@ func normalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 	}
 	trimmedDSN, _, _ := strings.Cut(dsn, "?")
 	if strings.HasPrefix(dsn, "sqlite:") {
-		dialect = sq.DialectSQLite
+		dialect = DialectSQLite
 	} else if strings.HasPrefix(dsn, "postgres://") {
-		dialect = sq.DialectPostgres
+		dialect = DialectPostgres
 	} else if strings.HasPrefix(dsn, "mysql://") {
-		dialect = sq.DialectMySQL
+		dialect = DialectMySQL
 	} else if strings.HasPrefix(dsn, "sqlserver://") {
-		dialect = sq.DialectSQLServer
+		dialect = DialectSQLServer
+	} else if strings.HasPrefix(dsn, "oracle://") {
+		dialect = DialectOracle
 	} else if strings.Contains(dsn, "@tcp(") || strings.Contains(dsn, "@unix(") {
-		dialect = sq.DialectMySQL
+		dialect = DialectMySQL
 	} else if strings.HasSuffix(trimmedDSN, ".sqlite") ||
 		strings.HasSuffix(trimmedDSN, ".sqlite3") ||
 		strings.HasSuffix(trimmedDSN, ".db") ||
 		strings.HasSuffix(trimmedDSN, ".db3") {
-		dialect = sq.DialectSQLite
+		dialect = DialectSQLite
 	} else {
 		return "", "", ""
 	}
@@ -1017,14 +1028,16 @@ func normalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 		return dialect, driver.DriverName, dsn
 	}
 	switch dialect {
-	case sq.DialectSQLite:
+	case DialectSQLite:
 		return dialect, "sqlite3", strings.TrimPrefix(strings.TrimPrefix(dsn, "sqlite:"), "//")
-	case sq.DialectPostgres:
+	case DialectPostgres:
 		return dialect, "postgres", dsn
-	case sq.DialectMySQL:
+	case DialectMySQL:
 		return dialect, "mysql", strings.TrimPrefix(dsn, "mysql://")
-	case sq.DialectSQLServer:
+	case DialectSQLServer:
 		return dialect, "sqlserver", dsn
+	case DialectOracle:
+		return dialect, "oracle", dsn
 	}
 	return "", "", ""
 }

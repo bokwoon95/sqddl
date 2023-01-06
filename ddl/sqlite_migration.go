@@ -28,7 +28,7 @@ type sqliteAlterTable struct {
 }
 
 func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqliteMigration {
-	const dialect = sq.DialectSQLite
+	const dialect = DialectSQLite
 	m := sqliteMigration{}
 	if len(srcCatalog.Schemas) == 0 && len(destCatalog.Schemas) == 0 {
 		return m
@@ -205,7 +205,7 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 
 func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.Buffer, warnings []string) {
 	const (
-		dialect          = sq.DialectSQLite
+		dialect          = DialectSQLite
 		currentSchema    = ""
 		defaultCollation = ""
 	)
@@ -332,7 +332,7 @@ func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.
 
 func (alterTable *sqliteAlterTable) copyTable(buf *bytes.Buffer) {
 	const (
-		dialect          = sq.DialectSQLite
+		dialect          = DialectSQLite
 		currentSchema    = ""
 		defaultCollation = ""
 	)

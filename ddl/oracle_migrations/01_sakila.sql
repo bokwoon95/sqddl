@@ -1,0 +1,8 @@
+DECLARE
+    X INTEGER;
+BEGIN
+    IF 0 < 1
+    THEN
+        SELECT 1 INTO X FROM DUAL;
+    END IF;
+END;

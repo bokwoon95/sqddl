@@ -5,8 +5,6 @@ import (
 	"go/token"
 	"strconv"
 	"strings"
-
-	"github.com/bokwoon95/sq"
 )
 
 // TableStructs is a slice of TableStructs.
@@ -60,7 +58,7 @@ func (s *TableStructs) ReadCatalog(catalog *Catalog) error {
 					firstField.NameTag = table.TableName
 				}
 			}
-			if catalog.Dialect == sq.DialectSQLite && isVirtualTable(&table) {
+			if catalog.Dialect == DialectSQLite && isVirtualTable(&table) {
 				firstField.Modifiers = append(firstField.Modifiers, Modifier{Name: "virtual"})
 			}
 			constraintModifierList := make([]*Modifier, 0, len(table.Constraints))
@@ -172,40 +170,40 @@ func (s *TableStructs) ReadCatalog(catalog *Catalog) error {
 				switch structField.Type {
 				case "sq.BinaryField":
 					switch catalog.Dialect {
-					case sq.DialectSQLite:
+					case DialectSQLite:
 						defaultColumnType = "BLOB"
-					case sq.DialectPostgres:
+					case DialectPostgres:
 						defaultColumnType = "BYTEA"
-					case sq.DialectMySQL:
+					case DialectMySQL:
 						defaultColumnType = "MEDIUMBLOB"
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "VARBINARY(MAX)"
 					default:
 						defaultColumnType = "BINARY"
 					}
 				case "sq.BooleanField":
 					switch catalog.Dialect {
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "BIT"
 					default:
 						defaultColumnType = "BOOLEAN"
 					}
 				case "sq.EnumField":
 					switch catalog.Dialect {
-					case sq.DialectSQLite, sq.DialectPostgres:
+					case DialectSQLite, DialectPostgres:
 						defaultColumnType = "TEXT"
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "NVARCHAR(255)"
 					default:
 						defaultColumnType = "VARCHAR(255)"
 					}
 				case "sq.JSONField":
 					switch catalog.Dialect {
-					case sq.DialectSQLite, sq.DialectMySQL:
+					case DialectSQLite, DialectMySQL:
 						defaultColumnType = "JSON"
-					case sq.DialectPostgres:
+					case DialectPostgres:
 						defaultColumnType = "JSONB"
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "NVARCHAR(MAX)"
 					default:
 						defaultColumnType = "VARCHAR(255)"
@@ -214,25 +212,25 @@ func (s *TableStructs) ReadCatalog(catalog *Catalog) error {
 					defaultColumnType = "INT"
 				case "sq.StringField":
 					switch catalog.Dialect {
-					case sq.DialectSQLite, sq.DialectPostgres:
+					case DialectSQLite, DialectPostgres:
 						defaultColumnType = "TEXT"
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "NVARCHAR(255)"
 					default:
 						defaultColumnType = "VARCHAR(255)"
 					}
 				case "sq.TimeField":
 					switch catalog.Dialect {
-					case sq.DialectPostgres:
+					case DialectPostgres:
 						defaultColumnType = "TIMESTAMPTZ"
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						defaultColumnType = "DATETIMEOFFSET"
 					default:
 						defaultColumnType = "TIMESTAMP"
 					}
 				case "sq.UUIDField":
 					switch catalog.Dialect {
-					case sq.DialectSQLite, sq.DialectPostgres:
+					case DialectSQLite, DialectPostgres:
 						defaultColumnType = "UUID"
 					default:
 						defaultColumnType = "BINARY(16)"
@@ -242,7 +240,7 @@ func (s *TableStructs) ReadCatalog(catalog *Catalog) error {
 				if column.DomainName != "" {
 					structField.Modifiers = append(structField.Modifiers, Modifier{Name: "type", RawValue: column.DomainName})
 				} else if column.ColumnType != "" && column.ColumnType != defaultColumnType {
-					isSQLiteRowid := catalog.Dialect == sq.DialectSQLite &&
+					isSQLiteRowid := catalog.Dialect == DialectSQLite &&
 						primarykeyModifier != nil &&
 						primarykeyModifier.Value == column.ColumnName &&
 						strings.EqualFold(column.ColumnType, "INTEGER")
@@ -278,22 +276,22 @@ func (s *TableStructs) ReadCatalog(catalog *Catalog) error {
 				// autoincrement
 				if column.IsAutoincrement {
 					switch catalog.Dialect {
-					case sq.DialectSQLite:
+					case DialectSQLite:
 						structField.Modifiers = append(structField.Modifiers, Modifier{Name: "autoincrement"})
-					case sq.DialectMySQL:
+					case DialectMySQL:
 						structField.Modifiers = append(structField.Modifiers, Modifier{Name: "auto_increment"})
 					}
 				}
 				// identity
 				if column.ColumnIdentity != "" {
 					switch catalog.Dialect {
-					case sq.DialectPostgres:
+					case DialectPostgres:
 						if column.ColumnIdentity == DEFAULT_IDENTITY {
 							structField.Modifiers = append(structField.Modifiers, Modifier{Name: "identity"})
 						} else if column.ColumnIdentity == ALWAYS_IDENTITY {
 							structField.Modifiers = append(structField.Modifiers, Modifier{Name: "alwaysidentity"})
 						}
-					case sq.DialectSQLServer:
+					case DialectSQLServer:
 						if column.ColumnIdentity == IDENTITY {
 							structField.Modifiers = append(structField.Modifiers, Modifier{Name: "identity"})
 						}

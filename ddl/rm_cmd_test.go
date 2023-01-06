@@ -59,8 +59,8 @@ func TestRmCmd(t *testing.T) {
 	wantFilenames := []string{"repeatable/views/staff_list.sql"}
 	gotFilenames, err := sq.FetchAll(db, sq.
 		Queryf("SELECT {*} FROM sqddl_history ORDER BY filename"),
-		func(row *sq.Row) (string, error) {
-			return row.String("filename"), nil
+		func(row *sq.Row) string {
+			return row.String("filename")
 		},
 	)
 	if err != nil {

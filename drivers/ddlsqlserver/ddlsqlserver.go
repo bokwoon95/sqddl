@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	mssql "github.com/denisenkom/go-mssqldb"
 )
@@ -16,7 +15,7 @@ import (
 // github.com/denisenkom/go-mssqldb.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectSQLServer,
+		Dialect:    ddl.DialectSQLServer,
 		DriverName: "sqlserver",
 		IsLockTimeout: func(err error) bool {
 			var mssqlErr mssql.Error

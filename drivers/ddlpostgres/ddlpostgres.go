@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/ddl"
 	"github.com/lib/pq"
 )
@@ -16,7 +15,7 @@ import (
 // github.com/lib/pq.
 func Register() {
 	ddl.Register(ddl.Driver{
-		Dialect:    sq.DialectPostgres,
+		Dialect:    ddl.DialectPostgres,
 		DriverName: "postgres",
 		IsLockTimeout: func(err error) bool {
 			var pqerr *pq.Error
@@ -44,11 +43,7 @@ func Register() {
 			line := 1
 			pos, posErr := strconv.Atoi(pqerr.Position)
 			if posErr == nil {
-				for _, char := range query[:pos] {
-					if char == '\n' {
-						line++
-					}
-				}
+				line = strings.Count(query[:pos], "\n") + 1
 			}
 			if posErr != nil && pqerr.Detail == "" && pqerr.Hint == "" {
 				return originalErr
