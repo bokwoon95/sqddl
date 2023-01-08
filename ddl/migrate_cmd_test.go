@@ -52,7 +52,7 @@ func TestMigrateCmd(t *testing.T) {
 	t.Run("migrate all", func(t *testing.T) {
 		t.Parallel()
 		migrateCmd, err := MigrateCommand(
-			"-db", "sqlite:file/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"-dir", "sqlite_migrations",
 		)
 		if err != nil {
@@ -96,7 +96,7 @@ func TestMigrateCmd(t *testing.T) {
 
 	t.Run("migrate some", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
 		migrateCmd, err := MigrateCommand(
 			"-db", dsn,
 			"-dir", "sqlite_migrations",

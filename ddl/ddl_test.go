@@ -513,7 +513,7 @@ func Test_normalizeColumnDefault(t *testing.T) {
 	}})
 }
 
-func Test_normalizeDSN(t *testing.T) {
+func TestNormalizeDSN(t *testing.T) {
 	type TT struct {
 		dsn               string
 		wantDialect       string
@@ -528,33 +528,61 @@ func Test_normalizeDSN(t *testing.T) {
 	defer func() { drivers = oldDrivers }()
 
 	driverlessTests := []TT{{
-		dsn:         "file:testdata/sqlite_db",
-		wantDialect: "sqlite", wantDriverName: "sqlite3",
+		dsn:         "file:nonexistent_file", // <-- file doesn't exist and doesn't have .{sqlite,sqlite3,db,db3} suffix
+		wantDialect: "", wantDriverName: "",
+		wantNormalizedDSN: "",
+	}, {
+		dsn:         "file:nonexistent_file.db", // <-- file doesn't exist and has .{sqlite,sqlite3,db,db3} suffix
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "file:nonexistent_file.db",
+	}, {
+		dsn:         "file:testdata/sqlite_db", // <-- file is an SQLite database.
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
 		wantNormalizedDSN: "file:testdata/sqlite_db",
 	}, {
-		dsn:         "file:testdata/database_url.txt",
-		wantDialect: "postgres", wantDriverName: "postgres",
+		dsn:         "file:testdata/database_url.txt", // <-- file contains a Postgres DSN.
+		wantDialect: DialectPostgres, wantDriverName: "postgres",
 		wantNormalizedDSN: "postgres://user1:Hunter2!@localhost:5456/sakila?sslmode=disable",
 	}, {
+		dsn:         "sqlite:has_sqlite_prefix",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "has_sqlite_prefix",
+	}, {
+		dsn:         "sqlite3:has_sqlite3_prefix",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "has_sqlite3_prefix",
+	}, {
+		dsn:         "postgres://user1:Hunter2!@localhost:5456/sakila",
+		wantDialect: DialectPostgres, wantDriverName: "postgres",
+		wantNormalizedDSN: "postgres://user1:Hunter2!@localhost:5456/sakila",
+	}, {
 		dsn:         "mysql://root:Hunter2!@tcp(localhost:3330)/sakila?multiStatements=true&parseTime=true",
-		wantDialect: "mysql", wantDriverName: "mysql",
+		wantDialect: DialectMySQL, wantDriverName: "mysql",
 		wantNormalizedDSN: "root:Hunter2!@tcp(localhost:3330)/sakila?multiStatements=true&parseTime=true",
 	}, {
 		dsn:         "sqlserver://sa:Hunter2!@localhost:1447",
-		wantDialect: "sqlserver", wantDriverName: "sqlserver",
+		wantDialect: DialectSQLServer, wantDriverName: "sqlserver",
 		wantNormalizedDSN: "sqlserver://sa:Hunter2!@localhost:1447",
 	}, {
 		dsn:         "root:Hunter2!@tcp(localhost:3330)/sakila?multiStatements=true&parseTime=true",
-		wantDialect: "mysql", wantDriverName: "mysql",
+		wantDialect: DialectMySQL, wantDriverName: "mysql",
 		wantNormalizedDSN: "root:Hunter2!@tcp(localhost:3330)/sakila?multiStatements=true&parseTime=true",
 	}, {
-		dsn: "test.sqlite", wantDialect: "sqlite", wantDriverName: "sqlite3", wantNormalizedDSN: "test.sqlite",
+		dsn:         "test.sqlite",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "test.sqlite",
 	}, {
-		dsn: "test.sqlite3", wantDialect: "sqlite", wantDriverName: "sqlite3", wantNormalizedDSN: "test.sqlite3",
+		dsn:         "test.sqlite3",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "test.sqlite3",
 	}, {
-		dsn: "test.db", wantDialect: "sqlite", wantDriverName: "sqlite3", wantNormalizedDSN: "test.db",
+		dsn:         "test.db",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "test.db",
 	}, {
-		dsn: "test.db3", wantDialect: "sqlite", wantDriverName: "sqlite3", wantNormalizedDSN: "test.db3",
+		dsn:         "test.db3",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
+		wantNormalizedDSN: "test.db3",
 	}}
 
 	for _, tt := range driverlessTests {
@@ -575,7 +603,7 @@ func Test_normalizeDSN(t *testing.T) {
 
 	// Register the drivers.
 	Register(Driver{
-		Dialect:    "sqlite",
+		Dialect:    DialectSQLite,
 		DriverName: "sqlite3",
 		PreprocessDSN: func(dsn string) string {
 			dsn = strings.TrimPrefix(strings.TrimPrefix(dsn, "sqlite:"), "//")
@@ -591,7 +619,7 @@ func Test_normalizeDSN(t *testing.T) {
 		},
 	})
 	Register(Driver{
-		Dialect:    "postgres",
+		Dialect:    DialectPostgres,
 		DriverName: "postgres",
 		PreprocessDSN: func(dsn string) string {
 			before, after, _ := strings.Cut(dsn, "?")
@@ -606,7 +634,7 @@ func Test_normalizeDSN(t *testing.T) {
 		},
 	})
 	Register(Driver{
-		Dialect:    "mysql",
+		Dialect:    DialectMySQL,
 		DriverName: "mysql",
 		PreprocessDSN: func(dsn string) string {
 			if strings.HasPrefix(dsn, "mysql://") {
@@ -655,7 +683,7 @@ func Test_normalizeDSN(t *testing.T) {
 		},
 	})
 	Register(Driver{
-		Dialect:    "sqlserver",
+		Dialect:    DialectSQLServer,
 		DriverName: "sqlserver",
 		PreprocessDSN: func(dsn string) string {
 			u, err := url.Parse(dsn)
@@ -677,35 +705,35 @@ func Test_normalizeDSN(t *testing.T) {
 
 	driverTests := []TT{{
 		dsn:         "test.db",
-		wantDialect: "sqlite", wantDriverName: "sqlite3",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
 		wantNormalizedDSN: "test.db?_foreign_keys=true",
 	}, {
 		dsn:         "test.db?_fk=0",
-		wantDialect: "sqlite", wantDriverName: "sqlite3",
+		wantDialect: DialectSQLite, wantDriverName: "sqlite3",
 		wantNormalizedDSN: "test.db?_fk=0",
 	}, {
 		dsn:         "postgres://user1:Hunter2!@localhost:5456/sakila",
-		wantDialect: "postgres", wantDriverName: "postgres",
+		wantDialect: DialectPostgres, wantDriverName: "postgres",
 		wantNormalizedDSN: "postgres://user1:Hunter2!@localhost:5456/sakila?sslmode=disable",
 	}, {
 		dsn:         "postgres://user1:Hunter2!@localhost:5456/sakila?sslmode=verify-full",
-		wantDialect: "postgres", wantDriverName: "postgres",
+		wantDialect: DialectPostgres, wantDriverName: "postgres",
 		wantNormalizedDSN: "postgres://user1:Hunter2!@localhost:5456/sakila?sslmode=verify-full",
 	}, {
 		dsn:         "mysql://root:Hunter2!@localhost:3330/sakila",
-		wantDialect: "mysql", wantDriverName: "mysql",
+		wantDialect: DialectMySQL, wantDriverName: "mysql",
 		wantNormalizedDSN: "root:Hunter2!@tcp(localhost:3330)/sakila?allowAllFiles=true&multiStatements=true&parseTime=true",
 	}, {
 		dsn:         "root:Hunter2!@unix(/tmp/mysql.sock)/sakila?allowAllFiles=false&multiStatements=false&parseTime=false",
-		wantDialect: "mysql", wantDriverName: "mysql",
+		wantDialect: DialectMySQL, wantDriverName: "mysql",
 		wantNormalizedDSN: "root:Hunter2!@unix(/tmp/mysql.sock)/sakila?allowAllFiles=false&multiStatements=false&parseTime=false",
 	}, {
 		dsn:         "sqlserver://sa:Hunter2!@localhost:1447/sakila",
-		wantDialect: "sqlserver", wantDriverName: "sqlserver",
+		wantDialect: DialectSQLServer, wantDriverName: "sqlserver",
 		wantNormalizedDSN: "sqlserver://sa:Hunter2!@localhost:1447?database=sakila",
 	}, {
 		dsn:         "sqlserver://sa:Hunter2!@localhost:1447?database=sakila",
-		wantDialect: "sqlserver", wantDriverName: "sqlserver",
+		wantDialect: DialectSQLServer, wantDriverName: "sqlserver",
 		wantNormalizedDSN: "sqlserver://sa:Hunter2!@localhost:1447?database=sakila",
 	}}
 
@@ -725,7 +753,7 @@ func Test_normalizeDSN(t *testing.T) {
 		})
 	}
 
-	Register(Driver{Dialect: "sqlite", DriverName: "sqlite3"})
+	Register(Driver{Dialect: DialectSQLite, DriverName: "sqlite3"})
 	gotDialect, gotDriverName, gotNormalizedDSN := NormalizeDSN("sqlite://abcdefg")
 	if diff := testutil.Diff(gotDialect, "sqlite"); diff != "" {
 		t.Error(testutil.Callers(), diff)

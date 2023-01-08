@@ -12,7 +12,7 @@ import (
 func TestLsCmd(t *testing.T) {
 	t.Run("empty db", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
 		// Assert OK.
 		lsCmd, err := LsCommand("-db", dsn, "-dir", "sqlite_migrations")
 		if err != nil {
@@ -27,7 +27,7 @@ func TestLsCmd(t *testing.T) {
 
 	t.Run("non-empty db", func(t *testing.T) {
 		t.Parallel()
-		db, err := sql.Open("sqlite3", "file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true")
+		db, err := sql.Open("sqlite3", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true")
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}

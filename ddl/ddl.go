@@ -3,6 +3,7 @@ package ddl
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -976,8 +977,14 @@ func getDriver(dialect string) (driver Driver, ok bool) {
 // driverName to be used with sql.Open().
 func NormalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 	if strings.HasPrefix(dsn, "file:") {
-		filename := strings.TrimPrefix(strings.TrimPrefix(dsn, "file:"), "//")
+		filename, _, _ := strings.Cut(strings.TrimPrefix(strings.TrimPrefix(dsn, "file:"), "//"), "?")
 		file, err := os.Open(filename)
+		if errors.Is(err, os.ErrNotExist) && (strings.HasSuffix(filename, ".sqlite") ||
+			strings.HasSuffix(filename, ".sqlite3") ||
+			strings.HasSuffix(filename, ".db") ||
+			strings.HasSuffix(filename, ".db3")) {
+			return DialectSQLite, "sqlite3", dsn
+		}
 		if err != nil {
 			return "", "", ""
 		}
@@ -1003,7 +1010,7 @@ func NormalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 		}
 	}
 	trimmedDSN, _, _ := strings.Cut(dsn, "?")
-	if strings.HasPrefix(dsn, "sqlite:") {
+	if strings.HasPrefix(dsn, "sqlite:") || strings.HasPrefix(dsn, "sqlite3:") {
 		dialect = DialectSQLite
 	} else if strings.HasPrefix(dsn, "postgres://") {
 		dialect = DialectPostgres
@@ -1032,7 +1039,13 @@ func NormalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 	}
 	switch dialect {
 	case DialectSQLite:
-		return dialect, "sqlite3", strings.TrimPrefix(strings.TrimPrefix(dsn, "sqlite:"), "//")
+		var tmp string
+		if strings.HasPrefix(dsn, "sqlite3:") {
+			tmp = strings.TrimPrefix(dsn, "sqlite3:")
+		} else {
+			tmp = strings.TrimPrefix(dsn, "sqlite:")
+		}
+		return dialect, "sqlite3", strings.TrimPrefix(tmp, "//")
 	case DialectPostgres:
 		return dialect, "postgres", dsn
 	case DialectMySQL:

@@ -63,7 +63,7 @@ func TestGenerateCmd(t *testing.T) {
 }
 
 func Test_writeCatalog(t *testing.T) {
-	dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
+	dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
 	loadCmd, err := LoadCommand("-db", dsn, "-dir", "testdata/sqlite", "dump.zip")
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)

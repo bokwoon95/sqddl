@@ -3,7 +3,6 @@ package ddl
 import (
 	"database/sql"
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/bokwoon95/sq"
@@ -12,8 +11,8 @@ import (
 
 func TestRmCmd(t *testing.T) {
 	t.Parallel()
-	dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
-	db, err := sql.Open("sqlite3", strings.TrimPrefix(dsn, "sqlite:"))
+	dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
+	db, err := sql.Open("sqlite3", dsn)
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}

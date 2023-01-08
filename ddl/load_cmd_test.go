@@ -54,7 +54,7 @@ func TestLoadCmd(t *testing.T) {
 	t.Run("dir", func(t *testing.T) {
 		t.Parallel()
 		loadCmd, err := LoadCommand(
-			"-db", "sqlite:file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"-verbose",
 			"testdata/sqlite/schema.sql",
 			"csv_testdata",
@@ -76,7 +76,7 @@ func TestLoadCmd(t *testing.T) {
 
 	t.Run("zip", func(t *testing.T) {
 		t.Parallel()
-		db, err := sql.Open("sqlite3", "file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true")
+		db, err := sql.Open("sqlite3", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true")
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}
@@ -96,7 +96,7 @@ func TestLoadCmd(t *testing.T) {
 
 	t.Run("tgz", func(t *testing.T) {
 		t.Parallel()
-		db, err := sql.Open("sqlite3", "file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true")
+		db, err := sql.Open("sqlite3", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true")
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}
@@ -121,7 +121,7 @@ func TestLoadCmd(t *testing.T) {
 	t.Run("individual files", func(t *testing.T) {
 		t.Parallel()
 		loadCmd, err := LoadCommand(
-			"-db", "sqlite:file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"testdata/sqlite/schema.sql",
 			"csv_testdata/actor.csv",
 			"testdata/sqlite/indexes.sql",
@@ -176,7 +176,7 @@ func TestLoadCmd(t *testing.T) {
 	t.Run("ordered csv (dir)", func(t *testing.T) {
 		t.Parallel()
 		loadCmd, err := LoadCommand(
-			"-db", "sqlite:file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"testdata/ordered_csv",
 		)
 		if err != nil {
@@ -195,7 +195,7 @@ func TestLoadCmd(t *testing.T) {
 	t.Run("ordered csv (zip)", func(t *testing.T) {
 		t.Parallel()
 		loadCmd, err := LoadCommand(
-			"-db", "sqlite:file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"testdata/ordered_csv.zip",
 		)
 		if err != nil {
@@ -214,7 +214,7 @@ func TestLoadCmd(t *testing.T) {
 	t.Run("ordered csv (tar gz)", func(t *testing.T) {
 		t.Parallel()
 		loadCmd, err := LoadCommand(
-			"-db", "sqlite:file:/"+t.Name()+"?vfs=memdb&_foreign_keys=true",
+			"-db", "file:/"+t.Name()+".db?vfs=memdb&_foreign_keys=true",
 			"testdata/ordered_csv.tar.gz",
 		)
 		if err != nil {

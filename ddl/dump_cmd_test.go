@@ -19,7 +19,7 @@ import (
 func TestDumpCmd(t *testing.T) {
 	t.Run("tgz", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=false"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=false"
 		// Load the data.
 		loadCmd, err := LoadCommand("-db", dsn, "testdata/sqlite/dump.tgz")
 		if err != nil {
@@ -66,7 +66,7 @@ func TestDumpCmd(t *testing.T) {
 
 	t.Run("zip", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=false"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=false"
 		// Load the data.
 		loadCmd, err := LoadCommand("-db", dsn, "testdata/sqlite/dump.zip")
 		if err != nil {
@@ -112,7 +112,7 @@ func TestDumpCmd(t *testing.T) {
 
 	t.Run("subset", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
 		// Load the data.
 		loadCmd, err := LoadCommand(
 			"-db", dsn,
@@ -153,7 +153,7 @@ func TestDumpCmd(t *testing.T) {
 
 	t.Run("extended_subset", func(t *testing.T) {
 		t.Parallel()
-		dsn := "sqlite:file:/" + t.Name() + "?vfs=memdb&_foreign_keys=true"
+		dsn := "file:/" + t.Name() + ".db?vfs=memdb&_foreign_keys=true"
 		// Load the data.
 		loadCmd, err := LoadCommand(
 			"-db", dsn,
