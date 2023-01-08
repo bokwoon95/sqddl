@@ -88,7 +88,7 @@ Flags:
 		cmd.ExcludeViews = strings.Split(excludeViews, ",")
 	}
 	var driverName, dsn string
-	cmd.Dialect, driverName, dsn = normalizeDSN(cmd.db)
+	cmd.Dialect, driverName, dsn = NormalizeDSN(cmd.db)
 	if cmd.Dialect == "" {
 		return nil, fmt.Errorf("could not identity dialect for -db %q", cmd.db)
 	}

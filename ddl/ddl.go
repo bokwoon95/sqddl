@@ -971,7 +971,10 @@ func getDriver(dialect string) (driver Driver, ok bool) {
 	return driver, ok
 }
 
-func normalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
+// NormalizeDSN normalizes an input DSN (Data Source Name), using a heuristic
+// to detect the dialect of the DSN as well as providing an appropriate
+// driverName to be used with sql.Open().
+func NormalizeDSN(dsn string) (dialect, driverName, normalizedDSN string) {
 	if strings.HasPrefix(dsn, "file:") {
 		filename := strings.TrimPrefix(strings.TrimPrefix(dsn, "file:"), "//")
 		file, err := os.Open(filename)

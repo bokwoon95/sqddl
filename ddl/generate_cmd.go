@@ -328,7 +328,7 @@ func writeCatalog(catalog *Catalog, fsys fs.FS, historyTable, s string) error {
 		}
 		return nil
 	}
-	dialect, driverName, dsn := normalizeDSN(s)
+	dialect, driverName, dsn := NormalizeDSN(s)
 	if dialect == "" {
 		return fmt.Errorf("could not identity dialect for %q", s)
 	}

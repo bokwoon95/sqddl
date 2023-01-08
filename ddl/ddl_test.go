@@ -560,7 +560,7 @@ func Test_normalizeDSN(t *testing.T) {
 	for _, tt := range driverlessTests {
 		tt := tt
 		t.Run(tt.dsn, func(t *testing.T) {
-			gotDialect, gotDriverName, gotNormalizedDSN := normalizeDSN(tt.dsn)
+			gotDialect, gotDriverName, gotNormalizedDSN := NormalizeDSN(tt.dsn)
 			if diff := testutil.Diff(gotDialect, tt.wantDialect); diff != "" {
 				t.Error(testutil.Callers(), diff)
 			}
@@ -712,7 +712,7 @@ func Test_normalizeDSN(t *testing.T) {
 	for _, tt := range driverTests {
 		tt := tt
 		t.Run(tt.dsn, func(t *testing.T) {
-			gotDialect, gotDriverName, gotNormalizedDSN := normalizeDSN(tt.dsn)
+			gotDialect, gotDriverName, gotNormalizedDSN := NormalizeDSN(tt.dsn)
 			if diff := testutil.Diff(gotDialect, tt.wantDialect); diff != "" {
 				t.Error(testutil.Callers(), diff)
 			}
@@ -726,7 +726,7 @@ func Test_normalizeDSN(t *testing.T) {
 	}
 
 	Register(Driver{Dialect: "sqlite", DriverName: "sqlite3"})
-	gotDialect, gotDriverName, gotNormalizedDSN := normalizeDSN("sqlite://abcdefg")
+	gotDialect, gotDriverName, gotNormalizedDSN := NormalizeDSN("sqlite://abcdefg")
 	if diff := testutil.Diff(gotDialect, "sqlite"); diff != "" {
 		t.Error(testutil.Callers(), diff)
 	}
