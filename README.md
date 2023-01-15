@@ -31,7 +31,7 @@ Notable features:
 ## Installation
 
 ```shell
-$ go install -tags=fts5 github.com/bokwoon95/sqddl/sqddl@latest
+$ go install -tags=fts5 github.com/bokwoon95/sqddl@latest
 ```
 
 ## Example migrations.
