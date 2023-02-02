@@ -113,19 +113,12 @@ func (cmd *ViewsCmd) Run() error {
 		defer cmd.DB.Close()
 	}
 
-	dbi := NewDatabaseIntrospector(cmd.Dialect, cmd.DB)
-	dbi.Schemas = cmd.Schemas
-	dbi.ExcludeSchemas = cmd.ExcludeSchemas
-	dbi.Views = cmd.Views
-	dbi.ExcludeViews = cmd.ExcludeViews
-	dbi.ObjectTypes = []string{"VIEWS"}
-	catalog := &Catalog{}
-	err := dbi.WriteCatalog(catalog)
-	if err != nil {
-		return err
-	}
-	var viewStructs ViewStructs
-	err = viewStructs.ReadCatalog(catalog)
+	viewStructs, err := NewViewStructs(cmd.Dialect, cmd.DB, Filter{
+		Schemas:        cmd.Schemas,
+		ExcludeSchemas: cmd.ExcludeSchemas,
+		Views:          cmd.Views,
+		ExcludeViews:   cmd.ExcludeViews,
+	})
 	if err != nil {
 		return err
 	}

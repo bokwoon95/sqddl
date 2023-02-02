@@ -2,6 +2,7 @@ package ddl
 
 import (
 	"bytes"
+	"database/sql"
 	"strconv"
 	"strings"
 )
@@ -13,6 +14,32 @@ type ViewStruct struct {
 	Fields []StructField
 }
 
+// NewViewStructs introspects a database connection and returns a slice of
+// ViewStructs, each ViewStruct corresponding to a view in the database. You
+// may narrow down the list of views by filling in the Schemas, ExcludeSchemas,
+// Views and ExcludeViews fields of the Filter struct. The Filter.ObjectTypes
+// field will always be set to []string{"VIEWS"}.
+func NewViewStructs(dialect string, db *sql.DB, filter Filter) (ViewStructs, error) {
+	var viewStructs ViewStructs
+	var catalog Catalog
+	dbi := &DatabaseIntrospector{
+		Filter:  filter,
+		Dialect: dialect,
+		DB:      db,
+	}
+	dbi.ObjectTypes = []string{"VIEWS"}
+	err := dbi.WriteCatalog(&catalog)
+	if err != nil {
+		return nil, err
+	}
+	err = viewStructs.ReadCatalog(&catalog)
+	if err != nil {
+		return nil, err
+	}
+	return viewStructs, nil
+}
+
+// ReadCatalog reads from a catalog and populates the ViewStructs accordingly.
 func (s *ViewStructs) ReadCatalog(catalog *Catalog) error {
 	for _, schema := range catalog.Schemas {
 		for _, view := range schema.Views {
@@ -52,6 +79,7 @@ func (s *ViewStructs) ReadCatalog(catalog *Catalog) error {
 	return nil
 }
 
+// MarshalText converts the ViewStructs into Go source code.
 func (s *ViewStructs) MarshalText() (text []byte, err error) {
 	buf := bufpool.Get().(*bytes.Buffer)
 	buf.Reset()

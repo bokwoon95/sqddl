@@ -676,7 +676,7 @@ func (p *StructParser) parseReferencesModifier(table *Table, columnName string, 
 	}
 }
 
-func (p *StructParser) parseColumnModifiers(table *Table, columnName, columnType string, loc location, modifiers Modifiers) {
+func (p *StructParser) parseColumnModifiers(table *Table, columnName, columnType string, loc location, modifiers []Modifier) {
 	column := p.cache.GetOrCreateColumn(table, columnName, columnType)
 	column.TableSchema = table.TableSchema
 	column.TableName = table.TableName
@@ -805,7 +805,7 @@ func (p *StructParser) parseColumnModifiers(table *Table, columnName, columnType
 	}
 }
 
-func (p *StructParser) parseTableModifiers(table *Table, loc location, modifiers Modifiers) {
+func (p *StructParser) parseTableModifiers(table *Table, loc location, modifiers []Modifier) {
 	var dialects []string
 	for i := range modifiers {
 		modifier := &modifiers[i]

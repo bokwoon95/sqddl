@@ -120,19 +120,12 @@ func (cmd *TablesCmd) Run() error {
 		defer cmd.DB.Close()
 	}
 
-	dbi := NewDatabaseIntrospector(cmd.Dialect, cmd.DB)
-	dbi.Schemas = cmd.Schemas
-	dbi.ExcludeSchemas = cmd.ExcludeSchemas
-	dbi.Tables = cmd.Tables
-	dbi.ExcludeTables = append(cmd.ExcludeTables, cmd.HistoryTable)
-	dbi.ObjectTypes = []string{"TABLES"}
-	catalog := &Catalog{}
-	err := dbi.WriteCatalog(catalog)
-	if err != nil {
-		return err
-	}
-	var tableStructs TableStructs
-	err = tableStructs.ReadCatalog(catalog)
+	tableStructs, err := NewTableStructs(cmd.Dialect, cmd.DB, Filter{
+		Schemas:        cmd.Schemas,
+		ExcludeSchemas: cmd.ExcludeSchemas,
+		Tables:         cmd.Tables,
+		ExcludeTables:  append(cmd.ExcludeTables, cmd.HistoryTable),
+	})
 	if err != nil {
 		return err
 	}

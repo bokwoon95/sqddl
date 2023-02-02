@@ -2,6 +2,7 @@ package ddl
 
 import (
 	"bytes"
+	"database/sql"
 	"go/token"
 	"strconv"
 	"strings"
@@ -31,11 +32,36 @@ type StructField struct {
 	NameTag string
 
 	// Modifiers are the parsed modifiers for the "ddl" struct tag.
-	Modifiers Modifiers
+	Modifiers []Modifier
 
 	// tagPos tracks where in the source code the struct tag appeared in. Used
 	// for error reporting.
 	tagPos token.Pos
+}
+
+// NewTableStructs introspects a database connection and returns a slice of
+// TableStructs, each TableStruct corresponding to a table in the database. You
+// may narrow down the list of tables by filling in the Schemas,
+// ExcludeSchemas, Tables and ExcludeTables fields of the Filter struct. The
+// Filter.ObjectTypes field will always be set to []string{"TABLES"}.
+func NewTableStructs(dialect string, db *sql.DB, filter Filter) (TableStructs, error) {
+	var tableStructs TableStructs
+	var catalog Catalog
+	dbi := &DatabaseIntrospector{
+		Filter:  filter,
+		Dialect: dialect,
+		DB:      db,
+	}
+	dbi.ObjectTypes = []string{"TABLES"}
+	err := dbi.WriteCatalog(&catalog)
+	if err != nil {
+		return nil, err
+	}
+	err = tableStructs.ReadCatalog(&catalog)
+	if err != nil {
+		return nil, err
+	}
+	return tableStructs, nil
 }
 
 // ReadCatalog reads from a catalog and populates the TableStructs accordingly.
@@ -379,7 +405,7 @@ func (s *TableStructs) MarshalText() (text []byte, err error) {
 			} else {
 				buf.WriteString("\n\t" + structField.Type)
 			}
-			ddlTag := structField.Modifiers.String()
+			ddlTag := Modifiers(structField.Modifiers).String()
 			if structField.NameTag == "" && ddlTag == "" {
 				continue
 			}

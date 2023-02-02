@@ -26,13 +26,13 @@ type Modifier struct {
 
 	// Submodifiers are the submodifiers of the modifier (parsed from the
 	// RawValue).
-	Submodifiers Modifiers
+	Submodifiers []Modifier
 }
 
 // NewModifiers parses a string into a slice of modifiers.
-func NewModifiers(s string) (Modifiers, error) {
+func NewModifiers(s string) ([]Modifier, error) {
 	var err error
-	var ms Modifiers
+	var ms []Modifier
 	var m Modifier
 	remainder := s
 	for remainder != "" {
@@ -49,12 +49,12 @@ func NewModifiers(s string) (Modifiers, error) {
 }
 
 // String converts a slice of modifiers into their string representation.
-func (ms *Modifiers) String() string {
+func (ms Modifiers) String() string {
 	buf := bufpool.Get().(*bytes.Buffer)
 	buf.Reset()
 	defer bufpool.Put(buf)
-	for i := range *ms {
-		(*ms)[i].writeBuf(buf)
+	for i := range ms {
+		ms[i].writeBuf(buf)
 	}
 	return buf.String()
 }
