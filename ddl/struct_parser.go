@@ -148,6 +148,9 @@ func (p *StructParser) WriteCatalog(catalog *Catalog) error {
 	p.cache = NewCatalogCache(catalog)
 
 	for _, tableStruct := range p.TableStructs {
+		if len(tableStruct.Fields) == 0 {
+			continue
+		}
 		var tableSchema string
 		tableName := strings.ToLower(tableStruct.Name)
 		if tableStruct.Fields[0].NameTag != "" {
