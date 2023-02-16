@@ -215,6 +215,7 @@ func TestMain(m *testing.M) {
 				{"testdata/sqlite_drop_schema", true},
 				{"testdata/sqlite_empty", true},
 				{"testdata/sqlite_misc", true},
+				{"testdata/sqlite_ignore", false},
 			},
 		},
 		{

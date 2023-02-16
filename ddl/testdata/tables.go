@@ -119,7 +119,7 @@ type FILM_TEXT struct {
 	DESCRIPTION    sq.StringField `ddl:"mysql:type=TEXT"`
 	FILM_TEXT      sq.AnyField    `ddl:"dialect=sqlite"`
 	RANK           sq.NumberField `ddl:"dialect=sqlite"`
-	_              struct{}       `ddl:"mysql:index={. using=title,description}"`
+	_              struct{}       `ddl:"mysql:index={title,description using=fulltext}"`
 }
 
 type INVENTORY struct {

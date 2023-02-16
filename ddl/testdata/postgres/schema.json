@@ -2,7 +2,7 @@
   "Dialect": "postgres",
   "VersionNums": [
     14,
-    1
+    2
   ],
   "CatalogName": "sakila",
   "CurrentSchema": "public",
