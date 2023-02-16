@@ -40,6 +40,7 @@ func TestSQLite(t *testing.T) {
 		"testdata/sqlite_drop_schema",
 		"testdata/sqlite_empty",
 		"testdata/sqlite_misc",
+		"testdata/sqlite_ignore",
 	)
 	testLoadDump(t, dialect, sqliteDSN, nil)
 }
@@ -60,6 +61,7 @@ func TestPostgres(t *testing.T) {
 		"testdata/postgres_drop",
 		"testdata/postgres_schema",
 		"testdata/postgres_table",
+		"testdata/postgres_ignore",
 	)
 	testLoadDump(t, dialect, *postgresDSN, map[string]func([]string) []string{
 		"film.csv": func(record []string) []string {
@@ -86,6 +88,7 @@ func TestMySQL(t *testing.T) {
 		"testdata/mysql_drop",
 		"testdata/mysql_schema",
 		"testdata/mysql_table",
+		"testdata/mysql_ignore",
 	)
 	testLoadDump(t, dialect, *mysqlDSN, map[string]func([]string) []string{
 		"film.csv": func(record []string) []string {
@@ -124,6 +127,7 @@ func TestSQLServer(t *testing.T) {
 		"testdata/sqlserver_drop",
 		"testdata/sqlserver_schema",
 		"testdata/sqlserver_table",
+		"testdata/sqlserver_ignore",
 	)
 	testLoadDump(t, dialect, *sqlserverDSN, map[string]func([]string) []string{
 		"language.csv": func(record []string) []string {

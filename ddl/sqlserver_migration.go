@@ -89,6 +89,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 	if dropObjects {
 		for i := range srcCatalog.Schemas {
 			srcSchema := &srcCatalog.Schemas[i]
+			if srcSchema.Ignore {
+				continue
+			}
 			destSchema := destCache.GetSchema(destCatalog, srcSchema.SchemaName)
 			if destSchema == nil {
 				// DROP SCHEMA.
@@ -98,6 +101,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 				for j := range srcSchema.Tables {
 					// DROP FOREIGN KEY.
 					srcTable := &srcSchema.Tables[j]
+					if srcTable.Ignore {
+						continue
+					}
 					srcFkeys := srcCache.GetForeignKeys(srcTable)
 					for _, srcFkey := range srcFkeys {
 						tablesID := getTablesID(srcFkey)
@@ -117,6 +123,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 
 	for i := range destCatalog.Schemas {
 		destSchema := &destCatalog.Schemas[i]
+		if destSchema.Ignore {
+			continue
+		}
 		srcSchema := srcCache.GetSchema(srcCatalog, destSchema.SchemaName)
 		if srcSchema == nil {
 			// CREATE SCHEMA.
@@ -125,6 +134,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 			}
 			for j := range destSchema.Tables {
 				destTable := &destSchema.Tables[j]
+				if destTable.Ignore {
+					continue
+				}
 				// CREATE TABLE.
 				m.createTables = append(m.createTables, destTable)
 				// ADD FOREIGN KEY.
@@ -146,6 +158,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 		if dropObjects {
 			for j := range srcSchema.Tables {
 				srcTable := &srcSchema.Tables[j]
+				if srcTable.Ignore {
+					continue
+				}
 				destTable := destCache.GetTable(destSchema, srcTable.TableName)
 				if destTable == nil {
 					// DROP TABLE.
@@ -168,6 +183,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 
 		for j := range destSchema.Tables {
 			destTable := &destSchema.Tables[j]
+			if destTable.Ignore {
+				continue
+			}
 			srcTable := srcCache.GetTable(srcSchema, destTable.TableName)
 			if srcTable == nil {
 				// CREATE TABLE.
@@ -205,6 +223,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 			if dropObjects {
 				for k := range srcTable.Constraints {
 					srcConstraint := &srcTable.Constraints[k]
+					if srcConstraint.Ignore {
+						continue
+					}
 					destConstraint := destCache.GetConstraint(destTable, srcConstraint.ConstraintName)
 					if destConstraint == nil {
 						switch srcConstraint.ConstraintType {
@@ -227,6 +248,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 				}
 				for k := range srcTable.Indexes {
 					srcIndex := &srcTable.Indexes[k]
+					if srcIndex.Ignore {
+						continue
+					}
 					destIndex := destCache.GetIndex(destTable, srcIndex.IndexName)
 					if destIndex == nil {
 						// DROP INDEX.
@@ -236,6 +260,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 				}
 				for k := range srcTable.Columns {
 					srcColumn := &srcTable.Columns[k]
+					if srcColumn.Ignore {
+						continue
+					}
 					destColumn := destCache.GetColumn(destTable, srcColumn.ColumnName)
 					if destColumn == nil {
 						// DROP COLUMN.
@@ -246,6 +273,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 
 			for k := range destTable.Columns {
 				destColumn := &destTable.Columns[k]
+				if destColumn.Ignore {
+					continue
+				}
 				srcColumn := srcCache.GetColumn(srcTable, destColumn.ColumnName)
 				alterTable.columnTypes[destColumn.ColumnName] = destColumn.ColumnType
 				if srcColumn == nil {
@@ -296,6 +326,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 
 			for k := range destTable.Indexes {
 				destIndex := &destTable.Indexes[k]
+				if destIndex.Ignore {
+					continue
+				}
 				srcIndex := srcCache.GetIndex(srcTable, destIndex.IndexName)
 				if srcIndex == nil {
 					// CREATE INDEX.
@@ -305,6 +338,9 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 
 			for k := range destTable.Constraints {
 				destConstraint := &destTable.Constraints[k]
+				if destConstraint.Ignore {
+					continue
+				}
 				srcConstraint := srcCache.GetConstraint(srcTable, destConstraint.ConstraintName)
 				if destConstraint.ConstraintType == PRIMARY_KEY {
 					alterTable.pkey = destConstraint
@@ -346,12 +382,18 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 			columnConstraintDependencies := make(map[string][]*Constraint)
 			for k := range srcTable.Indexes {
 				srcIndex := &srcTable.Indexes[k]
+				if srcIndex.Ignore {
+					continue
+				}
 				for _, column := range srcIndex.Columns {
 					columnIndexDependencies[column] = append(columnIndexDependencies[column], srcIndex)
 				}
 			}
 			for k := range srcTable.Constraints {
 				srcConstraint := &srcTable.Constraints[k]
+				if srcConstraint.Ignore {
+					continue
+				}
 				for _, column := range srcConstraint.Columns {
 					columnConstraintDependencies[column] = append(columnConstraintDependencies[column], srcConstraint)
 				}

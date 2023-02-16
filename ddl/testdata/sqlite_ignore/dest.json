@@ -1,0 +1,27 @@
+{
+  "Dialect": "sqlite",
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "film",
+          "SQL": "CREATE TABLE film (\n    film_id INT NOT NULL\n    ,title TEXT NOT NULL\n);",
+          "Columns": [
+            {
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "INT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

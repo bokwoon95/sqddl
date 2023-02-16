@@ -21,6 +21,7 @@ func Test_sqliteMigration(t *testing.T) {
 		{"testdata/sqlite_drop_schema", true},
 		{"testdata/sqlite_create_schema", true},
 		{"testdata/sqlite_misc", true},
+		{"testdata/sqlite_ignore", true},
 	}
 	newCatalog := func(t *testing.T, filename string) *Catalog {
 		file, err := os.Open(filename)

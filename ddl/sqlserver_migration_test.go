@@ -22,6 +22,7 @@ func Test_sqlserverMigration(t *testing.T) {
 		{"testdata/sqlserver_drop", true},
 		{"testdata/sqlserver_add", false},
 		{"testdata/sqlserver_alter", false},
+		{"testdata/sqlserver_ignore", true},
 	}
 	newCatalog := func(t *testing.T, filename string) *Catalog {
 		file, err := os.Open(filename)

@@ -22,6 +22,7 @@ func Test_mysqlMigration(t *testing.T) {
 		{"testdata/mysql_drop", true},
 		{"testdata/mysql_add", false},
 		{"testdata/mysql_alter", false},
+		{"testdata/mysql_ignore", true},
 	}
 	newCatalog := func(t *testing.T, filename string) *Catalog {
 		file, err := os.Open(filename)

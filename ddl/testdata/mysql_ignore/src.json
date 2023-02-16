@@ -1,0 +1,33 @@
+{
+  "Dialect": "mysql",
+  "CatalogName": "sakila",
+  "CurrentSchema": "sakila",
+  "Schemas": [
+    {
+      "SchemaName": "sakila",
+      "Tables": [
+        {
+          "TableSchema": "sakila",
+          "TableName": "film",
+          "Columns": [
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "sakila",
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

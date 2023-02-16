@@ -55,6 +55,10 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 		}
 		return m
 	}
+
+	// Because SQLite doesn't support constraint names, we have to generate it
+	// ourselves (we need constraint names because that's how we identify the
+	// existence of a constraint).
 	for i := range srcCatalog.Schemas {
 		srcSchema := &srcCatalog.Schemas[i]
 		for j := range srcSchema.Tables {
@@ -87,11 +91,15 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 		}
 	}
+
 	srcCache, destCache := NewCatalogCache(srcCatalog), NewCatalogCache(destCatalog)
 	srcSchema, destSchema := &srcCatalog.Schemas[0], &destCatalog.Schemas[0]
 	if dropObjects {
 		for i := range srcSchema.Tables {
 			srcTable := &srcSchema.Tables[i]
+			if srcTable.Ignore {
+				continue
+			}
 			if isVirtualTable(srcTable) {
 				continue
 			}
@@ -104,6 +112,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 	}
 	for i := range destSchema.Tables {
 		destTable := &destSchema.Tables[i]
+		if destTable.Ignore {
+			continue
+		}
 		if isVirtualTable(destTable) {
 			continue
 		}
@@ -123,6 +134,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 		if dropObjects {
 			for j := range srcTable.Constraints {
 				srcConstraint := &srcTable.Constraints[j]
+				if srcConstraint.Ignore {
+					continue
+				}
 				destConstraint := destCache.GetConstraint(destTable, srcConstraint.ConstraintName)
 				if destConstraint == nil {
 					// DROP CONSTRAINT.
@@ -131,6 +145,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 			for j := range srcTable.Indexes {
 				srcIndex := &srcTable.Indexes[j]
+				if srcIndex.Ignore {
+					continue
+				}
 				destIndex := destCache.GetIndex(destTable, srcIndex.IndexName)
 				if destIndex == nil {
 					// DROP INDEX.
@@ -139,6 +156,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 			for j := range srcTable.Columns {
 				srcColumn := &srcTable.Columns[j]
+				if srcColumn.Ignore {
+					continue
+				}
 				destColumn := destCache.GetColumn(destTable, srcColumn.ColumnName)
 				if destColumn == nil {
 					// DROP COLUMN.
@@ -148,6 +168,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 			for j := range destTable.Columns {
 				destColumn := &destTable.Columns[j]
+				if destColumn.Ignore {
+					continue
+				}
 				srcColumn := srcCache.GetColumn(srcTable, destColumn.ColumnName)
 				if srcColumn == nil {
 					// ADD COLUMN.
@@ -176,6 +199,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 			for j := range destTable.Indexes {
 				destIndex := &destTable.Indexes[j]
+				if destIndex.Ignore {
+					continue
+				}
 				srcIndex := srcCache.GetIndex(srcTable, destIndex.IndexName)
 				if srcIndex == nil {
 					// CREATE INDEX.
@@ -184,6 +210,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			}
 			for j := range destTable.Constraints {
 				destConstraint := &destTable.Constraints[j]
+				if destConstraint.Ignore {
+					continue
+				}
 				srcConstraint := srcCache.GetConstraint(srcTable, destConstraint.ConstraintName)
 				if srcConstraint == nil {
 					// ADD CONSTRAINT.

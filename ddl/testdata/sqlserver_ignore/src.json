@@ -1,0 +1,33 @@
+{
+  "Dialect": "sqlserver",
+  "CatalogName": "master",
+  "CurrentSchema": "dbo",
+  "Schemas": [
+    {
+      "SchemaName": "dbo",
+      "Tables": [
+        {
+          "TableSchema": "dbo",
+          "TableName": "film",
+          "Columns": [
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "dbo",
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "nvarchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

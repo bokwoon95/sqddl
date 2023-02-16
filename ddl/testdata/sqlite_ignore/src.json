@@ -1,0 +1,61 @@
+{
+  "Dialect": "sqlite",
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "country",
+          "SQL": "CREATE TABLE country (\n    country_id INTEGER PRIMARY KEY\n    ,country TEXT NOT NULL\n    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())\n);",
+          "Columns": [
+            {
+              "TableName": "country",
+              "ColumnName": "country_id",
+              "ColumnType": "INTEGER",
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "country",
+              "ColumnName": "country",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "country",
+              "ColumnName": "last_update",
+              "ColumnType": "DATETIME",
+              "IsNotNull": true,
+              "ColumnDefault": "(unixepoch())"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "country",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "country_id"
+              ]
+            }
+          ]
+        },
+        {
+          "TableName": "film",
+          "SQL": "CREATE TABLE film (\n    film_id INT NOT NULL\n    ,title TEXT NOT NULL\n);",
+          "Columns": [
+            {
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "INT",
+              "IsNotNull": true
+            },
+            {
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "TEXT",
+              "IsNotNull": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

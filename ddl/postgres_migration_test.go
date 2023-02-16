@@ -22,6 +22,7 @@ func Test_postgresMigration(t *testing.T) {
 		{"testdata/postgres_drop", true},
 		{"testdata/postgres_add", false},
 		{"testdata/postgres_alter", false},
+		{"testdata/postgres_ignore", true},
 	}
 	newCatalog := func(t *testing.T, filename string) *Catalog {
 		file, err := os.Open(filename)

@@ -215,7 +215,7 @@ func TestMain(m *testing.M) {
 				{"testdata/sqlite_drop_schema", true},
 				{"testdata/sqlite_empty", true},
 				{"testdata/sqlite_misc", true},
-				{"testdata/sqlite_ignore", false},
+				{"testdata/sqlite_ignore", true},
 			},
 		},
 		{
@@ -227,6 +227,7 @@ func TestMain(m *testing.M) {
 				{"testdata/postgres_drop", true},
 				{"testdata/postgres_schema", true},
 				{"testdata/postgres_table", true},
+				{"testdata/postgres_ignore", true},
 			},
 		},
 		{
@@ -238,6 +239,7 @@ func TestMain(m *testing.M) {
 				{"testdata/mysql_drop", true},
 				{"testdata/mysql_schema", true},
 				{"testdata/mysql_table", true},
+				{"testdata/mysql_ignore", true},
 			},
 		},
 		{
@@ -249,6 +251,7 @@ func TestMain(m *testing.M) {
 				{"testdata/sqlserver_drop", true},
 				{"testdata/sqlserver_schema", true},
 				{"testdata/sqlserver_table", true},
+				{"testdata/sqlserver_ignore", true},
 			},
 		},
 	} {

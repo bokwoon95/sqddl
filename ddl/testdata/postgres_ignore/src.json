@@ -1,0 +1,33 @@
+{
+  "Dialect": "postgres",
+  "CatalogName": "sakila",
+  "CurrentSchema": "public",
+  "Schemas": [
+    {
+      "SchemaName": "public",
+      "Tables": [
+        {
+          "TableSchema": "public",
+          "TableName": "film",
+          "Columns": [
+            {
+              "TableSchema": "public",
+              "TableName": "film",
+              "ColumnName": "film_id",
+              "ColumnType": "int",
+              "IsNotNull": true
+            },
+            {
+              "TableSchema": "public",
+              "TableName": "film",
+              "ColumnName": "title",
+              "ColumnType": "varchar(255)",
+              "CharacterLength": "255",
+              "IsNotNull": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
