@@ -356,6 +356,9 @@ func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.
 		buf.WriteString("PRAGMA legacy_alter_table = OFF;\n")
 	}
 
+	if bufs[0].Len() == 0 {
+		filenames = filenames[1:]
+	}
 	return filenames, bufs, warnings
 }
 
