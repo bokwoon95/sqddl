@@ -127,7 +127,7 @@ Flags:
 	if err != nil {
 		return nil, err
 	}
-	cmd.DirFS = os.DirFS(dir)
+	cmd.DirFS = dirFS(dir)
 	if lockTimeout != "" {
 		cmd.LockTimeout, err = time.ParseDuration(lockTimeout)
 		if err != nil {

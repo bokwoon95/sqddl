@@ -99,7 +99,7 @@ Flags:
 	if err != nil {
 		return nil, err
 	}
-	cmd.DirFS = os.DirFS(cmd.dir)
+	cmd.DirFS = dirFS(cmd.dir)
 	return &cmd, nil
 }
 

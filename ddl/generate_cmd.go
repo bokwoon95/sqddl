@@ -117,13 +117,13 @@ Flags:
 	}
 	if src != "" {
 		for _, s := range strings.Split(src, ",") {
-			err = writeCatalog(cmd.SrcCatalog, os.DirFS("."), cmd.HistoryTable, s)
+			err = writeCatalog(cmd.SrcCatalog, dirFS("."), cmd.HistoryTable, s)
 			if err != nil {
 				return nil, err
 			}
 		}
 	} else if db != "" {
-		err = writeCatalog(cmd.SrcCatalog, os.DirFS("."), cmd.HistoryTable, db)
+		err = writeCatalog(cmd.SrcCatalog, dirFS("."), cmd.HistoryTable, db)
 		if err != nil {
 			return nil, err
 		}
@@ -138,7 +138,7 @@ Flags:
 	}
 	if dest != "" {
 		for _, s := range strings.Split(dest, ",") {
-			err = writeCatalog(cmd.DestCatalog, os.DirFS("."), cmd.HistoryTable, s)
+			err = writeCatalog(cmd.DestCatalog, dirFS("."), cmd.HistoryTable, s)
 			if err != nil {
 				return nil, err
 			}
