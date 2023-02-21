@@ -156,7 +156,7 @@ func (cmd *LoadCmd) Run() error {
 		return fmt.Errorf("empty Dialect")
 	}
 	if cmd.DirFS == nil {
-		cmd.DirFS = dirFS("")
+		cmd.DirFS = dirFS(".")
 	}
 	if cmd.Stderr == nil {
 		cmd.Stderr = os.Stderr

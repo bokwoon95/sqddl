@@ -311,7 +311,6 @@ func (bf *bufferFile) Close() error {
 }
 
 func writeCatalog(catalog *Catalog, fsys fs.FS, historyTable, s string) error {
-	s = filepath.ToSlash(s)
 	if strings.HasSuffix(s, ".json") {
 		file, err := fsys.Open(s)
 		if err != nil {

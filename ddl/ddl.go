@@ -922,7 +922,11 @@ var _ fs.FS = (*dirFS)(nil)
 
 // Open implements fs.FS.
 func (d dirFS) Open(name string) (fs.File, error) {
-	return os.Open(filepath.Join(string(d), name))
+	dir := string(d)
+	if dir == "." {
+		dir = ""
+	}
+	return os.Open(filepath.Join(dir, name))
 }
 
 var (
