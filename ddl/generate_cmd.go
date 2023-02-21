@@ -37,6 +37,10 @@ type GenerateCmd struct {
 	// Leave blank to use the current working directory.
 	OutputDir string
 
+	// Stdout is the command's standard out. If nil, the command writes to
+	// os.Stdout.
+	Stdout io.Writer
+
 	// Stderr specifies the command's standard error. If nil, the command
 	// writes to os.Stderr.
 	Stderr io.Writer
@@ -52,6 +56,10 @@ type GenerateCmd struct {
 	// DropObjects controls whether statements like DROP TABLE, DROP COLUMN
 	// will be generated.
 	DropObjects bool
+
+	// If DryRun is true, the SQL queries will be written to Stdout instead of
+	// being written into files.
+	DryRun bool
 
 	// Dialect is the sql dialect used. This will override whatever dialect is
 	// set inside the SrcCatalog and DestCatalog.
@@ -83,9 +91,11 @@ func GenerateCommand(args ...string) (*GenerateCmd, error) {
 	flagset.BoolVar(&cmd.DropObjects, "drop-objects", false, "Whether statements like DROP TABLE, DROP COLUMN, etc should be generated.")
 	flagset.StringVar(&cmd.Dialect, "dialect", "", "The database dialect used. Not needed if the database dialect can be inferred from the source schema's database URL.")
 	flagset.BoolVar(&cmd.AcceptWarnings, "accept-warnings", false, "Accept warnings when generating migrations.")
+	flagset.BoolVar(&cmd.DryRun, "dry-run", false, "Print the generated SQL statements instead of writing them into files.")
 	flagset.Usage = func() {
 		fmt.Fprint(flagset.Output(), `Usage:
   sqddl generate -src <SRC_SCHEMA> -dest <DEST_SCHEMA> [FLAGS]
+  sqddl generate -dialect sqlite -dest tables/tables.go -dry-run # preview the SQL output of tables.go
   sqddl generate -src 'postgres://username:password@localhost:5432/sakila' -dest tables/tables.go
   sqddl generate -src 'postgres://username:password@localhost:5432/sakila' -dest file1.go,file2.go,file3.go
   sqddl generate -src schema.json -dest tables/tables.go
@@ -144,7 +154,7 @@ func (cmd *GenerateCmd) Run() error {
 		return err
 	}
 	if len(warnings) > 0 {
-		if !cmd.AcceptWarnings {
+		if !cmd.AcceptWarnings && !cmd.DryRun {
 			return fmt.Errorf("warnings present (to proceed despite the warnings, use the -accept-warnings flag):\n" + strings.Join(warnings, "\n"))
 		}
 		for _, warning := range warnings {
@@ -156,12 +166,30 @@ func (cmd *GenerateCmd) Run() error {
 			file.Close()
 		}
 	}()
-	for _, file := range files {
+	for i, file := range files {
 		fileinfo, err := file.Stat()
 		if err != nil {
 			return err
 		}
 		name := filepath.Join(cmd.OutputDir, fileinfo.Name())
+		if cmd.DryRun {
+			if strings.HasSuffix(name, ".undo.sql") {
+				continue
+			}
+			if i == 0 {
+				_, err = io.WriteString(cmd.Stdout, "-- "+name+"\n")
+			} else {
+				_, err = io.WriteString(cmd.Stdout, "\n-- "+name+"\n")
+			}
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(cmd.Stdout, file)
+			if err != nil {
+				return err
+			}
+			continue
+		}
 		outputfile, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return err
@@ -197,6 +225,9 @@ func (cmd *GenerateCmd) Results() (files []fs.File, warnings []string, err error
 	prefix := cmd.Prefix
 	if prefix == "" {
 		prefix = time.Now().UTC().Format("20060102150405")
+	}
+	if cmd.Stdout == nil {
+		cmd.Stdout = os.Stdout
 	}
 	if cmd.Stderr == nil {
 		cmd.Stderr = os.Stderr

@@ -563,6 +563,23 @@ $ sqddl generate \
 ./migrations/20060102150405_01_schemas.sql
 ./migrations/20060102150405_02_tables.sql
 ./migrations/20060102150405_03_add_person_country_fkeys.tx.sql
+
+$ sqddl generate -dialect sqlite -dest tables/tables.go -dry-run
+-- 20060102150405.sql
+CREATE TABLE actor (
+    actor_id INTEGER PRIMARY KEY AUTOINCREMENT
+    ,first_name TEXT NOT NULL
+    ,last_name TEXT NOT NULL
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE INDEX actor_last_name_idx ON actor (last_name);
+
+CREATE TABLE category (
+    category_id INTEGER PRIMARY KEY
+    ,name TEXT NOT NULL
+    ,last_update DATETIME NOT NULL DEFAULT (unixepoch())
+);
 ```
 
 ### Accepted -src and -dest values #src-dest-values

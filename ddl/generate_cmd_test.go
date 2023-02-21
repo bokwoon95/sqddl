@@ -57,6 +57,26 @@ func TestGenerateCmd(t *testing.T) {
 			if err != nil {
 				t.Fatal(testutil.Callers(), err)
 			}
+			generateCmd.Stdout = io.Discard
+			generateCmd.Stderr = io.Discard
+			err = generateCmd.Run()
+			if err != nil {
+				t.Error(testutil.Callers(), err)
+			}
+
+			generateCmd, err = GenerateCommand(
+				"-src", filepath.Join(tt.dir, "src.go"),
+				"-dest", filepath.Join(tt.dir, "dest.go"),
+				"-prefix", strings.TrimPrefix(tt.dir, "testdata/"+tt.dialect+"_"),
+				"-drop-objects",
+				"-dialect", tt.dialect,
+				"-accept-warnings",
+				"-dry-run",
+			)
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			generateCmd.Stdout = io.Discard
 			generateCmd.Stderr = io.Discard
 			err = generateCmd.Run()
 			if err != nil {
