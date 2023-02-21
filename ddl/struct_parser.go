@@ -737,6 +737,7 @@ func (p *StructParser) parseColumnModifiers(table *Table, columnName, columnType
 			if p.dialect != DialectSQLite {
 				continue
 			}
+			column.ColumnType = "INTEGER"
 			column.IsAutoincrement = true
 		case "identity":
 			switch p.dialect {

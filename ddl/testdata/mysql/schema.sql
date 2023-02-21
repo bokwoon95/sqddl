@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS sakila;
 
 CREATE TABLE actor (
-    actor_id INT NOT NULL AUTO_INCREMENT
+    actor_id INT AUTO_INCREMENT NOT NULL
     ,first_name VARCHAR(45) NOT NULL
     ,last_name VARCHAR(45) NOT NULL
     ,full_name VARCHAR(255) AS (concat(`first_name`,_utf8mb4' ',`last_name`))
@@ -12,7 +12,7 @@ CREATE TABLE actor (
 );
 
 CREATE TABLE address (
-    address_id INT NOT NULL AUTO_INCREMENT
+    address_id INT AUTO_INCREMENT NOT NULL
     ,address VARCHAR(50) NOT NULL
     ,address2 VARCHAR(50)
     ,district VARCHAR(20) NOT NULL
@@ -25,7 +25,7 @@ CREATE TABLE address (
 );
 
 CREATE TABLE category (
-    category_id INT NOT NULL AUTO_INCREMENT
+    category_id INT AUTO_INCREMENT NOT NULL
     ,name VARCHAR(45) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -33,7 +33,7 @@ CREATE TABLE category (
 );
 
 CREATE TABLE city (
-    city_id INT NOT NULL AUTO_INCREMENT
+    city_id INT AUTO_INCREMENT NOT NULL
     ,city VARCHAR(50) NOT NULL
     ,country_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -42,7 +42,7 @@ CREATE TABLE city (
 );
 
 CREATE TABLE country (
-    country_id INT NOT NULL AUTO_INCREMENT
+    country_id INT AUTO_INCREMENT NOT NULL
     ,country VARCHAR(50) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -50,7 +50,7 @@ CREATE TABLE country (
 );
 
 CREATE TABLE customer (
-    customer_id INT NOT NULL AUTO_INCREMENT
+    customer_id INT AUTO_INCREMENT NOT NULL
     ,store_id INT NOT NULL
     ,first_name VARCHAR(45) NOT NULL
     ,last_name VARCHAR(45) NOT NULL
@@ -87,7 +87,7 @@ CREATE TABLE employee_department (
 );
 
 CREATE TABLE film (
-    film_id INT NOT NULL AUTO_INCREMENT
+    film_id INT AUTO_INCREMENT NOT NULL
     ,title VARCHAR(255) NOT NULL
     ,description TEXT
     ,release_year INT
@@ -129,7 +129,7 @@ CREATE TABLE film_text (
 );
 
 CREATE TABLE inventory (
-    inventory_id INT NOT NULL AUTO_INCREMENT
+    inventory_id INT AUTO_INCREMENT NOT NULL
     ,film_id INT NOT NULL
     ,store_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -138,7 +138,7 @@ CREATE TABLE inventory (
 );
 
 CREATE TABLE language (
-    language_id INT NOT NULL AUTO_INCREMENT
+    language_id INT AUTO_INCREMENT NOT NULL
     ,name CHAR(20) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -146,7 +146,7 @@ CREATE TABLE language (
 );
 
 CREATE TABLE payment (
-    payment_id INT NOT NULL AUTO_INCREMENT
+    payment_id INT AUTO_INCREMENT NOT NULL
     ,customer_id INT NOT NULL
     ,staff_id INT NOT NULL
     ,rental_id INT
@@ -158,7 +158,7 @@ CREATE TABLE payment (
 );
 
 CREATE TABLE rental (
-    rental_id INT NOT NULL AUTO_INCREMENT
+    rental_id INT AUTO_INCREMENT NOT NULL
     ,rental_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     ,inventory_id INT NOT NULL
     ,customer_id INT NOT NULL
@@ -170,7 +170,7 @@ CREATE TABLE rental (
 );
 
 CREATE TABLE staff (
-    staff_id INT NOT NULL AUTO_INCREMENT
+    staff_id INT AUTO_INCREMENT NOT NULL
     ,first_name VARCHAR(45) NOT NULL
     ,last_name VARCHAR(45) NOT NULL
     ,address_id INT NOT NULL
@@ -186,7 +186,7 @@ CREATE TABLE staff (
 );
 
 CREATE TABLE store (
-    store_id INT NOT NULL AUTO_INCREMENT
+    store_id INT AUTO_INCREMENT NOT NULL
     ,manager_staff_id INT NOT NULL
     ,address_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

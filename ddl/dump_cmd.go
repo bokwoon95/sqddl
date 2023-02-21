@@ -1184,14 +1184,6 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	if column.IsPrimaryKey && (columnLevelConstraint || dialect == DialectSQLite) {
 		buf.WriteString(" PRIMARY KEY")
 	}
-	// NOT NULL
-	if column.IsNotNull && !isSQLServerGeneratedColumn {
-		buf.WriteString(" NOT NULL")
-	}
-	// UNIQUE
-	if column.IsUnique && columnLevelConstraint {
-		buf.WriteString(" UNIQUE")
-	}
 	// AUTO_INCREMENT
 	if column.IsAutoincrement {
 		switch dialect {
@@ -1200,6 +1192,14 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 		case DialectMySQL:
 			buf.WriteString(" AUTO_INCREMENT")
 		}
+	}
+	// NOT NULL
+	if column.IsNotNull && !isSQLServerGeneratedColumn {
+		buf.WriteString(" NOT NULL")
+	}
+	// UNIQUE
+	if column.IsUnique && columnLevelConstraint {
+		buf.WriteString(" UNIQUE")
 	}
 	// IDENTITY
 	if column.ColumnIdentity != "" && (dialect == DialectPostgres || dialect == DialectSQLServer) {

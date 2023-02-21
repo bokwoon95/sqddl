@@ -1,5 +1,5 @@
 CREATE TABLE actor (
-    actor_id INT NOT NULL AUTO_INCREMENT
+    actor_id INT AUTO_INCREMENT NOT NULL
     ,first_name VARCHAR(45) NOT NULL
     ,last_name VARCHAR(45) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -10,7 +10,7 @@ CREATE TABLE actor (
 CREATE INDEX actor_last_name_idx ON actor (last_name);
 
 CREATE TABLE address (
-    address_id INT NOT NULL AUTO_INCREMENT
+    address_id INT AUTO_INCREMENT NOT NULL
     ,address VARCHAR(50) NOT NULL
     ,address2 VARCHAR(50)
     ,district VARCHAR(20) NOT NULL
@@ -25,7 +25,7 @@ CREATE TABLE address (
 CREATE INDEX address_city_id_idx ON address (city_id);
 
 CREATE TABLE category (
-    category_id INT NOT NULL AUTO_INCREMENT
+    category_id INT AUTO_INCREMENT NOT NULL
     ,name VARCHAR(45) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -33,7 +33,7 @@ CREATE TABLE category (
 );
 
 CREATE TABLE city (
-    city_id INT NOT NULL AUTO_INCREMENT
+    city_id INT AUTO_INCREMENT NOT NULL
     ,city VARCHAR(50) NOT NULL
     ,country_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -44,7 +44,7 @@ CREATE TABLE city (
 CREATE INDEX city_country_id_idx ON city (country_id);
 
 CREATE TABLE country (
-    country_id INT NOT NULL AUTO_INCREMENT
+    country_id INT AUTO_INCREMENT NOT NULL
     ,country VARCHAR(50) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -52,7 +52,7 @@ CREATE TABLE country (
 );
 
 CREATE TABLE customer (
-    customer_id INT NOT NULL AUTO_INCREMENT
+    customer_id INT AUTO_INCREMENT NOT NULL
     ,store_id INT NOT NULL
     ,first_name VARCHAR(45) NOT NULL
     ,last_name VARCHAR(45) NOT NULL
@@ -102,7 +102,7 @@ CREATE INDEX employee_department_employee_id_idx ON employee_department (employe
 CREATE INDEX employee_department_department_id_idx ON employee_department (department_id);
 
 CREATE TABLE film (
-    film_id INT NOT NULL AUTO_INCREMENT
+    film_id INT AUTO_INCREMENT NOT NULL
     ,title VARCHAR(255) NOT NULL
     ,description VARCHAR(255)
     ,release_year INT
@@ -152,7 +152,7 @@ CREATE TABLE film_text (
 );
 
 CREATE TABLE inventory (
-    inventory_id INT NOT NULL AUTO_INCREMENT
+    inventory_id INT AUTO_INCREMENT NOT NULL
     ,film_id INT NOT NULL
     ,store_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -163,7 +163,7 @@ CREATE TABLE inventory (
 CREATE INDEX inventory_film_id_idx ON inventory (film_id);
 
 CREATE TABLE language (
-    language_id INT NOT NULL AUTO_INCREMENT
+    language_id INT AUTO_INCREMENT NOT NULL
     ,name VARCHAR(20) NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -171,7 +171,7 @@ CREATE TABLE language (
 );
 
 CREATE TABLE payment (
-    payment_id INT NOT NULL AUTO_INCREMENT
+    payment_id INT AUTO_INCREMENT NOT NULL
     ,customer_id INT NOT NULL
     ,staff_id INT NOT NULL
     ,rental_id INT
@@ -189,7 +189,7 @@ CREATE INDEX payment_staff_id_idx ON payment (staff_id);
 CREATE INDEX payment_rental_id_idx ON payment (rental_id);
 
 CREATE TABLE rental (
-    rental_id INT NOT NULL AUTO_INCREMENT
+    rental_id INT AUTO_INCREMENT NOT NULL
     ,rental_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ,inventory_id INT NOT NULL
     ,customer_id INT NOT NULL
@@ -207,7 +207,7 @@ CREATE INDEX rental_customer_id_idx ON rental (customer_id);
 CREATE INDEX rental_staff_id_idx ON rental (staff_id);
 
 CREATE TABLE staff (
-    staff_id INT NOT NULL AUTO_INCREMENT
+    staff_id INT AUTO_INCREMENT NOT NULL
     ,first_name VARCHAR(255) NOT NULL
     ,last_name VARCHAR(255) NOT NULL
     ,address_id INT NOT NULL
@@ -228,7 +228,7 @@ CREATE INDEX staff_address_id_idx ON staff (address_id);
 CREATE INDEX staff_store_id_idx ON staff (store_id);
 
 CREATE TABLE store (
-    store_id INT NOT NULL AUTO_INCREMENT
+    store_id INT AUTO_INCREMENT NOT NULL
     ,manager_staff_id INT NOT NULL
     ,address_id INT NOT NULL
     ,last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
