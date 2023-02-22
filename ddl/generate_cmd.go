@@ -176,15 +176,17 @@ func (cmd *GenerateCmd) Run() error {
 			if strings.HasSuffix(name, ".undo.sql") {
 				continue
 			}
-			if cmd.SrcCatalog.Schemas != nil {
-				if i == 0 {
-					_, err = io.WriteString(cmd.Stdout, "-- "+name+"\n")
-				} else {
-					_, err = io.WriteString(cmd.Stdout, "\n-- "+name+"\n")
+			if i > 0 {
+				_, err = io.WriteString(cmd.Stdout, "\n")
+				if err != nil {
+					return err
 				}
 			}
-			if err != nil {
-				return err
+			if cmd.SrcCatalog.Schemas != nil {
+				_, err = io.WriteString(cmd.Stdout, "-- "+name+"\n")
+				if err != nil {
+					return err
+				}
 			}
 			_, err = io.Copy(cmd.Stdout, file)
 			if err != nil {
