@@ -176,10 +176,12 @@ func (cmd *GenerateCmd) Run() error {
 			if strings.HasSuffix(name, ".undo.sql") {
 				continue
 			}
-			if i == 0 {
-				_, err = io.WriteString(cmd.Stdout, "-- "+name+"\n")
-			} else {
-				_, err = io.WriteString(cmd.Stdout, "\n-- "+name+"\n")
+			if cmd.SrcCatalog.Schemas != nil {
+				if i == 0 {
+					_, err = io.WriteString(cmd.Stdout, "-- "+name+"\n")
+				} else {
+					_, err = io.WriteString(cmd.Stdout, "\n-- "+name+"\n")
+				}
 			}
 			if err != nil {
 				return err
@@ -311,6 +313,7 @@ func (bf *bufferFile) Close() error {
 }
 
 func writeCatalog(catalog *Catalog, fsys fs.FS, historyTable, s string) error {
+	s = filepath.ToSlash(s)
 	if strings.HasSuffix(s, ".json") {
 		file, err := fsys.Open(s)
 		if err != nil {
