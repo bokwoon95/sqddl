@@ -242,13 +242,17 @@ func (cmd *AutomigrateCmd) Run() error {
 			if strings.HasSuffix(filename, ".undo.sql") {
 				continue
 			}
-			if i == 0 {
-				_, err = io.WriteString(cmd.Stdout, "-- "+filename+"\n")
-			} else {
-				_, err = io.WriteString(cmd.Stdout, "\n-- "+filename+"\n")
+			if i > 0 {
+				_, err = io.WriteString(cmd.Stdout, "\n")
+				if err != nil {
+					return err
+				}
 			}
-			if err != nil {
-				return err
+			if len(filenames) > 1 {
+				_, err = io.WriteString(cmd.Stdout, "-- "+filename+"\n")
+				if err != nil {
+					return err
+				}
 			}
 			_, err = bufs[i].WriteTo(cmd.Stdout)
 			if err != nil {
