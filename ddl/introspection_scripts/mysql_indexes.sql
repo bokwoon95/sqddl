@@ -13,7 +13,11 @@ FROM (
         ,index_name
         ,index_type
         ,NOT non_unique AS is_unique
+        {{- if contains .Version "MariaDB" }}
+        ,column_name
+        {{- else }}
         ,COALESCE(column_name, CONCAT('(', expression, ')')) AS column_name
+        {{- end }}
         ,CASE collation WHEN 'D' THEN 1 ELSE 0 END AS is_descending
         ,seq_in_index
     FROM

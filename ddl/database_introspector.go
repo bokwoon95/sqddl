@@ -18,7 +18,12 @@ import (
 //go:embed introspection_scripts
 var embedFS embed.FS
 
-var templates = template.New("").Funcs(template.FuncMap{"mklist": mklist})
+var funcs = template.FuncMap{
+	"mklist":   mklist,
+	"contains": strings.Contains,
+}
+
+var templates = template.New("").Funcs(funcs)
 
 // DatabaseIntrospector is used to introspect a database.
 type DatabaseIntrospector struct {
@@ -263,55 +268,69 @@ func (dbi *DatabaseIntrospector) WriteCatalog(catalog *Catalog) error {
 	return nil
 }
 
-// GetVersionNums returns the version numbers of the database.
-func (dbi *DatabaseIntrospector) GetVersionNums() (versionNums VersionNums, err error) {
+func (dbi *DatabaseIntrospector) GetVersion() (version string, err error) {
 	ctx := context.Background()
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT sqlite_version()")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	case DialectPostgres:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT current_setting('server_version')") // alternatively, "SHOW server_version"
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	case DialectMySQL:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT version()")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	case DialectSQLServer:
 		rows, err = dbi.DB.QueryContext(ctx, "SELECT SERVERPROPERTY('ProductVersion')")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	default:
-		return nil, fmt.Errorf("unsupported dialect: %s", dbi.Dialect)
+		return "", fmt.Errorf("unsupported dialect: %s", dbi.Dialect)
 	}
 	defer rows.Close()
-	var versionStr string
 	if rows.Next() {
-		err = rows.Scan(&versionStr)
+		err = rows.Scan(&version)
 		if err != nil {
-			return nil, fmt.Errorf("scanning versionString: %w", err)
-		}
-		if dbi.Dialect == DialectPostgres {
-			versionStr, _, _ = strings.Cut(versionStr, " ")
+			return "", fmt.Errorf("scanning version: %w", err)
 		}
 	}
-	versionStrs := strings.Split(versionStr, ".")
-	versionNums = make([]int, len(versionStrs))
-	for i, str := range versionStrs {
-		versionNum, err := strconv.Atoi(str)
-		if err != nil {
-			return versionNums, fmt.Errorf("version %s: cannot convert %s to integer: %w", versionStr, str, err)
-		}
-		versionNums[i] = versionNum
+	return version, nil
+}
+
+// GetVersionNums returns the version numbers of the database.
+func (dbi *DatabaseIntrospector) GetVersionNums() (versionNums VersionNums, err error) {
+	version, err := dbi.GetVersion()
+	if err != nil {
+		return nil, err
 	}
-	return versionNums, closeRows(rows)
+	switch dbi.Dialect {
+	case DialectPostgres:
+		// Example: "15.2 (Debian 15.2-1.pgdg110+1)"
+		version, _, _ = strings.Cut(version, " ")
+	case DialectMySQL:
+		if strings.Contains(version, "MariaDB") {
+			// Example: "10.11.2-MariaDB-1:10.11.2+maria~ubu2204"
+			version, _, _ = strings.Cut(version, "-")
+		}
+	}
+	strs := strings.Split(version, ".")
+	versionNums = make([]int, len(strs))
+	for i, str := range strs {
+		num, err := strconv.Atoi(str)
+		if err != nil {
+			return versionNums, fmt.Errorf("version %s: cannot convert %s to integer: %w", version, str, err)
+		}
+		versionNums[i] = num
+	}
+	return versionNums, nil
 }
 
 // GetDatabaseName returns the database name.
@@ -431,22 +450,22 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_columns.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_columns.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_columns.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_columns.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_columns.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_columns.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_columns.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_columns.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -645,22 +664,22 @@ func (dbi *DatabaseIntrospector) GetConstraints() ([]Constraint, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_constraints.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_constraints.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_constraints.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_constraints.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_constraints.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_constraints.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_constraints.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_constraints.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -824,7 +843,7 @@ func (dbi *DatabaseIntrospector) GetDomains() ([]Domain, error) {
 		return nil, nil
 	}
 	var domains []Domain
-	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_domains.sql")
+	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_domains.sql", &dbi.Filter)
 	if err != nil {
 		return nil, err
 	}
@@ -886,7 +905,7 @@ func (dbi *DatabaseIntrospector) GetEnums() ([]Enum, error) {
 		return nil, nil
 	}
 	var enums []Enum
-	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_enums.sql")
+	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_enums.sql", &dbi.Filter)
 	if err != nil {
 		return nil, err
 	}
@@ -918,7 +937,7 @@ func (dbi *DatabaseIntrospector) GetExtensions() (extensions []string, err error
 	if dbi.Dialect != DialectPostgres {
 		return nil, nil
 	}
-	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_extensions.sql")
+	rows, err := dbi.queryContext(ctx, "introspection_scripts/postgres_extensions.sql", &dbi.Filter)
 	if err != nil {
 		return nil, err
 	}
@@ -945,22 +964,31 @@ func (dbi *DatabaseIntrospector) GetIndexes() ([]Index, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_indexes.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_indexes.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_indexes.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_indexes.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_indexes.sql")
+		// We need the version string to distinguish between MySQL and MariaDB.
+		// https://github.com/bokwoon95/sqddl/issues/1
+		filter := dbi.Filter
+		if filter.Version == "" {
+			filter.Version, err = dbi.GetVersion()
+			if err != nil {
+				return nil, err
+			}
+		}
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_indexes.sql", &filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_indexes.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_indexes.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -1119,17 +1147,17 @@ func (dbi *DatabaseIntrospector) GetRoutines() ([]Routine, error) {
 	case DialectSQLite:
 		return nil, nil
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_routines.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_routines.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_routines.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_routines.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_routines.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_routines.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -1223,22 +1251,22 @@ func (dbi *DatabaseIntrospector) GetTables() ([]Table, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_tables.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_tables.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_tables.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_tables.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_tables.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_tables.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_tables.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_tables.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -1283,22 +1311,22 @@ func (dbi *DatabaseIntrospector) GetTriggers() ([]Trigger, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_triggers.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_triggers.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_triggers.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_triggers.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_triggers.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_triggers.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_triggers.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_triggers.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -1377,22 +1405,22 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 	var rows *sql.Rows
 	switch dbi.Dialect {
 	case DialectSQLite:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_views.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlite_views.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectPostgres:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_views.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/postgres_views.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectMySQL:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_views.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/mysql_views.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
 	case DialectSQLServer:
-		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_views.sql")
+		rows, err = dbi.queryContext(ctx, "introspection_scripts/sqlserver_views.sql", &dbi.Filter)
 		if err != nil {
 			return nil, err
 		}
@@ -1470,7 +1498,7 @@ func (dbi *DatabaseIntrospector) GetViews() ([]View, error) {
 // queryContext works like (*sql.DB).QueryContext except instead of taking in a
 // query string, it takes in a filename in order to read the contents from and
 // convert into a query string.
-func (dbi *DatabaseIntrospector) queryContext(ctx context.Context, filename string) (*sql.Rows, error) {
+func (dbi *DatabaseIntrospector) queryContext(ctx context.Context, filename string, filter *Filter) (*sql.Rows, error) {
 	var err error
 	tmpl := templates.Lookup(filename)
 	if tmpl == nil {
@@ -1478,10 +1506,7 @@ func (dbi *DatabaseIntrospector) queryContext(ctx context.Context, filename stri
 		if err != nil {
 			return nil, fmt.Errorf("reading %s: %w", filename, err)
 		}
-		tmpl, err = template.
-			New(filename).
-			Funcs(template.FuncMap{"mklist": mklist}).
-			Parse(string(b))
+		tmpl, err = template.New(filename).Funcs(funcs).Parse(string(b))
 		if err != nil {
 			return nil, fmt.Errorf("parsing %s: %w", filename, err)
 		}
@@ -1492,7 +1517,7 @@ func (dbi *DatabaseIntrospector) queryContext(ctx context.Context, filename stri
 	buf := bufpool.Get().(*bytes.Buffer)
 	buf.Reset()
 	defer bufpool.Put(buf)
-	err = tmpl.Execute(buf, &dbi.Filter)
+	err = tmpl.Execute(buf, filter)
 	if err != nil {
 		return nil, fmt.Errorf("executing %s: %w", filename, err)
 	}
@@ -1519,6 +1544,10 @@ func closeRows(rows *sql.Rows) error {
 // Filter is a struct used by DatabaseIntrospector in order to narrow down its
 // search.
 type Filter struct {
+	// Version holds the raw version string returned by the database. You
+	// can use DatabaseIntrospector.GetVersion to populate it.
+	Version string
+
 	// VersionNums holds the version number of the underlying database
 	// connection. This is used by the query templates to output different
 	// queries based on the database version. If no version number is found,

@@ -27,6 +27,20 @@ services:
       MYSQL_DATABASE: 'sakila'
     platform: 'linux/amd64'
 
+  mariadb:
+    container_name: 'mariadb_sakila'
+    image: 'mariadb'
+    ports:
+      - '3340:3306'
+    volumes:
+      - 'mariadb_data:/var/lib/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Hunter2!'
+      MYSQL_USER: 'user1'
+      MYSQL_PASSWORD: 'Hunter2!'
+      MYSQL_DATABASE: 'sakila'
+    platform: 'linux/amd64'
+
   sqlserver:
     container_name: 'sqlserver_sakila'
     image: 'mcr.microsoft.com/azure-sql-edge'
@@ -56,5 +70,6 @@ services:
 volumes:
   postgres_data:
   mysql_data:
+  mariadb_data:
   sqlserver_data:
   # oracle_data:

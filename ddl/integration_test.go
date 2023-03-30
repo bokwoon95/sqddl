@@ -80,6 +80,18 @@ func TestMySQL(t *testing.T) {
 	if *mysqlDSN == "" {
 		return
 	}
+	db, err := sql.Open(driver, *mysqlDSN)
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	dbi := NewDatabaseIntrospector(dialect, db)
+	version, err := dbi.GetVersion()
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	if strings.Contains(version, "MariaDB") {
+		t.Skip("skipping integration tests for MariaDB because it doesn't support indexed expressions (which are present in the mysql migration scripts)")
+	}
 	t.Parallel()
 	testMigrateIntrospect(t, dialect, driver, *mysqlDSN)
 	testAutomigrate(t, dialect, *mysqlDSN,
