@@ -84,6 +84,7 @@ func TestMySQL(t *testing.T) {
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}
+
 	dbi := NewDatabaseIntrospector(dialect, db)
 	version, err := dbi.GetVersion()
 	if err != nil {
@@ -92,6 +93,15 @@ func TestMySQL(t *testing.T) {
 	if strings.Contains(version, "MariaDB") {
 		t.Skip("skipping integration tests for MariaDB because it doesn't support indexed expressions (which are present in the mysql migration scripts)")
 	}
+
+	versionNums, err := dbi.GetVersionNums()
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	if versionNums.LowerThan(8) {
+		t.Skip(fmt.Sprintf("skipping integration tests for MySQL %d because the tests are only designed for MySQL 8 and above", versionNums[0]))
+	}
+
 	t.Parallel()
 	testMigrateIntrospect(t, dialect, driver, *mysqlDSN)
 	testAutomigrate(t, dialect, *mysqlDSN,

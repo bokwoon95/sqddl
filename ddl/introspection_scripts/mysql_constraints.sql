@@ -11,6 +11,8 @@ SELECT
     ,'' AS delete_rule
     ,'' AS match_option
     ,'' AS check_expr
+FROM
+    information_schema.table_constraints
 WHERE
     FALSE
 {{- if .IncludeConstraintType "PRIMARY KEY" }}

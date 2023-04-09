@@ -78,6 +78,7 @@ If you have docker, you can use the docker-compose.yml (run `docker-compose up`)
 # docker-compose up -d
 POSTGRES_URL='postgres://user1:Hunter2!@localhost:5456/sakila?sslmode=disable'
 MYSQL_URL='root:Hunter2!@tcp(localhost:3330)/sakila?multiStatements=true&parseTime=true'
+MYSQL5_URL='root:Hunter2!@tcp(localhost:3320)/sakila?multiStatements=true&parseTime=true'
 MARIADB_URL='root:Hunter2!@tcp(localhost:3340)/sakila?multiStatements=true&parseTime=true'
 SQLSERVER_URL='sqlserver://sa:Hunter2!@localhost:1447'
 ```
