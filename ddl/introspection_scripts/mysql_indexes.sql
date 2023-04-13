@@ -13,7 +13,7 @@ FROM (
         ,index_name
         ,index_type
         ,NOT non_unique AS is_unique
-        {{- if contains .Version "MariaDB" }}
+        {{- if or (contains .Version "MariaDB") (.VersionNums.LowerThan 8) }}
         ,column_name
         {{- else }}
         ,COALESCE(column_name, CONCAT('(', expression, ')')) AS column_name

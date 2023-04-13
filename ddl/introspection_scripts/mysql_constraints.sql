@@ -138,7 +138,7 @@ GROUP BY
     ,rc.delete_rule
     ,rc.match_option
 {{- end }}
-{{- if .IncludeConstraintType "CHECK" }}
+{{- if and (.IncludeConstraintType "CHECK") (.VersionNums.GreaterOrEqualTo 8) }}
 UNION ALL
 SELECT
     tc.table_schema

@@ -789,6 +789,10 @@ func TestVersionNums(t *testing.T) {
 			if diff := testutil.Diff(got, tt.want); diff != "" {
 				t.Error(testutil.Callers(), diff)
 			}
+			got = tt.v1.GreaterOrEqualTo(tt.v2...)
+			if diff := testutil.Diff(got, !tt.want); diff != "" {
+				t.Error(testutil.Callers(), diff)
+			}
 		})
 	}
 }
