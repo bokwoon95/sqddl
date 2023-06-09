@@ -27,6 +27,11 @@ type TablesCmd struct {
 	// blank to write to Stdout instead.
 	Filename string
 
+	// SchemaQualifiedStructs controls whether the generated struct names are
+	// schema qualified e.g. `type SCHEMA_TABLE struct` instead of `type TABLE
+	// struct`.
+	SchemaQualifiedStructs bool
+
 	// Stdout specifies the command's standard out to write to if no Filename
 	// is provided. If nil, the command writes to os.Stdout.
 	Stdout io.Writer
@@ -58,6 +63,7 @@ func TablesCommand(args ...string) (*TablesCmd, error) {
 	flagset.StringVar(&cmd.HistoryTable, "history-table", "sqddl_history", "Name of migration history table.")
 	flagset.StringVar(&cmd.PackageName, "pkg", "_", "Package name used in the generated code.")
 	flagset.StringVar(&cmd.Filename, "file", "", "Name of the file to write the generated code into. Leave blank to write to stdout.")
+	flagset.BoolVar(&cmd.SchemaQualifiedStructs, "schema-qualified-structs", false, "Schema-qualify the generated struct names.")
 	flagset.StringVar(&schemas, "schemas", "", "Comma-separated list of schemas to be included.")
 	flagset.StringVar(&excludeSchemas, "exclude-schemas", "", "Comma-separated list of schemas to be excluded.")
 	flagset.StringVar(&tables, "tables", "", "Comma-separated list of tables to be included.")
@@ -120,14 +126,45 @@ func (cmd *TablesCmd) Run() error {
 		defer cmd.DB.Close()
 	}
 
-	tableStructs, err := NewTableStructs(cmd.Dialect, cmd.DB, Filter{
-		Schemas:        cmd.Schemas,
-		ExcludeSchemas: cmd.ExcludeSchemas,
-		Tables:         cmd.Tables,
-		ExcludeTables:  append(cmd.ExcludeTables, cmd.HistoryTable),
-	})
+	var tableStructs TableStructs
+	var catalog Catalog
+	dbi := &DatabaseIntrospector{
+		Dialect: cmd.Dialect,
+		DB:      cmd.DB,
+		Filter: Filter{
+			Schemas:        cmd.Schemas,
+			ExcludeSchemas: cmd.ExcludeSchemas,
+			Tables:         cmd.Tables,
+			ExcludeTables:  append(cmd.ExcludeTables, cmd.HistoryTable),
+		},
+	}
+	dbi.ObjectTypes = []string{"TABLES"}
+	err := dbi.WriteCatalog(&catalog)
 	if err != nil {
 		return err
+	}
+	err = tableStructs.ReadCatalog(&catalog)
+	if err != nil {
+		return err
+	}
+	if cmd.SchemaQualifiedStructs {
+		for i := range tableStructs {
+			tableStruct := &tableStructs[i]
+			tableName := strings.ToLower(tableStruct.Name)
+			if tableStruct.Fields[0].NameTag != "" {
+				tableName = tableStruct.Fields[0].NameTag
+			}
+			tableSchema, tableName, _ := strings.Cut(tableName, ".")
+			if tableName == "" {
+				tableSchema, tableName = tableName, tableSchema
+			}
+			if tableSchema == "" && catalog.CurrentSchema != "" {
+				tableSchema = catalog.CurrentSchema
+			}
+			if tableSchema != "" {
+				tableStruct.Name = strings.ToUpper(strings.ReplaceAll(tableSchema+"_"+tableName, " ", "_"))
+			}
+		}
 	}
 	text, err := tableStructs.MarshalText()
 	if err != nil {

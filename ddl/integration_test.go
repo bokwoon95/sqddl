@@ -70,6 +70,7 @@ func TestPostgres(t *testing.T) {
 			return record[:len(record)-1]
 		},
 	})
+	testTablesCmdSchemaQualifiedStructs(t, dialect, *postgresDSN, "testdata/postgres/schema_qualified_tables.go")
 }
 
 func TestMySQL(t *testing.T) {
@@ -390,6 +391,28 @@ func testLoadDump(t *testing.T, dialect string, dsn string, transforms map[strin
 		t.Fatal(testutil.Callers(), err)
 	}
 	assertCSVsAreIdentical(t, tempDir, "testdata/extended_subset", nil, transforms)
+}
+
+func testTablesCmdSchemaQualifiedStructs(t *testing.T, dialect string, dsn string, goldenFile string) {
+	tablesCmd, err := TablesCommand("-db", dsn, "-schema-qualified-structs")
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	var buf bytes.Buffer
+	tablesCmd.Stdout = &buf
+	err = tablesCmd.Run()
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	b, err := os.ReadFile(goldenFile)
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	gotOutput := buf.String()
+	wantOutput := string(b)
+	if diff := testutil.Diff(gotOutput, wantOutput); diff != "" {
+		t.Error(testutil.Callers(), diff)
+	}
 }
 
 func rewriteCSV(filename string, transform func(record []string) []string) error {
