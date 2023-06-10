@@ -163,6 +163,7 @@ func (cmd *TablesCmd) Run() error {
 			}
 			if tableSchema != "" {
 				tableStruct.Name = strings.ToUpper(strings.ReplaceAll(tableSchema+"_"+tableName, " ", "_"))
+				tableStruct.Fields[0].NameTag = tableSchema + "." + tableName
 			}
 		}
 	}
