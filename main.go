@@ -73,6 +73,10 @@ func main() {
 		if errors.Is(err, flag.ErrHelp) {
 			os.Exit(0)
 		}
+		var migrationErr *ddl.MigrationError
+		if errors.As(err, &migrationErr) {
+			fmt.Fprintln(os.Stderr, migrationErr.Contents)
+		}
 		fmt.Fprintln(os.Stderr, subcmd+": "+err.Error())
 		os.Exit(1)
 	}

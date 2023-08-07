@@ -334,6 +334,27 @@ func (m migration) rowmapper(row *sq.Row) migration {
 // https://www.reddit.com/r/golang/comments/ntyi7i/what_is_the_reason_go_chose_to_use_a_constant_as/h0w0tu7/
 var rng = rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64())))
 
+// MigrationError is returned by (*MigrateCmd).Run() if any errors were
+// encountered when running a migration script (SQL syntax errors, violated
+// constraints, etc).
+type MigrationError struct {
+	Err       error         // Migration error.
+	Filename  string        // Migration filename.
+	Contents  string        // Contents of the migration script.
+	StartedAt time.Time     // When the migration started at.
+	TimeTaken time.Duration // How long the migration took.
+}
+
+// Error implements the error interface.
+func (migrationErr *MigrationError) Error() string {
+	return migrationErr.Err.Error()
+}
+
+// Unwrap returns the underlying error when running the migration.
+func (migrationErr *MigrationError) Unwrap() error {
+	return migrationErr.Err
+}
+
 func (cmd *MigrateCmd) runWithRetry(conn *sql.Conn, queue []migration) error {
 	isTx := len(queue) > 1 || (!strings.HasSuffix(queue[0].filename, ".txoff.sql") && cmd.Dialect != DialectMySQL) || strings.HasSuffix(queue[0].filename, ".tx.sql")
 	isStmt := false
@@ -472,12 +493,19 @@ func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt in
 			fmt.Fprintln(cmd.Stderr, timestamp()+"[START] "+m.filename)
 		}
 		m.startedAt = sql.NullTime{Time: time.Now(), Valid: true}
-		_, migrationErr := db.ExecContext(cmd.Ctx, contents)
+		_, err = db.ExecContext(cmd.Ctx, contents)
 		timeTaken := time.Since(m.startedAt.Time)
 		m.timeTakenNs = sql.NullInt64{Int64: int64(timeTaken), Valid: true}
-		if migrationErr != nil {
+		if err != nil {
+			migrationErr := &MigrationError{
+				Err:       err,
+				Filename:  m.filename,
+				Contents:  contents,
+				StartedAt: m.startedAt.Time,
+				TimeTaken: timeTaken,
+			}
 			if cmd.driver.AnnotateError != nil {
-				migrationErr = cmd.driver.AnnotateError(migrationErr, contents)
+				migrationErr.Err = cmd.driver.AnnotateError(migrationErr.Err, contents)
 			}
 			m.success = false
 			if cmd.Verbose {

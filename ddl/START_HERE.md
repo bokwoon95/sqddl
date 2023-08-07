@@ -72,6 +72,10 @@ There are tests that require a live database connection. They will only run if y
 $ go test ./ddl -tags=fts5 -postgres $POSTGRES_URL -mysql $MYSQL_URL -sqlserver $SQLSERVER_URL # -failfast -shuffle=on -coverprofile=coverage
 ```
 
+- For $POSTGRES\_URL, make sure sslmode=disable is in the query string e.g. `postgres://username:password@address:port/database?sslmode=disable`.
+
+- For $MYSQL\_URL, make sure multiStatements=true is in the query string e.g. `username:password@tcp(address:port)/database?multiStatements=true`.
+
 If you have docker, you can use the docker-compose.yml (run `docker-compose up`) at the root of this project's directory to spin up Postgres, MySQL and SQL Server databases that are reachable at the following URLs:
 
 ```shell
