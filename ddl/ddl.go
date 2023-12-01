@@ -563,9 +563,10 @@ type Trigger struct {
 	Ignore bool `json:",omitempty"`
 }
 
-// generate name generates the appropriate constraint/index name for a given
-// table and columns.
-func generateName(nameType string, tableName string, columnNames []string) string {
+// GenerateName generates the appropriate constraint/index name for a given
+// table and columns. The nameType should be one of "PRIMARY KEY", "FOREIGN
+// KEY", "UNIQUE" or "INDEX".
+func GenerateName(nameType string, tableName string, columnNames []string) string {
 	var b strings.Builder
 	n := len(tableName) + len(nameType)
 	for _, columnName := range columnNames {

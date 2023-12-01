@@ -62,7 +62,7 @@ func Test_generateName(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.description, func(t *testing.T) {
-			gotName := generateName(tt.nameType, tt.tableName, tt.columnNames)
+			gotName := GenerateName(tt.nameType, tt.tableName, tt.columnNames)
 			if diff := testutil.Diff(gotName, tt.wantName); diff != "" {
 				t.Error(testutil.Callers(), diff)
 			}

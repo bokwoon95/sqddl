@@ -69,7 +69,7 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 				if srcConstraint.ConstraintType != PRIMARY_KEY && srcConstraint.ConstraintType != UNIQUE && srcConstraint.ConstraintType != FOREIGN_KEY {
 					continue
 				}
-				srcConstraint.ConstraintName = generateName(srcConstraint.ConstraintType, srcConstraint.TableName, srcConstraint.Columns)
+				srcConstraint.ConstraintName = GenerateName(srcConstraint.ConstraintType, srcConstraint.TableName, srcConstraint.Columns)
 			}
 		}
 	}
@@ -85,7 +85,7 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 				if destConstraint.ConstraintType != PRIMARY_KEY && destConstraint.ConstraintType != UNIQUE && destConstraint.ConstraintType != FOREIGN_KEY {
 					continue
 				}
-				destConstraint.ConstraintName = generateName(destConstraint.ConstraintType, destConstraint.TableName, destConstraint.Columns)
+				destConstraint.ConstraintName = GenerateName(destConstraint.ConstraintType, destConstraint.TableName, destConstraint.Columns)
 			}
 		}
 	}

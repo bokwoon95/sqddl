@@ -406,7 +406,7 @@ func (p *StructParser) parseIndexModifier(table *Table, columnNames []string, lo
 	if len(columnNames) == 0 {
 		p.report(loc, "no column provided")
 	}
-	indexName := generateName(INDEX, table.TableName, columnNames)
+	indexName := GenerateName(INDEX, table.TableName, columnNames)
 	p.locations[[2]string{table.TableSchema, indexName}] = loc
 	index := p.cache.GetOrCreateIndex(table, indexName, columnNames)
 	index.TableSchema = table.TableSchema
@@ -447,7 +447,7 @@ func (p *StructParser) parsePrimaryKeyUniqueModifier(table *Table, columnNames [
 	if len(columnNames) == 0 {
 		p.report(loc, "no column provided")
 	}
-	constraintName := generateName(constraintType, table.TableName, columnNames)
+	constraintName := GenerateName(constraintType, table.TableName, columnNames)
 	if p.dialect == DialectMySQL && constraintType == PRIMARY_KEY {
 		constraintName = "PRIMARY"
 	}
@@ -494,7 +494,7 @@ func (p *StructParser) parseForeignKeyModifier(table *Table, loc location, m *Mo
 		return
 	}
 	columnNames := strings.Split(m.Value, ",")
-	constraintName := generateName(FOREIGN_KEY, table.TableName, columnNames)
+	constraintName := GenerateName(FOREIGN_KEY, table.TableName, columnNames)
 	p.locations[[2]string{table.TableSchema, constraintName}] = loc
 	constraint := p.cache.GetOrCreateConstraint(table, constraintName, FOREIGN_KEY, columnNames)
 	constraint.TableSchema = table.TableSchema
@@ -592,7 +592,7 @@ func (p *StructParser) parseReferencesModifier(table *Table, columnName string, 
 	if columnName == "" {
 		p.report(loc, "no column provided")
 	}
-	constraintName := generateName(FOREIGN_KEY, table.TableName, []string{columnName})
+	constraintName := GenerateName(FOREIGN_KEY, table.TableName, []string{columnName})
 	p.locations[[2]string{table.TableSchema, constraintName}] = loc
 
 	constraint := p.cache.GetOrCreateConstraint(table, constraintName, FOREIGN_KEY, []string{columnName})
