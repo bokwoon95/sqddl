@@ -76,7 +76,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create enum and assert it was created
 		wantEnum := Enum{
-			EnumName: lorem_ipsum,
+			EnumSchema: lorem_ipsum,
+			EnumName:   lorem_ipsum,
 		}
 		cache.AddOrUpdateEnum(schema, wantEnum)
 		gotEnum = cache.GetEnum(schema, lorem_ipsum)
@@ -101,7 +102,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create domain and assert it was created
 		wantDomain := Domain{
-			DomainName: lorem_ipsum,
+			DomainSchema: lorem_ipsum,
+			DomainName:   lorem_ipsum,
 		}
 		cache.AddOrUpdateDomain(schema, wantDomain)
 		gotDomain = cache.GetDomain(schema, lorem_ipsum)
@@ -126,7 +128,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create routine and assert it was created
 		wantRoutine := Routine{
-			RoutineName: lorem_ipsum,
+			RoutineSchema: lorem_ipsum,
+			RoutineName:   lorem_ipsum,
 		}
 		cache.AddOrUpdateRoutine(schema, wantRoutine)
 		gotRoutine = cache.GetRoutine(schema, lorem_ipsum, "")
@@ -151,7 +154,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create view and assert it was created
 		wantView := View{
-			ViewName: lorem_ipsum,
+			ViewSchema: lorem_ipsum,
+			ViewName:   lorem_ipsum,
 		}
 		cache.AddOrUpdateView(schema, wantView)
 		gotView = cache.GetView(schema, lorem_ipsum)
@@ -176,7 +180,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create table and assert it was created
 		wantTable := Table{
-			TableName: lorem_ipsum,
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
 		}
 		cache.AddOrUpdateTable(schema, wantTable)
 		gotTable = cache.GetTable(schema, lorem_ipsum)
@@ -202,8 +207,10 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create column and assert it was created
 		wantColumn := Column{
-			ColumnName: lorem_ipsum,
-			ColumnType: lorem_ipsum,
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
+			ColumnName:  lorem_ipsum,
+			ColumnType:  lorem_ipsum,
 		}
 		cache.AddOrUpdateColumn(table, wantColumn)
 		gotColumn = cache.GetColumn(table, lorem_ipsum)
@@ -229,6 +236,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create primary key and assert it was created
 		wantConstraint := Constraint{
+			TableSchema:    lorem_ipsum,
+			TableName:      lorem_ipsum,
 			ConstraintName: lorem_ipsum,
 			ConstraintType: PRIMARY_KEY,
 			Columns:        []string{lorem_ipsum},
@@ -260,9 +269,9 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create foreign keys and assert they were created
 		wantFkeys := []Constraint{
-			{ConstraintName: "1", ConstraintType: FOREIGN_KEY},
-			{ConstraintName: "2", ConstraintType: FOREIGN_KEY},
-			{ConstraintName: "3", ConstraintType: FOREIGN_KEY},
+			{TableSchema: lorem_ipsum, TableName: lorem_ipsum, ConstraintName: "1", ConstraintType: FOREIGN_KEY},
+			{TableSchema: lorem_ipsum, TableName: lorem_ipsum, ConstraintName: "2", ConstraintType: FOREIGN_KEY},
+			{TableSchema: lorem_ipsum, TableName: lorem_ipsum, ConstraintName: "3", ConstraintType: FOREIGN_KEY},
 		}
 		for _, fkey := range wantFkeys {
 			cache.AddOrUpdateConstraint(table, fkey)
@@ -300,8 +309,10 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create index and assert it was created
 		wantIndex := Index{
-			IndexName: lorem_ipsum,
-			Columns:   []string{lorem_ipsum},
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
+			IndexName:   lorem_ipsum,
+			Columns:     []string{lorem_ipsum},
 		}
 		cache.AddOrUpdateIndex(table, wantIndex)
 		gotIndex = cache.GetIndex(table, lorem_ipsum)
@@ -327,6 +338,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create trigger and assert it was created
 		wantTrigger := Trigger{
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
 			TriggerName: lorem_ipsum,
 		}
 		cache.AddOrUpdateTrigger(table, wantTrigger)
@@ -354,8 +367,10 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create view index and assert it was created
 		wantIndex := Index{
-			IndexName: lorem_ipsum,
-			Columns:   []string{lorem_ipsum},
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
+			IndexName:   lorem_ipsum,
+			Columns:     []string{lorem_ipsum},
 		}
 		cache.AddOrUpdateViewIndex(view, wantIndex)
 		gotIndex = cache.GetViewIndex(view, lorem_ipsum)
@@ -382,6 +397,8 @@ func TestCatalogCache(t *testing.T) {
 		}
 		// create view trigger and assert it was created
 		wantTrigger := Trigger{
+			TableSchema: lorem_ipsum,
+			TableName:   lorem_ipsum,
 			TriggerName: lorem_ipsum,
 		}
 		cache.AddOrUpdateViewTrigger(view, wantTrigger)

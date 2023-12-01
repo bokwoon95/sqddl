@@ -200,6 +200,7 @@ func (c *CatalogCache) GetOrCreateEnum(schema *Schema, enumName string) *Enum {
 // AddOrUpdateEnum adds the given Enum to the Schema, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateEnum(schema *Schema, enum Enum) {
+	enum.EnumSchema = schema.SchemaName
 	i, ok := c.enums[[2]string{schema.SchemaName, enum.EnumName}]
 	if ok && !schema.Enums[i].Ignore {
 		schema.Enums[i] = enum
@@ -251,6 +252,7 @@ func (c *CatalogCache) GetOrCreateDomain(schema *Schema, domainName string) *Dom
 // AddOrUpdateDomain adds the given Domain to the Schema, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateDomain(schema *Schema, domain Domain) {
+	domain.DomainSchema = schema.SchemaName
 	i, ok := c.domains[[2]string{schema.SchemaName, domain.DomainName}]
 	if ok && !schema.Domains[i].Ignore {
 		schema.Domains[i] = domain
@@ -312,6 +314,7 @@ func (c *CatalogCache) GetOrCreateRoutine(schema *Schema, routineName, identityA
 // AddOrUpdateRoutine adds the given Routine to the Schema, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateRoutine(schema *Schema, routine Routine) {
+	routine.RoutineSchema = schema.SchemaName
 	i, ok := c.routines[[3]string{schema.SchemaName, routine.RoutineName, routine.IdentityArguments}]
 	if ok && !schema.Routines[i].Ignore {
 		schema.Routines[i] = routine
@@ -362,6 +365,7 @@ func (c *CatalogCache) GetOrCreateView(schema *Schema, viewName string) *View {
 // AddOrUpdateView adds the given View to the Schema, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateView(schema *Schema, view View) {
+	view.ViewSchema = schema.SchemaName
 	i, ok := c.views[[2]string{schema.SchemaName, view.ViewName}]
 	if ok && !schema.Views[i].Ignore {
 		schema.Views[i] = view
@@ -412,6 +416,7 @@ func (c *CatalogCache) GetOrCreateTable(schema *Schema, tableName string) *Table
 // AddOrUpdateTable adds the given Table to the Schema, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateTable(schema *Schema, table Table) {
+	table.TableSchema = schema.SchemaName
 	i, ok := c.tables[[2]string{schema.SchemaName, table.TableName}]
 	if ok && !schema.Tables[i].Ignore {
 		schema.Tables[i] = table
@@ -451,8 +456,10 @@ func (c *CatalogCache) GetOrCreateColumn(table *Table, columnName, columnType st
 		return &table.Columns[i]
 	}
 	table.Columns = append(table.Columns, Column{
-		ColumnName: columnName,
-		ColumnType: columnType,
+		TableSchema: table.TableSchema,
+		TableName:   table.TableName,
+		ColumnName:  columnName,
+		ColumnType:  columnType,
 	})
 	i = len(table.Columns) - 1
 	c.columns[[3]string{table.TableSchema, table.TableName, columnName}] = i
@@ -462,6 +469,8 @@ func (c *CatalogCache) GetOrCreateColumn(table *Table, columnName, columnType st
 // AddOrUpdateColumn adds the given Column to the Table, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateColumn(table *Table, column Column) {
+	column.TableSchema = table.TableSchema
+	column.TableName = table.TableName
 	i, ok := c.columns[[3]string{table.TableSchema, table.TableName, column.ColumnName}]
 	if ok && !table.Columns[i].Ignore {
 		table.Columns[i] = column
@@ -502,6 +511,8 @@ func (c *CatalogCache) GetOrCreateConstraint(table *Table, constraintName, const
 		return &table.Constraints[i]
 	}
 	table.Constraints = append(table.Constraints, Constraint{
+		TableSchema:    table.TableSchema,
+		TableName:      table.TableName,
 		ConstraintName: constraintName,
 		ConstraintType: constraintType,
 		Columns:        columnNames,
@@ -521,6 +532,8 @@ func (c *CatalogCache) GetOrCreateConstraint(table *Table, constraintName, const
 // AddOrUpdateConstraint adds the given Constraint to the Table, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateConstraint(table *Table, constraint Constraint) {
+	constraint.TableSchema = table.TableSchema
+	constraint.TableName = table.TableName
 	i, ok := c.constraints[[3]string{table.TableSchema, table.TableName, constraint.ConstraintName}]
 	if ok && !table.Constraints[i].Ignore {
 		table.Constraints[i] = constraint
@@ -569,8 +582,10 @@ func (c *CatalogCache) GetOrCreateIndex(table *Table, indexName string, columnNa
 		return &table.Indexes[i]
 	}
 	table.Indexes = append(table.Indexes, Index{
-		IndexName: indexName,
-		Columns:   columnNames,
+		TableSchema: table.TableSchema,
+		TableName:   table.TableName,
+		IndexName:   indexName,
+		Columns:     columnNames,
 	})
 	i = len(table.Indexes) - 1
 	c.indexes[[3]string{table.TableSchema, table.TableName, indexName}] = i
@@ -580,6 +595,8 @@ func (c *CatalogCache) GetOrCreateIndex(table *Table, indexName string, columnNa
 // AddOrUpdateIndex adds the given Index to the Table, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateIndex(table *Table, index Index) {
+	index.TableSchema = table.TableSchema
+	index.TableName = table.TableName
 	i, ok := c.indexes[[3]string{table.TableSchema, table.TableName, index.IndexName}]
 	if ok && !table.Indexes[i].Ignore {
 		table.Indexes[i] = index
@@ -620,6 +637,8 @@ func (c *CatalogCache) GetOrCreateTrigger(table *Table, triggerName string) *Tri
 		return &table.Triggers[i]
 	}
 	table.Triggers = append(table.Triggers, Trigger{
+		TableSchema: table.TableSchema,
+		TableName:   table.TableName,
 		TriggerName: triggerName,
 	})
 	i = len(table.Triggers) - 1
@@ -630,6 +649,8 @@ func (c *CatalogCache) GetOrCreateTrigger(table *Table, triggerName string) *Tri
 // AddOrUpdateTrigger adds the given Trigger to the Table, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateTrigger(table *Table, trigger Trigger) {
+	trigger.TableSchema = table.TableSchema
+	trigger.TableName = table.TableName
 	i, ok := c.triggers[[3]string{table.TableSchema, table.TableName, trigger.TriggerName}]
 	if ok && !table.Triggers[i].Ignore {
 		table.Triggers[i] = trigger
@@ -669,8 +690,10 @@ func (c *CatalogCache) GetOrCreateViewIndex(view *View, indexName string, column
 		return &view.Indexes[i]
 	}
 	view.Indexes = append(view.Indexes, Index{
-		IndexName: indexName,
-		Columns:   columnNames,
+		TableSchema: view.ViewSchema,
+		TableName:   view.ViewName,
+		IndexName:   indexName,
+		Columns:     columnNames,
 	})
 	i = len(view.Indexes) - 1
 	c.indexes[[3]string{view.ViewSchema, view.ViewName, indexName}] = i
@@ -680,6 +703,8 @@ func (c *CatalogCache) GetOrCreateViewIndex(view *View, indexName string, column
 // AddOrUpdateViewIndex adds the given Index to the View, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateViewIndex(view *View, index Index) {
+	index.TableSchema = view.ViewSchema
+	index.TableName = view.ViewName
 	i, ok := c.indexes[[3]string{view.ViewSchema, view.ViewName, index.IndexName}]
 	if ok && !view.Indexes[i].Ignore {
 		view.Indexes[i] = index
@@ -719,6 +744,8 @@ func (c *CatalogCache) GetOrCreateViewTrigger(view *View, triggerName string) *T
 		return &view.Triggers[i]
 	}
 	view.Triggers = append(view.Triggers, Trigger{
+		TableSchema: view.ViewSchema,
+		TableName:   view.ViewName,
 		TriggerName: triggerName,
 	})
 	i = len(view.Triggers) - 1
@@ -729,6 +756,8 @@ func (c *CatalogCache) GetOrCreateViewTrigger(view *View, triggerName string) *T
 // AddOrUpdateViewTrigger adds the given Trigger to the View, or updates it if
 // it already exists.
 func (c *CatalogCache) AddOrUpdateViewTrigger(view *View, trigger Trigger) {
+	trigger.TableSchema = view.ViewSchema
+	trigger.TableName = view.ViewName
 	i, ok := c.triggers[[3]string{view.ViewSchema, view.ViewName, trigger.TriggerName}]
 	if ok && !view.Triggers[i].Ignore {
 		view.Triggers[i] = trigger
