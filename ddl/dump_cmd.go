@@ -18,7 +18,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/internal/pqarray"
 	"golang.org/x/sync/errgroup"
 )
@@ -268,13 +267,13 @@ func (cmd *DumpCmd) Run() error {
 						} else {
 							buf.WriteString(", ")
 						}
-						buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, column.ColumnName))
+						buf.WriteString(QuoteIdentifier(cmd.Dialect, column.ColumnName))
 					}
 					buf.WriteString(" FROM ")
 					if table.TableSchema != "" && table.TableSchema != cmd.catalog.CurrentSchema {
-						buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableSchema) + ".")
+						buf.WriteString(QuoteIdentifier(cmd.Dialect, table.TableSchema) + ".")
 					}
-					buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableName))
+					buf.WriteString(QuoteIdentifier(cmd.Dialect, table.TableName))
 					pkey := cmd.cache.GetPrimaryKey(table)
 					if pkey != nil {
 						buf.WriteString(" ORDER BY ")
@@ -282,7 +281,7 @@ func (cmd *DumpCmd) Run() error {
 							if j > 0 {
 								buf.WriteString(", ")
 							}
-							buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, column))
+							buf.WriteString(QuoteIdentifier(cmd.Dialect, column))
 						}
 					}
 					cmd.tableQueries = append(cmd.tableQueries, tableQuery{
@@ -634,7 +633,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 		if buf.Len() > 0 {
 			buf.WriteString("\n")
 		}
-		buf.WriteString("CREATE EXTENSION IF NOT EXISTS " + sq.QuoteIdentifier(cmd.Dialect, extension) + ";\n")
+		buf.WriteString("CREATE EXTENSION IF NOT EXISTS " + QuoteIdentifier(cmd.Dialect, extension) + ";\n")
 	}
 
 	// CREATE SCHEMA.
@@ -647,7 +646,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 		}
 		var schemaName string
 		if schema.SchemaName != "" && schema.SchemaName != cmd.catalog.CurrentSchema {
-			schemaName = sq.QuoteIdentifier(cmd.Dialect, schema.SchemaName)
+			schemaName = QuoteIdentifier(cmd.Dialect, schema.SchemaName)
 		}
 
 		// CREATE ENUM.
@@ -655,7 +654,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			enumName := sq.QuoteIdentifier(cmd.Dialect, enum.EnumName)
+			enumName := QuoteIdentifier(cmd.Dialect, enum.EnumName)
 			if schemaName != "" {
 				enumName = schemaName + "." + enumName
 			}
@@ -664,7 +663,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 				if i > 0 {
 					buf.WriteString(", ")
 				}
-				buf.WriteString("'" + sq.EscapeQuote(label, '\'') + "'")
+				buf.WriteString("'" + EscapeQuote(label, '\'') + "'")
 			}
 			buf.WriteString(");\n")
 		}
@@ -674,7 +673,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			domainName := sq.QuoteIdentifier(cmd.Dialect, domain.DomainName)
+			domainName := QuoteIdentifier(cmd.Dialect, domain.DomainName)
 			if schemaName != "" {
 				domainName = schemaName + "." + domainName
 			}
@@ -683,7 +682,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 				buf.WriteString(" NOT NULL")
 			}
 			if domain.CollationName != "" && domain.CollationName != cmd.catalog.DefaultCollation {
-				buf.WriteString(` COLLATE "` + sq.EscapeQuote(domain.CollationName, '"') + `"`)
+				buf.WriteString(` COLLATE "` + EscapeQuote(domain.CollationName, '"') + `"`)
 			}
 			if domain.ColumnDefault != "" {
 				buf.WriteString(" DEFAULT " + domain.ColumnDefault)
@@ -695,7 +694,7 @@ func (cmd *DumpCmd) dumpSchema(w io.Writer) error {
 						constraintName = domain.CheckNames[i]
 					}
 					if constraintName != "" {
-						buf.WriteString(" CONSTRAINT " + sq.QuoteIdentifier(cmd.Dialect, constraintName))
+						buf.WriteString(" CONSTRAINT " + QuoteIdentifier(cmd.Dialect, constraintName))
 					}
 					buf.WriteString(" CHECK " + wrapBrackets(checkExpr))
 				}
@@ -796,9 +795,9 @@ func (cmd *DumpCmd) dumpConstraints(w io.Writer) error {
 				if constraint.ConstraintType == FOREIGN_KEY {
 					continue
 				}
-				tableName := sq.QuoteIdentifier(cmd.Dialect, constraint.TableName)
+				tableName := QuoteIdentifier(cmd.Dialect, constraint.TableName)
 				if constraint.TableSchema != "" && constraint.TableSchema != cmd.catalog.CurrentSchema {
-					tableName = sq.QuoteIdentifier(cmd.Dialect, constraint.TableSchema) + "." + tableName
+					tableName = QuoteIdentifier(cmd.Dialect, constraint.TableSchema) + "." + tableName
 				}
 				buf.WriteString("ALTER TABLE " + tableName + " ADD ")
 				writeConstraintDefinition(cmd.Dialect, buf, cmd.catalog.CurrentSchema, constraint)
@@ -820,9 +819,9 @@ func (cmd *DumpCmd) dumpConstraints(w io.Writer) error {
 			buf.WriteString(table.TableName + "\n")
 			fkeys := cmd.cache.GetForeignKeys(table)
 			for _, fkey := range fkeys {
-				tableName := sq.QuoteIdentifier(cmd.Dialect, fkey.TableName)
+				tableName := QuoteIdentifier(cmd.Dialect, fkey.TableName)
 				if fkey.TableSchema != "" && fkey.TableSchema != cmd.catalog.CurrentSchema {
-					tableName = sq.QuoteIdentifier(cmd.Dialect, fkey.TableSchema) + "." + tableName
+					tableName = QuoteIdentifier(cmd.Dialect, fkey.TableSchema) + "." + tableName
 				}
 				buf.WriteString("ALTER TABLE " + tableName + " ADD ")
 				writeConstraintDefinition(cmd.Dialect, buf, cmd.catalog.CurrentSchema, fkey)
@@ -1004,13 +1003,13 @@ func (cmd *DumpCmd) dumpCSV(ctx context.Context, w io.Writer, table *Table, quer
 func writeCreateSchema(dialect string, buf *bytes.Buffer, schemaName string) {
 	switch dialect {
 	case DialectPostgres, DialectMySQL:
-		buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
+		buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + QuoteIdentifier(dialect, schemaName) + ";\n")
 	case DialectSQLServer:
 		// SQLServer doesn't allow CREATE SCHEMA to exist with other
 		// SQL statements so we wrap it in an EXEC() in order to get
 		// around that restriction
 		// (https://stackoverflow.com/q/5748056).
-		buf.WriteString("IF SCHEMA_ID('" + sq.EscapeQuote(schemaName, '\'') + "') IS NULL EXEC('CREATE SCHEMA " + sq.EscapeQuote(sq.QuoteIdentifier(dialect, schemaName), '\'') + "');\n")
+		buf.WriteString("IF SCHEMA_ID('" + EscapeQuote(schemaName, '\'') + "') IS NULL EXEC('CREATE SCHEMA " + EscapeQuote(QuoteIdentifier(dialect, schemaName), '\'') + "');\n")
 	}
 }
 
@@ -1019,9 +1018,9 @@ func writeCreateTable(dialect string, buf *bytes.Buffer, currentSchema, defaultC
 		buf.WriteString(table.SQL + "\n")
 		return
 	}
-	tableName := sq.QuoteIdentifier(dialect, table.TableName)
+	tableName := QuoteIdentifier(dialect, table.TableName)
 	if table.TableSchema != "" && table.TableSchema != currentSchema {
-		tableName = sq.QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
+		tableName = QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
 	}
 	buf.WriteString("CREATE TABLE " + tableName + " (")
 	columnWritten := false
@@ -1097,7 +1096,7 @@ func writeCreateIndex(dialect string, buf *bytes.Buffer, currentSchema string, i
 	if index.SQL != "" {
 		sql := index.SQL
 		if createConcurrently && dialect == DialectPostgres {
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
 			sql = strings.Replace(sql, "CREATE INDEX "+indexName, "CREATE INDEX CONCURRENTLY "+indexName, 1)
 		}
 		buf.WriteString(sql + "\n")
@@ -1116,7 +1115,7 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 			isFulltextOrSpatialIndex = true
 		}
 	}
-	indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+	indexName := QuoteIdentifier(dialect, index.IndexName)
 	if index.IsUnique {
 		buf.WriteString("UNIQUE ")
 	} else if isFulltextOrSpatialIndex {
@@ -1136,9 +1135,9 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 	if !createInline {
 		buf.WriteString(" ON ")
 		if index.TableSchema != "" && index.TableSchema != currentSchema {
-			buf.WriteString(sq.QuoteIdentifier(dialect, index.TableSchema) + ".")
+			buf.WriteString(QuoteIdentifier(dialect, index.TableSchema) + ".")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, index.TableName))
+		buf.WriteString(QuoteIdentifier(dialect, index.TableName))
 	}
 	if index.IndexType != "" && dialect == DialectPostgres && !strings.EqualFold(index.IndexType, "BTREE") {
 		buf.WriteString(" USING " + index.IndexType)
@@ -1151,7 +1150,7 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 		if wrappedInBrackets(column) {
 			buf.WriteString(column)
 		} else {
-			buf.WriteString(sq.QuoteIdentifier(dialect, column))
+			buf.WriteString(QuoteIdentifier(dialect, column))
 		}
 		if i < len(index.Descending) && index.Descending[i] {
 			buf.WriteString(" DESC")
@@ -1171,7 +1170,7 @@ func writeIndexDefinition(dialect string, buf *bytes.Buffer, currentSchema strin
 func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation string, column *Column, columnLevelConstraint bool) {
 	isSQLServerGeneratedColumn := dialect == DialectSQLServer && column.GeneratedExpr != ""
 	// ColumnName
-	buf.WriteString(sq.QuoteIdentifier(dialect, column.ColumnName))
+	buf.WriteString(QuoteIdentifier(dialect, column.ColumnName))
 	// ColumnType
 	if column.DomainName != "" {
 		buf.WriteString(" " + column.DomainName)
@@ -1216,7 +1215,7 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	// COLLATE
 	if column.CollationName != "" && column.CollationName != defaultCollation {
 		if dialect == DialectPostgres {
-			buf.WriteString(` COLLATE "` + sq.EscapeQuote(column.CollationName, '"') + `"`)
+			buf.WriteString(` COLLATE "` + EscapeQuote(column.CollationName, '"') + `"`)
 		} else {
 			buf.WriteString(` COLLATE ` + column.CollationName)
 		}
@@ -1243,9 +1242,9 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	if columnLevelConstraint && column.ReferencesTable != "" && column.ReferencesColumn != "" {
 		buf.WriteString(" REFERENCES ")
 		if column.ReferencesSchema != "" && column.ReferencesSchema != column.TableSchema {
-			buf.WriteString(sq.QuoteIdentifier(dialect, column.ReferencesSchema) + ".")
+			buf.WriteString(QuoteIdentifier(dialect, column.ReferencesSchema) + ".")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, column.ReferencesTable) + " (" + sq.QuoteIdentifier(dialect, column.ReferencesColumn) + ")")
+		buf.WriteString(QuoteIdentifier(dialect, column.ReferencesTable) + " (" + QuoteIdentifier(dialect, column.ReferencesColumn) + ")")
 		if column.UpdateRule != "" && column.UpdateRule != NO_ACTION {
 			buf.WriteString(" ON UPDATE " + column.UpdateRule)
 		}
@@ -1266,7 +1265,7 @@ func writeColumnNames(dialect string, buf *bytes.Buffer, columns []string) {
 		if i > 0 {
 			buf.WriteString(", ")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, column))
+		buf.WriteString(QuoteIdentifier(dialect, column))
 	}
 }
 
@@ -1280,7 +1279,7 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 	}
 
 	if constraint.ConstraintName != "" {
-		buf.WriteString("CONSTRAINT " + sq.QuoteIdentifier(dialect, constraint.ConstraintName) + " ")
+		buf.WriteString("CONSTRAINT " + QuoteIdentifier(dialect, constraint.ConstraintName) + " ")
 	}
 	buf.WriteString(constraint.ConstraintType)
 
@@ -1299,9 +1298,9 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 
 	// Is it a foreign key constraint?
 	if constraint.ConstraintType == FOREIGN_KEY {
-		referencesTable := sq.QuoteIdentifier(dialect, constraint.ReferencesTable)
+		referencesTable := QuoteIdentifier(dialect, constraint.ReferencesTable)
 		if constraint.ReferencesSchema != "" && constraint.ReferencesSchema != currentSchema {
-			referencesTable = sq.QuoteIdentifier(dialect, constraint.ReferencesSchema) + "." + referencesTable
+			referencesTable = QuoteIdentifier(dialect, constraint.ReferencesSchema) + "." + referencesTable
 		} else if dialect == DialectMySQL && constraint.TableSchema != constraint.ReferencesSchema {
 			// If dialect is mysql and the foreign key reference crosses schema
 			// boundaries, we have to always qualify it with a schema (even if
@@ -1311,7 +1310,7 @@ func writeConstraintDefinition(dialect string, buf *bytes.Buffer, currentSchema 
 			if refschema == "" {
 				refschema = currentSchema
 			}
-			referencesTable = sq.QuoteIdentifier(dialect, refschema) + "." + referencesTable
+			referencesTable = QuoteIdentifier(dialect, refschema) + "." + referencesTable
 		}
 		buf.WriteString(" REFERENCES " + referencesTable + " (")
 		writeColumnNames(dialect, buf, constraint.ReferencesColumns)

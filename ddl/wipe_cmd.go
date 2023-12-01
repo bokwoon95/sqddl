@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-
-	"github.com/bokwoon95/sq"
 )
 
 // WipeCmd implements the `sqddl wipe` subcommand.
@@ -116,9 +114,9 @@ func (cmd *WipeCmd) Run() error {
 		}
 		cmd.buf.WriteString("VIEW IF EXISTS ")
 		if view.ViewSchema != "" && view.ViewSchema != currentSchema {
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, view.ViewSchema) + ".")
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, view.ViewSchema) + ".")
 		}
-		cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, view.ViewName))
+		cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, view.ViewName))
 		if cmd.Dialect == DialectPostgres || cmd.Dialect == DialectMySQL {
 			cmd.buf.WriteString(" CASCADE")
 		}
@@ -140,9 +138,9 @@ func (cmd *WipeCmd) Run() error {
 			}
 			cmd.buf.WriteString("ALTER TABLE ")
 			if constraint.TableSchema != "" && constraint.TableSchema != currentSchema {
-				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, constraint.TableSchema) + ".")
+				cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, constraint.TableSchema) + ".")
 			}
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, constraint.TableName) + " DROP CONSTRAINT " + sq.QuoteIdentifier(cmd.Dialect, constraint.ConstraintName))
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, constraint.TableName) + " DROP CONSTRAINT " + QuoteIdentifier(cmd.Dialect, constraint.ConstraintName))
 			if cmd.Dialect == DialectPostgres {
 				cmd.buf.WriteString(" CASCADE")
 			}
@@ -167,9 +165,9 @@ func (cmd *WipeCmd) Run() error {
 		}
 		cmd.buf.WriteString("DROP TABLE IF EXISTS ")
 		if table.TableSchema != "" && table.TableSchema != currentSchema {
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableSchema) + ".")
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, table.TableSchema) + ".")
 		}
-		cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, table.TableName))
+		cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, table.TableName))
 		if cmd.Dialect == DialectPostgres || cmd.Dialect == DialectMySQL {
 			cmd.buf.WriteString(" CASCADE")
 		}
@@ -194,9 +192,9 @@ func (cmd *WipeCmd) Run() error {
 			}
 			cmd.buf.WriteString("IF EXISTS ")
 			if routine.RoutineSchema != "" && routine.RoutineSchema != currentSchema {
-				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, routine.RoutineSchema) + ".")
+				cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, routine.RoutineSchema) + ".")
 			}
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, routine.RoutineName))
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, routine.RoutineName))
 			if cmd.Dialect == DialectPostgres {
 				cmd.buf.WriteString(" CASCADE")
 			}
@@ -216,9 +214,9 @@ func (cmd *WipeCmd) Run() error {
 			}
 			cmd.buf.WriteString("DROP TYPE IF EXISTS ")
 			if enum.EnumSchema != "" && enum.EnumSchema != currentSchema {
-				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, enum.EnumSchema) + ".")
+				cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, enum.EnumSchema) + ".")
 			}
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, enum.EnumName) + " CASCADE;\n")
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, enum.EnumName) + " CASCADE;\n")
 		}
 
 		// DROP DOMAIN.
@@ -232,9 +230,9 @@ func (cmd *WipeCmd) Run() error {
 			}
 			cmd.buf.WriteString("DROP DOMAIN IF EXISTS ")
 			if domain.DomainSchema != "" && domain.DomainSchema != currentSchema {
-				cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, domain.DomainSchema) + ".")
+				cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, domain.DomainSchema) + ".")
 			}
-			cmd.buf.WriteString(sq.QuoteIdentifier(cmd.Dialect, domain.DomainName) + " CASCADE;\n")
+			cmd.buf.WriteString(QuoteIdentifier(cmd.Dialect, domain.DomainName) + " CASCADE;\n")
 		}
 
 		// DROP EXTENSION.
@@ -249,7 +247,7 @@ func (cmd *WipeCmd) Run() error {
 			if cmd.buf.Len() > 0 {
 				cmd.buf.WriteString("\n")
 			}
-			cmd.buf.WriteString("DROP EXTENSION IF EXISTS " + sq.QuoteIdentifier(cmd.Dialect, extension) + " CASCADE;\n")
+			cmd.buf.WriteString("DROP EXTENSION IF EXISTS " + QuoteIdentifier(cmd.Dialect, extension) + " CASCADE;\n")
 		}
 	}
 

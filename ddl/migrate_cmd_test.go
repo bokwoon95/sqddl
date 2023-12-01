@@ -1,12 +1,12 @@
 package ddl
 
 import (
+	"context"
 	"database/sql"
 	"io"
 	"testing"
 	"testing/fstest"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/internal/testutil"
 )
 
@@ -16,16 +16,26 @@ func TestMigrateCmd(t *testing.T) {
 		success  bool
 	}
 
-	assertHistoryTable := func(t *testing.T, db sq.DB, wantEntries []historyTableEntry) {
-		gotEntries, err := sq.FetchAll(db, sq.
-			Queryf("SELECT {*} FROM sqddl_history ORDER BY filename"),
-			func(row *sq.Row) historyTableEntry {
-				return historyTableEntry{
-					filename: row.String("filename"),
-					success:  row.Bool("success"),
-				}
-			},
-		)
+	assertHistoryTable := func(t *testing.T, db DB, wantEntries []historyTableEntry) {
+		var gotEntries []historyTableEntry
+		rows, err := db.QueryContext(context.Background(), "SELECT filename, success FROM sqddl_history ORDER BY filename")
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var filename string
+			var success sql.NullBool
+			err := rows.Scan(&filename, &success)
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			gotEntries = append(gotEntries, historyTableEntry{
+				filename: filename,
+				success:  success.Bool,
+			})
+		}
+		err = rows.Close()
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}
@@ -34,13 +44,22 @@ func TestMigrateCmd(t *testing.T) {
 		}
 	}
 
-	assertTables := func(t *testing.T, db sq.DB, wantTables []string) {
-		gotTables, err := sq.FetchAll(db, sq.
-			Queryf("SELECT {*} FROM sqlite_schema WHERE type = 'table' ORDER BY tbl_name"),
-			func(row *sq.Row) string {
-				return row.String("tbl_name")
-			},
-		)
+	assertTables := func(t *testing.T, db DB, wantTables []string) {
+		var gotTables []string
+		rows, err := db.QueryContext(context.Background(), "SELECT tbl_name FROM sqlite_schema WHERE type = 'table' ORDER BY tbl_name")
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var tableName string
+			err := rows.Scan(&tableName)
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			gotTables = append(gotTables, tableName)
+		}
+		err = rows.Close()
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}

@@ -70,7 +70,7 @@ func TestPostgres(t *testing.T) {
 			return record[:len(record)-1]
 		},
 	})
-	testTablesCmdSchemaQualifiedStructs(t, dialect, *postgresDSN, "testdata/postgres/schema_qualified_tables.go")
+	testTablesCmdSchemaQualifiedStructs(t, dialect, *postgresDSN, "testdata/postgres/schema_qualified_tables.go.txt")
 }
 
 func TestMySQL(t *testing.T) {
@@ -228,7 +228,7 @@ func testAutomigrate(t *testing.T, dialect string, dsn string, dirs ...string) {
 			buf := &bytes.Buffer{}
 			automigrateCmd, err := AutomigrateCommand(
 				"-db", dsn,
-				"-dest", filepath.Join(dir, "src.go"),
+				"-dest", filepath.Join(dir, "src.go.txt"),
 				"-drop-objects",
 				"-accept-warnings",
 				"-dry-run",
@@ -245,7 +245,7 @@ func testAutomigrate(t *testing.T, dialect string, dsn string, dirs ...string) {
 			}
 			automigrateCmd, err = AutomigrateCommand(
 				"-db", dsn,
-				"-dest", filepath.Join(dir, "src.go"),
+				"-dest", filepath.Join(dir, "src.go.txt"),
 				"-drop-objects",
 				"-accept-warnings",
 			)
@@ -262,7 +262,7 @@ func testAutomigrate(t *testing.T, dialect string, dsn string, dirs ...string) {
 
 			automigrateCmd, err = AutomigrateCommand(
 				"-db", dsn,
-				"-dest", filepath.Join(dir, "dest.go"),
+				"-dest", filepath.Join(dir, "dest.go.txt"),
 				"-drop-objects",
 				"-accept-warnings",
 				"-dry-run",
@@ -279,7 +279,7 @@ func testAutomigrate(t *testing.T, dialect string, dsn string, dirs ...string) {
 			}
 			automigrateCmd, err = AutomigrateCommand(
 				"-db", dsn,
-				"-dest", filepath.Join(dir, "dest.go"),
+				"-dest", filepath.Join(dir, "dest.go.txt"),
 				"-drop-objects",
 				"-accept-warnings",
 			)

@@ -18,8 +18,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // MigrateCmd implements the `sqddl migrate` subcommand.
@@ -83,9 +81,9 @@ type MigrateCmd struct {
 
 // MigrateCommand creates a new MigrateCmd with the given arguments. E.g.
 //
-//   sqddl migrate -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS] [FILENAMES...]
+//	sqddl migrate -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS] [FILENAMES...]
 //
-//   MigrateCommand("-db", "postgres://user:pass@localhost:5432/sakila", "-dir", "./migrations")
+//	MigrateCommand("-db", "postgres://user:pass@localhost:5432/sakila", "-dir", "./migrations")
 func MigrateCommand(args ...string) (*MigrateCmd, error) {
 	var cmd MigrateCmd
 	var dir, lockTimeout, maxDelay, baseDelay string
@@ -218,22 +216,40 @@ func (cmd *MigrateCmd) Run() error {
 		if err != nil {
 			return err
 		}
-		cursor, err := sq.FetchCursor(cmd.DB, sq.
-			Queryf(`SELECT {*} FROM {} WHERE filename IN ({})`, sq.Identifier(cmd.HistoryTable), cmd.Filenames).
-			SetDialect(cmd.Dialect),
-			migration{}.rowmapper,
-		)
+		var b strings.Builder
+		b.WriteString("SELECT filename, checksum, started_at, time_taken_ns, success")
+		b.WriteString(" FROM " + QuoteIdentifier(cmd.Dialect, cmd.HistoryTable))
+		b.WriteString(" WHERE filename IN (")
+		for i, filename := range cmd.Filenames {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString("'" + EscapeQuote(filename, '\'') + "'")
+		}
+		b.WriteString(")")
+		rows, err := cmd.DB.Query(b.String())
 		if err != nil {
 			return err
 		}
-		defer cursor.Close()
-		for cursor.Next() {
-			m, err := cursor.Result()
+		defer rows.Close()
+		for rows.Next() {
+			var filename, checksum sql.NullString
+			var startedAt sql.NullTime
+			var timeTakenNs sql.NullInt64
+			var success sql.NullBool
+			err := rows.Scan(&filename, &checksum, &startedAt, &timeTakenNs, &success)
 			if err != nil {
 				return err
 			}
-			if i, ok := cache[m.filename]; ok {
-				migrations[i] = m
+			if i, ok := cache[filename.String]; ok {
+				migrations[i] = migration{
+					valid:       true,
+					filename:    filename.String,
+					checksum:    checksum.String,
+					startedAt:   startedAt,
+					timeTakenNs: timeTakenNs,
+					success:     success.Bool,
+				}
 			}
 		}
 	}
@@ -319,16 +335,6 @@ type migration struct {
 	startedAt   sql.NullTime  // When the migration started at.
 	timeTakenNs sql.NullInt64 // How long the migration took (in nanoseconds).
 	success     bool          // Whether the migration was successful.
-}
-
-func (m migration) rowmapper(row *sq.Row) migration {
-	m.valid = true
-	m.filename = row.String("filename")
-	m.checksum = row.String("checksum")
-	m.startedAt = row.NullTime("started_at")
-	m.timeTakenNs = row.NullInt64("time_taken_ns")
-	m.success = row.Bool("success")
-	return m
 }
 
 // https://www.reddit.com/r/golang/comments/ntyi7i/what_is_the_reason_go_chose_to_use_a_constant_as/h0w0tu7/
@@ -466,7 +472,7 @@ func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt in
 		}
 		tx.Rollback()
 	}
-	var db sq.DB
+	var db DB
 	if tx != nil {
 		db = tx
 	} else {

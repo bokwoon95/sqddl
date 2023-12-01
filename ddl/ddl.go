@@ -13,8 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // The various keyword constants used by ddl.
@@ -39,10 +37,10 @@ const (
 
 // The dialects supported by ddl.
 const (
-	DialectSQLite    = sq.DialectSQLite
-	DialectPostgres  = sq.DialectPostgres
-	DialectMySQL     = sq.DialectMySQL
-	DialectSQLServer = sq.DialectSQLServer
+	DialectSQLite    = "sqlite"
+	DialectPostgres  = "postgres"
+	DialectMySQL     = "mysql"
+	DialectSQLServer = "sqlserver"
 	DialectOracle    = "oracle"
 )
 

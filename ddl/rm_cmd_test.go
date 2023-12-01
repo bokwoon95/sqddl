@@ -5,7 +5,6 @@ import (
 	"io"
 	"testing"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/internal/testutil"
 )
 
@@ -56,12 +55,21 @@ func TestRmCmd(t *testing.T) {
 
 	// Assert staff_list.sql.
 	wantFilenames := []string{"repeatable/views/staff_list.sql"}
-	gotFilenames, err := sq.FetchAll(db, sq.
-		Queryf("SELECT {*} FROM sqddl_history ORDER BY filename"),
-		func(row *sq.Row) string {
-			return row.String("filename")
-		},
-	)
+	var gotFilenames []string
+	rows, err := db.Query("SELECT filename FROM sqddl_history ORDER BY filename")
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var filename string
+		err := rows.Scan(&filename)
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		gotFilenames = append(gotFilenames, filename)
+	}
+	err = rows.Close()
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}

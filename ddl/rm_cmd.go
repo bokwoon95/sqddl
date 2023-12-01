@@ -7,8 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
-
-	"github.com/bokwoon95/sq"
+	"strings"
 )
 
 // RmCmd implements the `sqddl rm` subcommand.
@@ -36,13 +35,13 @@ type RmCmd struct {
 
 // RmCommand creates a new RmCmd with the given arguments.
 //
-//   sqddl rm -db <DATABASE_URL> [FILENAMES...]
+//	sqddl rm -db <DATABASE_URL> [FILENAMES...]
 //
-//   RmCommand(
-//       "-db", "postgres://user:pass@localhost:5432/sakila",
-//       "-dir", "./migrations",
-//       "02_sakila.sql", 04_extras.sql",
-//   )
+//	RmCommand(
+//	    "-db", "postgres://user:pass@localhost:5432/sakila",
+//	    "-dir", "./migrations",
+//	    "02_sakila.sql", 04_extras.sql",
+//	)
 func RmCommand(args ...string) (*RmCmd, error) {
 	var cmd RmCmd
 	var dir string
@@ -112,18 +111,27 @@ func (cmd *RmCmd) Run() error {
 		fmt.Fprintln(cmd.Stderr, "0 rows affected")
 		return nil
 	}
-	historyTable := sq.Identifier(cmd.HistoryTable)
-	result, err := sq.Exec(cmd.DB, sq.
-		Queryf(`DELETE FROM {} WHERE filename IN ({})`, historyTable, cmd.Filenames).
-		SetDialect(cmd.Dialect),
-	)
+	var b strings.Builder
+	b.WriteString("DELETE FROM " + QuoteIdentifier(cmd.Dialect, cmd.HistoryTable) + " WHERE filename IN (")
+	for i, filename := range cmd.Filenames {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString("'" + EscapeQuote(filename, '\'') + "'")
+	}
+	b.WriteString(")")
+	result, err := cmd.DB.Exec(b.String())
 	if err != nil {
 		return err
 	}
-	if result.RowsAffected == 1 {
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 1 {
 		fmt.Fprintln(cmd.Stderr, "1 row affected")
 	} else {
-		fmt.Fprintln(cmd.Stderr, strconv.FormatInt(result.RowsAffected, 10)+" rows affected")
+		fmt.Fprintln(cmd.Stderr, strconv.FormatInt(rowsAffected, 10)+" rows affected")
 	}
 	return nil
 }

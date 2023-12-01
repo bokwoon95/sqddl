@@ -12,13 +12,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // Subsetter is used to dump a referentially-intact subset of the database.
 type Subsetter struct {
-	db           sq.DB
+	db           DB
 	dialect      string
 	inMemory     bool
 	suffix       string
@@ -38,7 +36,7 @@ type queryResult struct {
 }
 
 // TODO: export this once you get the temp table version working.
-func newSubsetter(dialect string, db sq.DB, filter Filter) (*Subsetter, error) {
+func newSubsetter(dialect string, db DB, filter Filter) (*Subsetter, error) {
 	ss := &Subsetter{
 		dialect:      dialect,
 		db:           db,
@@ -77,7 +75,7 @@ func newSubsetter(dialect string, db sq.DB, filter Filter) (*Subsetter, error) {
 
 // NewInMemorySubsetter creates an in-memory subsetter that holds the results
 // of each subset query in-memory.
-func NewInMemorySubsetter(dialect string, db sq.DB, filter Filter) (*Subsetter, error) {
+func NewInMemorySubsetter(dialect string, db DB, filter Filter) (*Subsetter, error) {
 	ss, err := newSubsetter(dialect, db, filter)
 	if err != nil {
 		return nil, err
@@ -159,9 +157,9 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 		}
 		column := ss.cache.GetColumn(baseTable, columnName)
 		if baseTable.TableSchema != "" {
-			b.WriteString(sq.QuoteIdentifier(ss.dialect, baseTable.TableSchema) + ".")
+			b.WriteString(QuoteIdentifier(ss.dialect, baseTable.TableSchema) + ".")
 		}
-		b.WriteString(sq.QuoteIdentifier(ss.dialect, baseTable.TableName) + "." + sq.QuoteIdentifier(ss.dialect, columnName))
+		b.WriteString(QuoteIdentifier(ss.dialect, baseTable.TableName) + "." + QuoteIdentifier(ss.dialect, columnName))
 		columnType, _, _ := normalizeColumnType(ss.dialect, column.ColumnType)
 		if ss.dialect == DialectMySQL {
 			if strings.HasSuffix(columnType, " UNSIGNED") {
@@ -187,16 +185,16 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 		case "TINYTEXT", "TEXT", "MEDIUMTEXT", "LONGTEXT", "CHAR", "VARCHAR", "NVARCHAR", "UUIDField", "UNIQUEIDENTIFIER", "JSON", "JSONB":
 			scanDest = append(scanDest, &sql.NullString{})
 		case "DATE", "TIME", "TIMETZ", "DATETIME", "DATETIME2", "SMALLDATETIME", "DATETIMEOFFSET", "TIMESTAMP", "TIMESTAMPTZ":
-			scanDest = append(scanDest, &sq.Timestamp{})
+			scanDest = append(scanDest, &Timestamp{})
 		default:
 			scanDest = append(scanDest, &sql.NullString{})
 		}
 	}
 	b.WriteString(query[starEnd:tableStart])
 	if baseTable.TableSchema != "" {
-		b.WriteString(sq.QuoteIdentifier(ss.dialect, baseTable.TableSchema) + ".")
+		b.WriteString(QuoteIdentifier(ss.dialect, baseTable.TableSchema) + ".")
 	}
-	b.WriteString(sq.QuoteIdentifier(ss.dialect, baseTable.TableName) + query[tableEnd:])
+	b.WriteString(QuoteIdentifier(ss.dialect, baseTable.TableName) + query[tableEnd:])
 	rows, err := ss.db.QueryContext(context.Background(), b.String())
 	if err != nil {
 		return err
@@ -285,8 +283,8 @@ func (ss *Subsetter) subset(query string, extended bool) error {
 						}
 					}
 				}
-				record[i] = "'" + sq.EscapeQuote(value.String, '\'') + "'"
-			case *sq.Timestamp:
+				record[i] = "'" + EscapeQuote(value.String, '\'') + "'"
+			case *Timestamp:
 				if !value.Valid {
 					record[i] = "NULL"
 					continue
@@ -450,9 +448,9 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 	if table == nil {
 		return ""
 	}
-	fullTableName := sq.QuoteIdentifier(ss.dialect, table.TableName)
+	fullTableName := QuoteIdentifier(ss.dialect, table.TableName)
 	if table.TableSchema != "" {
-		fullTableName = sq.QuoteIdentifier(ss.dialect, table.TableSchema) + "." + fullTableName
+		fullTableName = QuoteIdentifier(ss.dialect, table.TableSchema) + "." + fullTableName
 	}
 	pkey := ss.cache.GetPrimaryKey(table)
 	if pkey == nil {
@@ -465,7 +463,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			b.WriteString(sq.QuoteIdentifier(ss.dialect, column))
+			b.WriteString(QuoteIdentifier(ss.dialect, column))
 		}
 		pkeyColumns = b.String()
 	}
@@ -476,7 +474,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			b.WriteString(fullTableName + "." + sq.QuoteIdentifier(ss.dialect, column))
+			b.WriteString(fullTableName + "." + QuoteIdentifier(ss.dialect, column))
 		}
 		qualifiedPkeyColumns = b.String()
 	}
@@ -502,7 +500,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 				if j > 0 {
 					b.WriteString(", ")
 				}
-				b.WriteString(sq.QuoteIdentifier(ss.dialect, column))
+				b.WriteString(QuoteIdentifier(ss.dialect, column))
 			}
 			resultColumns = b.String()
 		}
@@ -565,14 +563,14 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 		} else {
 			buf.WriteString("\n    ,")
 		}
-		buf.WriteString(fullTableName + "." + sq.QuoteIdentifier(ss.dialect, column.ColumnName))
+		buf.WriteString(fullTableName + "." + QuoteIdentifier(ss.dialect, column.ColumnName))
 	}
 	buf.WriteString("\nFROM " + fullTableName + "\nJOIN " + name + " ON ")
 	for i, column := range pkey.Columns {
 		if i > 0 {
 			buf.WriteString(" AND ")
 		}
-		columnName := sq.QuoteIdentifier(ss.dialect, column)
+		columnName := QuoteIdentifier(ss.dialect, column)
 		buf.WriteString(name + "." + columnName + " = " + fullTableName + "." + columnName)
 	}
 	if len(pkey.Columns) > 0 {
@@ -581,7 +579,7 @@ func (ss *Subsetter) Query(tableSchema, tableName string) string {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			buf.WriteString(fullTableName + "." + sq.QuoteIdentifier(ss.dialect, column))
+			buf.WriteString(fullTableName + "." + QuoteIdentifier(ss.dialect, column))
 		}
 	}
 	buf.WriteString("\n;")
@@ -656,9 +654,9 @@ func (j join) toSQL(dialect string) string {
 	defer bufpool.Put(buf)
 	tableID := j.tableIDs[len(j.tableIDs)-1]
 	if tableID[0] != "" {
-		buf.WriteString(sq.QuoteIdentifier(dialect, tableID[0]) + ".")
+		buf.WriteString(QuoteIdentifier(dialect, tableID[0]) + ".")
 	}
-	buf.WriteString(sq.QuoteIdentifier(dialect, tableID[1]))
+	buf.WriteString(QuoteIdentifier(dialect, tableID[1]))
 	var schema1, table1 string
 	var columns1, columns2 []string
 	schema2, table2 := tableID[0], tableID[1]
@@ -675,9 +673,9 @@ func (j join) toSQL(dialect string) string {
 		}
 		buf.WriteString("\n    JOIN ")
 		if schema2 != "" {
-			buf.WriteString(sq.QuoteIdentifier(dialect, schema2) + ".")
+			buf.WriteString(QuoteIdentifier(dialect, schema2) + ".")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, table2) + " ON ")
+		buf.WriteString(QuoteIdentifier(dialect, table2) + " ON ")
 		for i := range columns1 {
 			column1 := columns1[i]
 			column2 := columns2[i]
@@ -685,13 +683,13 @@ func (j join) toSQL(dialect string) string {
 				buf.WriteString(" AND ")
 			}
 			if schema2 != "" {
-				buf.WriteString(sq.QuoteIdentifier(dialect, schema2) + ".")
+				buf.WriteString(QuoteIdentifier(dialect, schema2) + ".")
 			}
-			buf.WriteString(sq.QuoteIdentifier(dialect, table2) + "." + sq.QuoteIdentifier(dialect, column2) + " = ")
+			buf.WriteString(QuoteIdentifier(dialect, table2) + "." + QuoteIdentifier(dialect, column2) + " = ")
 			if schema1 != "" {
-				buf.WriteString(sq.QuoteIdentifier(dialect, schema1) + ".")
+				buf.WriteString(QuoteIdentifier(dialect, schema1) + ".")
 			}
-			buf.WriteString(sq.QuoteIdentifier(dialect, table1) + "." + sq.QuoteIdentifier(dialect, column1))
+			buf.WriteString(QuoteIdentifier(dialect, table1) + "." + QuoteIdentifier(dialect, column1))
 		}
 	}
 	return buf.String()

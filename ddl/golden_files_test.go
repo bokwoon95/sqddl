@@ -11,8 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/bokwoon95/sq"
 )
 
 var generateGoldenFiles = flag.Bool("generate-golden-files", false, "")
@@ -71,13 +69,13 @@ func TestMain(m *testing.M) {
 		l.Fatal(err)
 	}
 
-	tablesCmd := &TablesCmd{Dialect: "sqlite", DB: db, Filename: "testdata/sqlite/tables.go", PackageName: "sakila"}
+	tablesCmd := &TablesCmd{Dialect: "sqlite", DB: db, Filename: "testdata/sqlite/tables.go.txt", PackageName: "sakila"}
 	err = tablesCmd.Run()
 	if err != nil {
 		l.Fatal(err)
 	}
 
-	viewsCmd := &ViewsCmd{Dialect: "sqlite", DB: db, Filename: "testdata/sqlite/views.go", PackageName: "sakila"}
+	viewsCmd := &ViewsCmd{Dialect: "sqlite", DB: db, Filename: "testdata/sqlite/views.go.txt", PackageName: "sakila"}
 	err = viewsCmd.Run()
 	if err != nil {
 		l.Fatal(err)
@@ -117,7 +115,7 @@ func TestMain(m *testing.M) {
 	}
 
 	p := NewStructParser(nil)
-	file, err := os.Open("testdata/tables.go")
+	file, err := os.Open("testdata/tables.go.txt")
 	if err != nil {
 		l.Fatal(err)
 	}
@@ -170,9 +168,9 @@ func TestMain(m *testing.M) {
 						if buf.Len() > 0 {
 							buf.WriteString("\n")
 						}
-						tableName := sq.QuoteIdentifier(dialect, constraint.TableName)
+						tableName := QuoteIdentifier(dialect, constraint.TableName)
 						if constraint.TableSchema != "" {
-							tableName = sq.QuoteIdentifier(dialect, constraint.TableSchema) + "." + tableName
+							tableName = QuoteIdentifier(dialect, constraint.TableSchema) + "." + tableName
 						}
 						buf.WriteString("ALTER TABLE " + tableName + " ADD ")
 						writeConstraintDefinition(dialect, buf, "", constraint)
@@ -285,12 +283,12 @@ func TestMain(m *testing.M) {
 
 		for _, tc := range database.testcases {
 			srcCatalog := &Catalog{Dialect: database.dialect, CurrentSchema: database.currentSchema}
-			err = writeCatalog(srcCatalog, os.DirFS("."), "sqddl_history", filepath.Join(tc.dir, "src.go"))
+			err = writeCatalog(srcCatalog, os.DirFS("."), "sqddl_history", filepath.Join(tc.dir, "src.go.txt"))
 			if err != nil {
 				l.Fatalf("%s: %s: %s", database.dialect, tc.dir, err)
 			}
 			destCatalog := &Catalog{Dialect: database.dialect, CurrentSchema: database.currentSchema}
-			err = writeCatalog(destCatalog, os.DirFS("."), "sqddl_history", filepath.Join(tc.dir, "dest.go"))
+			err = writeCatalog(destCatalog, os.DirFS("."), "sqddl_history", filepath.Join(tc.dir, "dest.go.txt"))
 			if err != nil {
 				l.Fatalf("%s: %s: %s", database.dialect, tc.dir, err)
 			}

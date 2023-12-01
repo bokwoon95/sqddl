@@ -44,7 +44,7 @@ func TestViewsCmd(t *testing.T) {
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}
-	b, err := os.ReadFile("testdata/sqlite/views.go")
+	b, err := os.ReadFile("testdata/sqlite/views.go.txt")
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}

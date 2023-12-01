@@ -46,8 +46,8 @@ func Test_sqlserverMigration(t *testing.T) {
 		tt := tt
 		t.Run(tt.dir, func(t *testing.T) {
 			t.Parallel()
-			srcCatalog := newCatalog(t, tt.dir+"/src.go")
-			destCatalog := newCatalog(t, tt.dir+"/dest.go")
+			srcCatalog := newCatalog(t, tt.dir+"/src.go.txt")
+			destCatalog := newCatalog(t, tt.dir+"/dest.go.txt")
 			m := newSQLServerMigration(srcCatalog, destCatalog, tt.dropObjects)
 			filenames, bufs, warnings := m.sql(strings.TrimPrefix(filepath.Base(tt.dir), "sqlserver_"))
 			for i, filename := range filenames {

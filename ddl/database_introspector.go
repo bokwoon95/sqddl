@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-
-	"github.com/bokwoon95/sq"
 )
 
 //go:embed introspection_scripts
@@ -36,11 +34,11 @@ type DatabaseIntrospector struct {
 	Dialect string
 
 	// DB is the database connection used to introspect the database.
-	DB sq.DB
+	DB DB
 }
 
 // NewDatabaseIntrospector creates a new DatabaseIntrospector.
-func NewDatabaseIntrospector(dialect string, db sq.DB) *DatabaseIntrospector {
+func NewDatabaseIntrospector(dialect string, db DB) *DatabaseIntrospector {
 	return &DatabaseIntrospector{Dialect: dialect, DB: db}
 }
 
@@ -597,7 +595,7 @@ func (dbi *DatabaseIntrospector) GetColumns() ([]Column, error) {
 				column.GeneratedExpr = strings.ReplaceAll(column.GeneratedExpr, `\'`, `'`)
 			}
 			if column.ColumnDefault != "" && !isLiteral(column.ColumnDefault) && !wrappedInBrackets(column.ColumnDefault) {
-				column.ColumnDefault = `'` + sq.EscapeQuote(column.ColumnDefault, '\'') + `'`
+				column.ColumnDefault = `'` + EscapeQuote(column.ColumnDefault, '\'') + `'`
 			}
 		case DialectSQLServer:
 			err = rows.Scan(
@@ -1664,7 +1662,7 @@ func mklist(strs []string) string {
 		} else {
 			b.WriteString(`, `)
 		}
-		b.WriteString(`'` + sq.EscapeQuote(str, '\'') + `'`)
+		b.WriteString(`'` + EscapeQuote(str, '\'') + `'`)
 	}
 	return b.String()
 }

@@ -44,7 +44,7 @@ func TestTablesCmd(t *testing.T) {
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}
-	b, err := os.ReadFile("testdata/sqlite/tables.go")
+	b, err := os.ReadFile("testdata/sqlite/tables.go.txt")
 	if err != nil {
 		t.Fatal(testutil.Callers(), err)
 	}

@@ -328,7 +328,7 @@ func writeCatalog(catalog *Catalog, fsys fs.FS, historyTable, s string) error {
 		}
 		return nil
 	}
-	if strings.HasSuffix(s, ".go") {
+	if strings.HasSuffix(s, ".go") || strings.HasSuffix(s, ".go.txt") {
 		file, err := fsys.Open(s)
 		if err != nil {
 			return err

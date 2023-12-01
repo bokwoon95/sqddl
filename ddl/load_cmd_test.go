@@ -8,7 +8,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/bokwoon95/sq"
 	"github.com/bokwoon95/sqddl/internal/testutil"
 )
 
@@ -140,9 +139,21 @@ func TestLoadCmd(t *testing.T) {
 
 	assertOrderedCSV := func(t *testing.T, db *sql.DB) {
 		wantA := []int{1, 2, 3}
-		gotA, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM a"), func(row *sq.Row) int {
-			return row.Int("a")
-		})
+		var gotA []int
+		rows, err := db.Query("SELECT a FROM a")
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var num int
+			err := rows.Scan(&num)
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			gotA = append(gotA, num)
+		}
+		err = rows.Close()
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}
@@ -151,9 +162,21 @@ func TestLoadCmd(t *testing.T) {
 		}
 
 		wantB := [][2]int{{1, 1}, {2, 2}, {3, 3}}
-		gotB, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM b"), func(row *sq.Row) [2]int {
-			return [2]int{row.Int("b"), row.Int("a")}
-		})
+		var gotB [][2]int
+		rows, err = db.Query("SELECT b, a FROM b")
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var nums [2]int
+			err := rows.Scan(&nums[0], &nums[1])
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			gotB = append(gotB, nums)
+		}
+		err = rows.Close()
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}
@@ -162,9 +185,21 @@ func TestLoadCmd(t *testing.T) {
 		}
 
 		wantC := [][2]int{{1, 1}, {2, 2}, {3, 3}}
-		gotC, err := sq.FetchAll(db, sq.Queryf("SELECT {*} FROM c"), func(row *sq.Row) [2]int {
-			return [2]int{row.Int("c"), row.Int("b")}
-		})
+		var gotC [][2]int
+		rows, err = db.Query("SELECT c, b FROM c")
+		if err != nil {
+			t.Fatal(testutil.Callers(), err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var nums [2]int
+			err := rows.Scan(&nums[0], &nums[1])
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			gotC = append(gotC, nums)
+		}
+		err = rows.Close()
 		if err != nil {
 			t.Fatal(testutil.Callers(), err)
 		}

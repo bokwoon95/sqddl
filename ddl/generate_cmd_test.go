@@ -46,8 +46,8 @@ func TestGenerateCmd(t *testing.T) {
 			t.Parallel()
 			tempDir := t.TempDir()
 			generateCmd, err := GenerateCommand(
-				"-src", filepath.Join(tt.dir, "src.go"),
-				"-dest", filepath.Join(tt.dir, "dest.go"),
+				"-src", filepath.Join(tt.dir, "src.go.txt"),
+				"-dest", filepath.Join(tt.dir, "dest.go.txt"),
 				"-output-dir", tempDir,
 				"-prefix", strings.TrimPrefix(tt.dir, "testdata/"+tt.dialect+"_"),
 				"-drop-objects",
@@ -65,8 +65,8 @@ func TestGenerateCmd(t *testing.T) {
 			}
 
 			generateCmd, err = GenerateCommand(
-				"-src", filepath.Join(tt.dir, "src.go"),
-				"-dest", filepath.Join(tt.dir, "dest.go"),
+				"-src", filepath.Join(tt.dir, "src.go.txt"),
+				"-dest", filepath.Join(tt.dir, "dest.go.txt"),
 				"-prefix", strings.TrimPrefix(tt.dir, "testdata/"+tt.dialect+"_"),
 				"-drop-objects",
 				"-dialect", tt.dialect,
@@ -110,7 +110,7 @@ func Test_writeCatalog(t *testing.T) {
 
 	sources := []string{
 		"testdata/sqlite/schema.json",
-		"testdata/sqlite/tables.go",
+		"testdata/sqlite/tables.go.txt",
 		"testdata/sqlite/dump.zip",
 		"testdata/sqlite/dump.tgz",
 		"testdata/sqlite",
@@ -134,7 +134,7 @@ func Test_writeCatalog(t *testing.T) {
 					if diff := testutil.Diff(gotTable.Columns, wantTable.Columns); diff != "" {
 						t.Error(testutil.Callers(), diff)
 					}
-					if strings.HasSuffix(source, ".go") {
+					if strings.HasSuffix(source, ".go.txt") {
 						continue
 					}
 					if diff := testutil.Diff(gotTable.Constraints, wantTable.Constraints); diff != "" {

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-
-	"github.com/bokwoon95/sq"
 )
 
 type sqlserverMigration struct {
@@ -284,11 +282,11 @@ func newSQLServerMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) s
 					continue
 				}
 				if srcColumn.ColumnIdentity == "" && destColumn.ColumnIdentity != "" {
-					tableName := sq.QuoteIdentifier(dialect, destTable.TableName)
+					tableName := QuoteIdentifier(dialect, destTable.TableName)
 					if destSchema.SchemaName != "" && destSchema.SchemaName != m.currentSchema {
-						tableName = sq.QuoteIdentifier(dialect, destSchema.SchemaName) + "."
+						tableName = QuoteIdentifier(dialect, destSchema.SchemaName) + "."
 					}
-					columnName := sq.QuoteIdentifier(dialect, destColumn.ColumnName)
+					columnName := QuoteIdentifier(dialect, destColumn.ColumnName)
 					m.warnings = append(m.warnings, fmt.Sprintf("%s: column %s: identity cannot be added to an existing column, skipping", tableName, columnName))
 				}
 				columnsAreDifferent := func() bool {
@@ -477,10 +475,10 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, fkey.ConstraintName)
-			tableName := sq.QuoteIdentifier(dialect, fkey.TableName)
+			constraintName := QuoteIdentifier(dialect, fkey.ConstraintName)
+			tableName := QuoteIdentifier(dialect, fkey.TableName)
 			if fkey.TableSchema != "" && fkey.TableSchema != m.currentSchema {
-				tableName = sq.QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
+				tableName = QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
 			}
 			buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName + ";\n")
 		}
@@ -496,21 +494,21 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 		bufs = append(bufs, buf)
 		var schemaPrefix string
 		if schema.SchemaName != "" && schema.SchemaName != m.currentSchema {
-			schemaPrefix = sq.QuoteIdentifier(dialect, schema.SchemaName) + "."
+			schemaPrefix = QuoteIdentifier(dialect, schema.SchemaName) + "."
 		}
 		// DROP VIEW.
 		for _, view := range schema.Views {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("DROP VIEW " + schemaPrefix + sq.QuoteIdentifier(dialect, view.ViewName) + ";\n")
+			buf.WriteString("DROP VIEW " + schemaPrefix + QuoteIdentifier(dialect, view.ViewName) + ";\n")
 		}
 		// DROP TABLE.
 		for _, table := range schema.Tables {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("DROP TABLE " + schemaPrefix + sq.QuoteIdentifier(dialect, table.TableName) + ";\n")
+			buf.WriteString("DROP TABLE " + schemaPrefix + QuoteIdentifier(dialect, table.TableName) + ";\n")
 		}
 		// DROP PROCEDURE and DROP FUNCTION.
 		for _, routine := range schema.Routines {
@@ -518,16 +516,16 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 				buf.WriteString("\n")
 			}
 			if routine.RoutineType == "FUNCTION" {
-				buf.WriteString("DROP FUNCTION " + schemaPrefix + sq.QuoteIdentifier(dialect, routine.RoutineName) + ";\n")
+				buf.WriteString("DROP FUNCTION " + schemaPrefix + QuoteIdentifier(dialect, routine.RoutineName) + ";\n")
 			} else {
-				buf.WriteString("DROP PROCEDURE " + schemaPrefix + sq.QuoteIdentifier(dialect, routine.RoutineName) + ";\n")
+				buf.WriteString("DROP PROCEDURE " + schemaPrefix + QuoteIdentifier(dialect, routine.RoutineName) + ";\n")
 			}
 		}
 		// DROP SCHEMA.
 		if buf.Len() > 0 {
 			buf.WriteString("\n")
 		}
-		buf.WriteString("DROP SCHEMA " + sq.QuoteIdentifier(dialect, schema.SchemaName) + ";\n")
+		buf.WriteString("DROP SCHEMA " + QuoteIdentifier(dialect, schema.SchemaName) + ";\n")
 	}
 
 	// CREATE SCHEMA.
@@ -542,7 +540,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("IF SCHEMA_ID('" + sq.EscapeQuote(schemaName, '\'') + "') IS NULL EXEC('CREATE SCHEMA " + sq.EscapeQuote(sq.QuoteIdentifier(dialect, schemaName), '\'') + "');\n")
+			buf.WriteString("IF SCHEMA_ID('" + EscapeQuote(schemaName, '\'') + "') IS NULL EXEC('CREATE SCHEMA " + EscapeQuote(QuoteIdentifier(dialect, schemaName), '\'') + "');\n")
 		}
 	}
 
@@ -558,9 +556,9 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			tableName := sq.QuoteIdentifier(dialect, table.TableName)
+			tableName := QuoteIdentifier(dialect, table.TableName)
 			if table.TableSchema != "" && table.TableSchema != m.currentSchema {
-				tableName = sq.QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
+				tableName = QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
 			}
 			buf.WriteString("DROP TABLE " + tableName + ";\n")
 		}
@@ -588,10 +586,10 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 		}
 		n++
 		name := alterTable.tableName
-		tableName := sq.QuoteIdentifier(dialect, alterTable.tableName)
+		tableName := QuoteIdentifier(dialect, alterTable.tableName)
 		if alterTable.tableSchema != "" && alterTable.tableSchema != m.currentSchema {
 			name = alterTable.tableSchema + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
 		}
 		// ${prefix}_${n}_alter_${table}.tx.sql
 		filenames = append(filenames, fmt.Sprintf("%s_%02d_alter_%s.tx.sql", prefix, n, name))
@@ -604,10 +602,10 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
-			tableName := sq.QuoteIdentifier(dialect, index.TableName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
+			tableName := QuoteIdentifier(dialect, index.TableName)
 			if index.TableSchema != "" && index.TableSchema != m.currentSchema {
-				tableName = sq.QuoteIdentifier(dialect, index.TableSchema) + "." + tableName
+				tableName = QuoteIdentifier(dialect, index.TableSchema) + "." + tableName
 			}
 			buf.WriteString("DROP INDEX " + indexName + " ON " + tableName + ";\n")
 		}
@@ -617,7 +615,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, constraint.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, constraint.ConstraintName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName + ";\n")
 		}
 
@@ -626,7 +624,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+			columnName := QuoteIdentifier(dialect, column.ColumnName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP COLUMN " + columnName + ";\n")
 		}
 
@@ -646,7 +644,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 		// ALTER COLUMN.
 		for _, columns := range alterTable.alterColumns {
 			srcColumn, destColumn := columns[0], columns[1]
-			columnName := sq.QuoteIdentifier(dialect, destColumn.ColumnName)
+			columnName := QuoteIdentifier(dialect, destColumn.ColumnName)
 			srcType, srcArg1, srcArg2 := normalizeColumnType(dialect, srcColumn.ColumnType)
 			destType, destArg1, destArg2 := normalizeColumnType(dialect, destColumn.ColumnType)
 			// ALTER TYPE
@@ -657,7 +655,7 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
 			// COLLATE
 			collation := ""
 			if destColumn.CollationName != "" && destColumn.CollationName != m.defaultCollation {
-				collation = sq.EscapeQuote(destColumn.CollationName, '[')
+				collation = EscapeQuote(destColumn.CollationName, '[')
 			}
 			// NULL | NOT NULL
 			nullability := ""
@@ -704,11 +702,11 @@ func (m *sqlserverMigration) sql(prefix string) (filenames []string, bufs []*byt
         JOIN sys.tables ON tables.object_id = default_constraints.parent_object_id
         JOIN sys.columns ON columns.column_id = default_constraints.parent_column_id
     WHERE
-        SCHEMA_NAME(tables.schema_id) = '` + sq.EscapeQuote(alterTable.tableSchema, '\'') + `'
-        AND tables.name = '` + sq.EscapeQuote(alterTable.tableName, '\'') + `'
-        AND columns.name = '` + sq.EscapeQuote(destColumn.ColumnName, '\'') + `'
+        SCHEMA_NAME(tables.schema_id) = '` + EscapeQuote(alterTable.tableSchema, '\'') + `'
+        AND tables.name = '` + EscapeQuote(alterTable.tableName, '\'') + `'
+        AND columns.name = '` + EscapeQuote(destColumn.ColumnName, '\'') + `'
     ;
-    EXEC('ALTER TABLE ` + sq.EscapeQuote(tableName, '\'') + ` DROP CONSTRAINT ' + @name);
+    EXEC('ALTER TABLE ` + EscapeQuote(tableName, '\'') + ` DROP CONSTRAINT ' + @name);
 END;
 `)
 				}
@@ -762,9 +760,9 @@ END;
 			}
 			buf.WriteString("ALTER TABLE ")
 			if fkey.TableSchema != "" && fkey.TableSchema != m.currentSchema {
-				buf.WriteString(sq.QuoteIdentifier(dialect, fkey.TableSchema) + ".")
+				buf.WriteString(QuoteIdentifier(dialect, fkey.TableSchema) + ".")
 			}
-			buf.WriteString(sq.QuoteIdentifier(dialect, fkey.TableName) + " ADD ")
+			buf.WriteString(QuoteIdentifier(dialect, fkey.TableName) + " ADD ")
 			writeConstraintDefinition(dialect, buf, m.currentSchema, fkey)
 			buf.WriteString(";\n")
 		}
@@ -785,9 +783,9 @@ END;
 			}
 			buf.WriteString("ALTER TABLE ")
 			if fkey.TableSchema != "" && fkey.TableSchema != m.currentSchema {
-				buf.WriteString(sq.QuoteIdentifier(dialect, fkey.TableSchema) + ".")
+				buf.WriteString(QuoteIdentifier(dialect, fkey.TableSchema) + ".")
 			}
-			buf.WriteString(sq.QuoteIdentifier(dialect, fkey.TableName) + " ADD ")
+			buf.WriteString(QuoteIdentifier(dialect, fkey.TableName) + " ADD ")
 			writeConstraintDefinition(dialect, buf, m.currentSchema, fkey)
 			buf.WriteString(";\n")
 		}

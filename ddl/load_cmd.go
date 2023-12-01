@@ -24,7 +24,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bokwoon95/sq"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -1084,7 +1083,7 @@ func getColumnInfo(ctx context.Context, tx *sql.Tx, dialect, tableSchema, tableN
 	return columnTypes, keyColumns, identityColumns, closeRows(rows)
 }
 
-func setSessionValue(ctx context.Context, db sq.DB, getter, setter, value string) (restoreSessionValue func() error, err error) {
+func setSessionValue(ctx context.Context, db DB, getter, setter, value string) (restoreSessionValue func() error, err error) {
 	rows, err := db.QueryContext(ctx, getter)
 	if err != nil {
 		return nil, err
@@ -1104,7 +1103,7 @@ func setSessionValue(ctx context.Context, db sq.DB, getter, setter, value string
 	if oldValue == value {
 		return func() error { return nil }, nil
 	}
-	_, err = db.ExecContext(ctx, strings.ReplaceAll(setter, "%s", sq.EscapeQuote(value, '\'')))
+	_, err = db.ExecContext(ctx, strings.ReplaceAll(setter, "%s", EscapeQuote(value, '\'')))
 	if err != nil {
 		return nil, err
 	}
@@ -1113,7 +1112,7 @@ func setSessionValue(ctx context.Context, db sq.DB, getter, setter, value string
 		if !atomic.CompareAndSwapInt32(&done, 0, 1) {
 			return nil
 		}
-		_, err = db.ExecContext(ctx, strings.ReplaceAll(setter, "%s", sq.EscapeQuote(oldValue, '\'')))
+		_, err = db.ExecContext(ctx, strings.ReplaceAll(setter, "%s", EscapeQuote(oldValue, '\'')))
 		return err
 	}, nil
 }

@@ -3,8 +3,6 @@ package ddl
 import (
 	"bytes"
 	"strings"
-
-	"github.com/bokwoon95/sq"
 )
 
 type sqliteMigration struct {
@@ -286,7 +284,7 @@ func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.
 		if buf.Len() > 0 {
 			buf.WriteString("\n")
 		}
-		tableName := sq.QuoteIdentifier(dialect, table.TableName)
+		tableName := QuoteIdentifier(dialect, table.TableName)
 		buf.WriteString("DROP TABLE " + tableName + ";\n")
 	}
 
@@ -314,13 +312,13 @@ func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.
 			alterTable.copyTable(buf)
 			continue
 		}
-		tableName := sq.QuoteIdentifier(dialect, alterTable.destTable.TableName)
+		tableName := QuoteIdentifier(dialect, alterTable.destTable.TableName)
 		// DROP INDEX.
 		for _, index := range alterTable.dropIndexes {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
 			buf.WriteString("DROP INDEX " + indexName + ";\n")
 		}
 		// DROP COLUMN.
@@ -328,7 +326,7 @@ func (m *sqliteMigration) sql(prefix string) (filenames []string, bufs []*bytes.
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+			columnName := QuoteIdentifier(dialect, column.ColumnName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP COLUMN " + columnName + ";\n")
 		}
 		// ADD COLUMN.
@@ -368,8 +366,8 @@ func (alterTable *sqliteAlterTable) copyTable(buf *bytes.Buffer) {
 		currentSchema    = ""
 		defaultCollation = ""
 	)
-	tableName := sq.QuoteIdentifier(dialect, alterTable.destTable.TableName)
-	tableNameNew := sq.QuoteIdentifier(dialect, alterTable.destTable.TableName+"_new")
+	tableName := QuoteIdentifier(dialect, alterTable.destTable.TableName)
+	tableNameNew := QuoteIdentifier(dialect, alterTable.destTable.TableName+"_new")
 
 	// CREATE "${TableName}_new".
 	tableNew := *alterTable.destTable
@@ -394,14 +392,14 @@ func (alterTable *sqliteAlterTable) copyTable(buf *bytes.Buffer) {
 		if i > 0 {
 			buf.WriteString(", ")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, insertColumn))
+		buf.WriteString(QuoteIdentifier(dialect, insertColumn))
 	}
 	buf.WriteString(")\nSELECT\n    ")
 	for i, insertColumn := range insertColumns {
 		if i > 0 {
 			buf.WriteString(", ")
 		}
-		buf.WriteString(sq.QuoteIdentifier(dialect, insertColumn))
+		buf.WriteString(QuoteIdentifier(dialect, insertColumn))
 	}
 	buf.WriteString("\nFROM\n    " + tableName + "\n;\n")
 

@@ -12,8 +12,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // LsCmd implements the `sqddl ls` subcommand.
@@ -57,9 +55,9 @@ type LsCmd struct {
 
 // LsCommand creates a new LsCmd with the given arguments. E.g.
 //
-//   sqddl ls -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS]
+//	sqddl ls -db <DATABASE_URL> -dir <MIGRATION_DIR> [FLAGS]
 //
-//   LsCommand("-db", "postgres://user:pass@localhost:5432/sakila", "-dir", "./migrations")
+//	LsCommand("-db", "postgres://user:pass@localhost:5432/sakila", "-dir", "./migrations")
 func LsCommand(args ...string) (*LsCmd, error) {
 	var cmd LsCmd
 	flagset := flag.NewFlagSet("", flag.ContinueOnError)
@@ -150,25 +148,46 @@ func (cmd *LsCmd) Run() error {
 	if err != nil {
 		return err
 	}
-	historyTable := sq.Identifier(cmd.HistoryTable)
 	if exists {
-		cursor, err := sq.FetchCursor(cmd.DB, sq.
-			Queryf("SELECT {*} FROM {} WHERE filename IN ({})", historyTable, filenames).
-			SetDialect(cmd.Dialect),
-			migration{}.rowmapper,
-		)
+		var b strings.Builder
+		b.WriteString("SELECT filename, checksum, started_at, time_taken_ns, success")
+		b.WriteString(" FROM " + QuoteIdentifier(cmd.Dialect, cmd.HistoryTable))
+		b.WriteString(" WHERE filename IN (")
+		for i, filename := range filenames {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString("'" + EscapeQuote(filename, '\'') + "'")
+		}
+		b.WriteString(")")
+		rows, err := cmd.DB.Query(b.String())
 		if err != nil {
 			return err
 		}
-		defer cursor.Close()
-		for cursor.Next() {
-			script, err := cursor.Result()
+		defer rows.Close()
+		for rows.Next() {
+			var filename, checksum sql.NullString
+			var startedAt sql.NullTime
+			var timeTakenNs sql.NullInt64
+			var success sql.NullBool
+			err := rows.Scan(&filename, &checksum, &startedAt, &timeTakenNs, &success)
 			if err != nil {
 				return err
 			}
-			if i, ok := cache[script.filename]; ok {
-				migrations[i] = script
+			if i, ok := cache[filename.String]; ok {
+				migrations[i] = migration{
+					valid:       true,
+					filename:    filename.String,
+					checksum:    checksum.String,
+					startedAt:   startedAt,
+					timeTakenNs: timeTakenNs,
+					success:     success.Bool,
+				}
 			}
+		}
+		err = rows.Close()
+		if err != nil {
+			return err
 		}
 	}
 
@@ -223,24 +242,37 @@ func (cmd *LsCmd) Run() error {
 	// separate query in the database looking for scripts that exist in the
 	// history table but are not in the migration dir.
 	if exists && cmd.IncludeMissing {
-		cursor, err := sq.FetchCursor(cmd.DB, sq.
-			Queryf("SELECT {*} FROM {} WHERE filename NOT IN ({}) ORDER BY CASE WHEN filename LIKE 'repeatable/%' THEN 1 ELSE 0 END, filename", historyTable, filenames).
-			SetDialect(cmd.Dialect),
-			migration{}.rowmapper,
-		)
+		var b strings.Builder
+		b.WriteString("SELECT filename")
+		b.WriteString(" FROM " + QuoteIdentifier(cmd.Dialect, cmd.HistoryTable))
+		b.WriteString(" WHERE filename NOT IN (")
+		for i, filename := range filenames {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString("'" + EscapeQuote(filename, '\'') + "'")
+		}
+		b.WriteString(")")
+		b.WriteString(" ORDER BY CASE WHEN filename LIKE 'repeatable/%' THEN 1 ELSE 0 END, filename")
+		rows, err := cmd.DB.Query(b.String())
 		if err != nil {
 			return err
 		}
-		defer cursor.Close()
-		for cursor.Next() {
-			script, err := cursor.Result()
+		defer rows.Close()
+		for rows.Next() {
+			var filename sql.NullString
+			err := rows.Scan(&filename)
 			if err != nil {
 				return err
 			}
-			_, err = io.WriteString(cmd.Stdout, "[missing] "+script.filename+"\n")
+			_, err = io.WriteString(cmd.Stdout, "[missing] "+filename.String+"\n")
 			if err != nil {
 				return err
 			}
+		}
+		err = rows.Close()
+		if err != nil {
+			return err
 		}
 	}
 	return nil

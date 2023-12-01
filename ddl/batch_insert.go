@@ -8,8 +8,6 @@ import (
 	"io"
 	"math"
 	"strconv"
-
-	"github.com/bokwoon95/sq"
 )
 
 // BatchInsert is used to insert data into a table in batches.
@@ -88,7 +86,7 @@ type BatchInsert struct {
 //       i++
 //       return nil
 //   })
-func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]any) error) (rowsAffected int64, err error) {
+func (bi *BatchInsert) ExecContext(ctx context.Context, db DB, next func([]any) error) (rowsAffected int64, err error) {
 	if db == nil {
 		return 0, fmt.Errorf("db is nil")
 	}
@@ -166,9 +164,9 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	defer bufpool.Put(buf)
 
 	// tableName
-	tableName := sq.QuoteIdentifier(bi.Dialect, bi.TableName)
+	tableName := QuoteIdentifier(bi.Dialect, bi.TableName)
 	if bi.TableSchema != "" {
-		tableName = sq.QuoteIdentifier(bi.Dialect, bi.TableSchema) + "." + tableName
+		tableName = QuoteIdentifier(bi.Dialect, bi.TableSchema) + "." + tableName
 	}
 
 	// columnNames
@@ -180,7 +178,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 		if i > 0 {
 			buf.WriteString(", ")
 		}
-		buf.WriteString(sq.QuoteIdentifier(bi.Dialect, column))
+		buf.WriteString(QuoteIdentifier(bi.Dialect, column))
 	}
 	columnNames := buf.String()
 
@@ -223,7 +221,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 				if i > 0 {
 					buf.WriteString(", ")
 				}
-				buf.WriteString(sq.QuoteIdentifier(bi.Dialect, column))
+				buf.WriteString(QuoteIdentifier(bi.Dialect, column))
 			}
 			buf.WriteString(") ")
 			if len(nonKeyColumns) > 0 {
@@ -232,7 +230,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 					if i > 0 {
 						buf.WriteString(", ")
 					}
-					columnName := sq.QuoteIdentifier(bi.Dialect, column)
+					columnName := QuoteIdentifier(bi.Dialect, column)
 					buf.WriteString(columnName + " = EXCLUDED." + columnName)
 				}
 			} else {
@@ -245,11 +243,11 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 					if i > 0 {
 						buf.WriteString(", ")
 					}
-					columnName := sq.QuoteIdentifier(bi.Dialect, column)
+					columnName := QuoteIdentifier(bi.Dialect, column)
 					buf.WriteString(columnName + " = VALUES(" + columnName + ")")
 				}
 			} else {
-				columnName := sq.QuoteIdentifier(bi.Dialect, keyColumns[0])
+				columnName := QuoteIdentifier(bi.Dialect, keyColumns[0])
 				buf.WriteString(columnName + " = " + columnName)
 			}
 		case DialectSQLServer:
@@ -258,7 +256,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 				if i > 0 {
 					buf.WriteString(" AND ")
 				}
-				columnName := sq.QuoteIdentifier(bi.Dialect, column)
+				columnName := QuoteIdentifier(bi.Dialect, column)
 				buf.WriteString(tableName + "." + columnName + " = " + tempTableName + "." + columnName)
 			}
 			buf.WriteString(")")
@@ -291,7 +289,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 			} else {
 				buf.WriteString(", ")
 			}
-			columnName := sq.QuoteIdentifier(bi.Dialect, column)
+			columnName := QuoteIdentifier(bi.Dialect, column)
 			buf.WriteString(columnName + " = " + tempTableName + "." + columnName)
 		}
 		buf.WriteString(" FROM " + tableName + " JOIN (VALUES ")
@@ -303,7 +301,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 			if i > 0 {
 				buf.WriteString(" AND ")
 			}
-			columnName := sq.QuoteIdentifier(bi.Dialect, column)
+			columnName := QuoteIdentifier(bi.Dialect, column)
 			buf.WriteString(tableName + "." + columnName + " = " + tempTableName + "." + columnName)
 		}
 		updateEnd = buf.String()
@@ -334,7 +332,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 			if updateStmt != nil {
 				result, updateErr := updateStmt.ExecContext(ctx, args...)
 				if updateErr != nil {
-					query, err := sq.Sprintf(bi.Dialect, updateStart+middle+updateEnd, args)
+					query, err := Sprintf(bi.Dialect, updateStart+middle+updateEnd, args)
 					if err == nil {
 						return rowsAffected, fmt.Errorf("%w\n"+query, updateErr)
 					}
@@ -342,7 +340,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 				}
 				n, updateErr := result.RowsAffected()
 				if updateErr != nil {
-					if query, err2 := sq.Sprintf(bi.Dialect, updateStart+middle+updateEnd, args); err2 != nil {
+					if query, err2 := Sprintf(bi.Dialect, updateStart+middle+updateEnd, args); err2 != nil {
 						return rowsAffected, fmt.Errorf("%w\n"+query, updateErr)
 					}
 					return rowsAffected, updateErr
@@ -351,7 +349,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 			}
 			result, insertErr := insertStmt.ExecContext(ctx, args...)
 			if insertErr != nil {
-				query, err := sq.Sprintf(bi.Dialect, insertStart+middle+insertEnd, args)
+				query, err := Sprintf(bi.Dialect, insertStart+middle+insertEnd, args)
 				if err == nil {
 					return rowsAffected, fmt.Errorf("%w\n"+query, insertErr)
 				}
@@ -375,7 +373,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 		if updateStmt != nil {
 			result, updateErr := db.ExecContext(ctx, updateStart+middle+updateEnd, args...)
 			if updateErr != nil {
-				query, err := sq.Sprintf(bi.Dialect, updateStart+middle+updateEnd, args)
+				query, err := Sprintf(bi.Dialect, updateStart+middle+updateEnd, args)
 				if err == nil {
 					return rowsAffected, fmt.Errorf("%w\n"+query, updateErr)
 				}
@@ -389,7 +387,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 		}
 		result, insertErr := db.ExecContext(ctx, insertStart+middle+insertEnd, args...)
 		if insertErr != nil {
-			query, err := sq.Sprintf(bi.Dialect, insertStart+middle+insertEnd, args)
+			query, err := Sprintf(bi.Dialect, insertStart+middle+insertEnd, args)
 			if err == nil {
 				return rowsAffected, fmt.Errorf("%w\n"+query, insertErr)
 			}
@@ -413,7 +411,7 @@ func (bi *BatchInsert) ExecContext(ctx context.Context, db sq.DB, next func([]an
 	// SELECT setval(pg_get_serial_sequence('table', 'id'), max(id)) FROM table;
 	if len(identityColumns) > 0 && bi.Dialect == DialectPostgres {
 		for _, column := range identityColumns {
-			columnName := sq.QuoteIdentifier(bi.Dialect, column)
+			columnName := QuoteIdentifier(bi.Dialect, column)
 			_, err = db.ExecContext(ctx,
 				"SELECT setval(pg_get_serial_sequence($1, $2), MAX("+columnName+")) FROM "+tableName,
 				tableName, columnName,

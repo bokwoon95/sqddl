@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
-	"github.com/bokwoon95/sq"
 )
 
 type postgresMigration struct {
@@ -376,10 +374,10 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 		n++
 		fk := *fkeys[0]
 		name := strings.ReplaceAll(fk.TableName, " ", "_") + "_"
-		tableName := sq.QuoteIdentifier(dialect, fk.TableName)
+		tableName := QuoteIdentifier(dialect, fk.TableName)
 		if fk.TableSchema != "" && fk.TableSchema != m.currentSchema {
 			name = strings.ReplaceAll(fk.TableSchema, " ", "_") + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
 		}
 		if fk.ReferencesSchema != "" && fk.ReferencesSchema != m.currentSchema {
 			name += strings.ReplaceAll(fk.ReferencesSchema, " ", "_") + "_"
@@ -394,7 +392,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, fkey.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, fkey.ConstraintName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT IF EXISTS " + constraintName + ";\n")
 		}
 	}
@@ -411,13 +409,13 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("DROP SCHEMA IF EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + " CASCADE;\n")
+			buf.WriteString("DROP SCHEMA IF EXISTS " + QuoteIdentifier(dialect, schemaName) + " CASCADE;\n")
 		}
 		for _, schemaName := range m.createSchemas {
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
+			buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + QuoteIdentifier(dialect, schemaName) + ";\n")
 		}
 	}
 
@@ -433,9 +431,9 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			tableName := sq.QuoteIdentifier(dialect, table.TableName)
+			tableName := QuoteIdentifier(dialect, table.TableName)
 			if table.TableSchema != "" && table.TableSchema != m.currentSchema {
-				tableName = sq.QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
+				tableName = QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
 			}
 			buf.WriteString("DROP TABLE IF EXISTS " + tableName + ";\n")
 		}
@@ -457,10 +455,10 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 	for _, alterTable := range m.alterTables {
 		n++
 		name := strings.ReplaceAll(alterTable.tableName, " ", "_")
-		tableName := sq.QuoteIdentifier(dialect, alterTable.tableName)
+		tableName := QuoteIdentifier(dialect, alterTable.tableName)
 		if alterTable.tableSchema != "" && alterTable.tableSchema != m.currentSchema {
 			name = strings.ReplaceAll(alterTable.tableSchema, " ", "_") + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
 		}
 		// ${prefix}_${n}_alter_${table}.tx.sql
 		filenames = append(filenames, prefix+"_"+fmt.Sprintf("%02d", n)+"_alter_"+name+".tx.sql")
@@ -472,9 +470,9 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
 			if index.TableSchema != "" && index.TableSchema != m.currentSchema {
-				indexName = sq.QuoteIdentifier(dialect, index.TableSchema) + "." + indexName
+				indexName = QuoteIdentifier(dialect, index.TableSchema) + "." + indexName
 			}
 			buf.WriteString("DROP INDEX IF EXISTS " + indexName + ";\n")
 		}
@@ -483,7 +481,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, constraint.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, constraint.ConstraintName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT IF EXISTS " + constraintName + ";\n")
 		}
 		// DROP COLUMN.
@@ -491,7 +489,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+			columnName := QuoteIdentifier(dialect, column.ColumnName)
 			buf.WriteString("ALTER TABLE " + tableName + " DROP COLUMN IF EXISTS " + columnName + ";\n")
 		}
 		// ADD COLUMN.
@@ -499,7 +497,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+			columnName := QuoteIdentifier(dialect, column.ColumnName)
 			if column.ColumnDefault != "" && m.versionNums.LowerThan(11) {
 				warnings = append(warnings, fmt.Sprintf("%s: adding column %q with DEFAULT is unsafe for large tables. Upgrade to Postgres 11+ to avoid this issue. If not, you should add a column without the default first, backfill the default values, then set the column default", tableName, columnName))
 			} else if column.ColumnIdentity != "" && m.versionNums.LowerThan(11) {
@@ -558,7 +556,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 				}
 				buf.WriteString("ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " TYPE " + destColumn.ColumnType)
 				if destColumn.CollationName != "" && destColumn.CollationName != m.defaultCollation {
-					buf.WriteString(` COLLATE "` + sq.EscapeQuote(destColumn.CollationName, '"') + `"`)
+					buf.WriteString(` COLLATE "` + EscapeQuote(destColumn.CollationName, '"') + `"`)
 				}
 				buf.WriteString(";\n")
 			} else {
@@ -575,7 +573,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 					if buf.Len() > 0 {
 						buf.WriteString("\n")
 					}
-					buf.WriteString("ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " TYPE " + destColumn.ColumnType + ` COLLATE "` + sq.EscapeQuote(destColumn.CollationName, '"') + `"` + ";\n")
+					buf.WriteString("ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " TYPE " + destColumn.ColumnType + ` COLLATE "` + EscapeQuote(destColumn.CollationName, '"') + `"` + ";\n")
 				}
 			}
 			srcDefault := normalizeColumnDefault(dialect, srcColumn.ColumnDefault)
@@ -606,7 +604,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 					warnings = append(warnings, fmt.Sprintf("%s: setting NOT NULL on column %q is unsafe for large tables. Upgrade to Postgres 12+ to avoid this issue", tableName, columnName))
 					buf.WriteString("ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NOT NULL;\n")
 				} else {
-					constraintName := sq.QuoteIdentifier(dialect, destColumn.TableName+"_"+destColumn.ColumnName+"_not_null_check")
+					constraintName := QuoteIdentifier(dialect, destColumn.TableName+"_"+destColumn.ColumnName+"_not_null_check")
 					buf.WriteString("ALTER TABLE " + tableName + " ADD CONSTRAINT " + constraintName + " CHECK (" + columnName + " IS NOT NULL) NOT VALID;\n")
 				}
 			}
@@ -629,7 +627,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, destConstraint.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, destConstraint.ConstraintName)
 			buf.WriteString("ALTER TABLE " + tableName + " ALTER CONSTRAINT " + constraintName)
 			if destConstraint.IsDeferrable {
 				buf.WriteString(" DEFERRABLE")
@@ -654,8 +652,8 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 				if buf.Len() > 0 {
 					buf.WriteString("\n")
 				}
-				constraintName := sq.QuoteIdentifier(dialect, column.TableName+"_"+column.ColumnName+"_not_null_check")
-				columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+				constraintName := QuoteIdentifier(dialect, column.TableName+"_"+column.ColumnName+"_not_null_check")
+				columnName := QuoteIdentifier(dialect, column.ColumnName)
 				buf.WriteString("ALTER TABLE " + tableName + " VALIDATE CONSTRAINT " + constraintName + ";\n")
 				buf.WriteString("ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NOT NULL;\n")
 				buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName + ";\n")
@@ -678,9 +676,9 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			buf = bufpool.Get().(*bytes.Buffer)
 			buf.Reset()
 			bufs = append(bufs, buf)
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
 			if index.TableSchema != "" && index.TableSchema != m.currentSchema {
-				indexName = sq.QuoteIdentifier(dialect, index.TableSchema) + "." + indexName
+				indexName = QuoteIdentifier(dialect, index.TableSchema) + "." + indexName
 			}
 			buf.WriteString("DROP INDEX IF EXISTS " + indexName + ";\n")
 		}
@@ -689,7 +687,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 		for _, addKeyConstraint := range alterTable.addConstraintsConcurrently {
 			n++
 			name := strings.ReplaceAll(addKeyConstraint.ConstraintName, " ", "_")
-			constraintName := sq.QuoteIdentifier(dialect, addKeyConstraint.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, addKeyConstraint.ConstraintName)
 			// ${prefix}_${n}_create_${index}.txoff.sql
 			filenames = append(filenames, fmt.Sprintf("%s_%02d_create_%s.txoff.sql", prefix, n, name))
 			buf := bufpool.Get().(*bytes.Buffer)
@@ -708,9 +706,9 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			buf = bufpool.Get().(*bytes.Buffer)
 			buf.Reset()
 			bufs = append(bufs, buf)
-			indexName := sq.QuoteIdentifier(dialect, createIndex.IndexName)
+			indexName := QuoteIdentifier(dialect, createIndex.IndexName)
 			if createIndex.TableSchema != "" && createIndex.TableSchema != m.currentSchema {
-				indexName = sq.QuoteIdentifier(dialect, createIndex.TableSchema) + "." + indexName
+				indexName = QuoteIdentifier(dialect, createIndex.TableSchema) + "." + indexName
 			}
 			buf.WriteString("DROP INDEX IF EXISTS " + indexName + ";\n")
 			// ${prefix}_${n}_add_${constraint}.tx.sql
@@ -728,10 +726,10 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 		n++
 		fk := *fkeys[0]
 		name := strings.ReplaceAll(fk.TableName, " ", "_") + "_"
-		tableName := sq.QuoteIdentifier(dialect, fk.TableName)
+		tableName := QuoteIdentifier(dialect, fk.TableName)
 		if fk.TableSchema != "" && fk.TableSchema != m.currentSchema {
 			name = strings.ReplaceAll(fk.TableSchema, " ", "_") + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
 		}
 		if fk.ReferencesSchema != "" && fk.ReferencesSchema != m.currentSchema {
 			name += strings.ReplaceAll(fk.ReferencesSchema, " ", "_") + "_"
@@ -757,10 +755,10 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 		n++
 		fk := *fkeys[0]
 		name := strings.ReplaceAll(fk.TableName, " ", "_") + "_"
-		tableName := sq.QuoteIdentifier(dialect, fk.TableName)
+		tableName := QuoteIdentifier(dialect, fk.TableName)
 		if fk.TableSchema != "" && fk.TableSchema != m.currentSchema {
 			name = strings.ReplaceAll(fk.TableSchema, " ", "_") + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, fk.TableSchema) + "." + tableName
 		}
 		if fk.ReferencesSchema != "" && fk.ReferencesSchema != m.currentSchema {
 			name += strings.ReplaceAll(fk.ReferencesSchema, " ", "_") + "_"
@@ -789,7 +787,7 @@ func (m *postgresMigration) sql(prefix string) (filenames []string, bufs []*byte
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			constraintName := sq.QuoteIdentifier(dialect, fkey.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, fkey.ConstraintName)
 			buf.WriteString("ALTER TABLE " + tableName + " VALIDATE CONSTRAINT " + constraintName + ";\n")
 		}
 	}

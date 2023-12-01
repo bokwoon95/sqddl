@@ -7,8 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
-
-	"github.com/bokwoon95/sq"
+	"strings"
 )
 
 // MvCmd implements the `sqddl mv` subcommand.
@@ -38,13 +37,13 @@ type MvCmd struct {
 
 // MvCommand creates a new MvCmd with the given arguments. E.g.
 //
-//   sqddl mv -db <DATABASE_URL> <OLD_FILENAME> <NEW_FILENAME>
+//	sqddl mv -db <DATABASE_URL> <OLD_FILENAME> <NEW_FILENAME>
 //
-//   MvCommand(
-//       "-db", "postgres://user:pass@localhost:5432/sakila",
-//       "-dir", "./migrations",
-//       "old_name.sql", "new_name.sql",
-//   )
+//	MvCommand(
+//	    "-db", "postgres://user:pass@localhost:5432/sakila",
+//	    "-dir", "./migrations",
+//	    "old_name.sql", "new_name.sql",
+//	)
 func MvCommand(args ...string) (*MvCmd, error) {
 	var cmd MvCmd
 	var dir string
@@ -118,12 +117,19 @@ func (cmd *MvCmd) Run() error {
 		fmt.Fprintln(cmd.Stderr, "0 rows affected")
 		return nil
 	}
-	historyTable := sq.Identifier(cmd.HistoryTable)
-	result, err := sq.Exec(cmd.DB, sq.
-		Queryf(`UPDATE {} SET filename = {} WHERE filename = {}`, historyTable, cmd.DestFilename, cmd.SrcFilename).
-		SetDialect(cmd.Dialect),
-	)
-	fmt.Fprintln(cmd.Stderr, strconv.FormatInt(result.RowsAffected, 10)+" rows affected")
+	var b strings.Builder
+	b.WriteString("UPDATE " + QuoteIdentifier(cmd.Dialect, cmd.HistoryTable))
+	b.WriteString(" SET filename = '" + EscapeQuote(cmd.DestFilename, '\'') + "'")
+	b.WriteString(" WHERE filename = '" + EscapeQuote(cmd.SrcFilename, '\'') + "'")
+	result, err := cmd.DB.Exec(b.String())
+	if err != nil {
+		return nil
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil
+	}
+	fmt.Fprintln(cmd.Stderr, strconv.FormatInt(rowsAffected, 10)+" rows affected")
 	if err != nil {
 		return err
 	}

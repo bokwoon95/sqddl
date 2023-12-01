@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
-	"github.com/bokwoon95/sq"
 )
 
 type mysqlMigration struct {
@@ -282,11 +280,11 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 		buf := bufpool.Get().(*bytes.Buffer)
 		buf.Reset()
 		bufs = append(bufs, buf)
-		tableName := sq.QuoteIdentifier(dialect, fkey.TableName)
+		tableName := QuoteIdentifier(dialect, fkey.TableName)
 		if fkey.TableSchema != "" && fkey.TableSchema != m.currentSchema {
-			tableName = sq.QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
 		}
-		constraintName := sq.QuoteIdentifier(dialect, fkey.ConstraintName)
+		constraintName := QuoteIdentifier(dialect, fkey.ConstraintName)
 		buf.WriteString("ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName + ";\n")
 	}
 
@@ -302,7 +300,7 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			buf.WriteString("DROP SCHEMA IF EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
+			buf.WriteString("DROP SCHEMA IF EXISTS " + QuoteIdentifier(dialect, schemaName) + ";\n")
 		}
 		if len(m.createSchemas) > 0 {
 			// ${prefix}_${n}_schemas.undo.sql
@@ -314,11 +312,11 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 				if buf.Len() > 0 {
 					buf.WriteString("\n")
 				}
-				buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
+				buf.WriteString("CREATE SCHEMA IF NOT EXISTS " + QuoteIdentifier(dialect, schemaName) + ";\n")
 				if undobuf.Len() > 0 {
 					undobuf.WriteString("\n")
 				}
-				undobuf.WriteString("DROP SCHEMA IF EXISTS " + sq.QuoteIdentifier(dialect, schemaName) + ";\n")
+				undobuf.WriteString("DROP SCHEMA IF EXISTS " + QuoteIdentifier(dialect, schemaName) + ";\n")
 			}
 		}
 	}
@@ -335,9 +333,9 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 			if buf.Len() > 0 {
 				buf.WriteString("\n")
 			}
-			tableName := sq.QuoteIdentifier(dialect, table.TableName)
+			tableName := QuoteIdentifier(dialect, table.TableName)
 			if table.TableSchema != "" && table.TableSchema != m.currentSchema {
-				tableName = sq.QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
+				tableName = QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
 			}
 			buf.WriteString("DROP TABLE IF EXISTS " + tableName + ";\n")
 		}
@@ -361,9 +359,9 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 				if undobuf.Len() > 0 {
 					undobuf.WriteString("\n")
 				}
-				tableName := sq.QuoteIdentifier(dialect, table.TableName)
+				tableName := QuoteIdentifier(dialect, table.TableName)
 				if table.TableSchema != "" && table.TableSchema != m.currentSchema {
-					tableName = sq.QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
+					tableName = QuoteIdentifier(dialect, table.TableSchema) + "." + tableName
 				}
 				undobuf.WriteString("DROP TABLE IF EXISTS " + tableName + ";\n")
 			}
@@ -374,10 +372,10 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 	for _, alterTable := range m.alterTables {
 		n++
 		name := strings.ReplaceAll(alterTable.tableName, " ", "_")
-		tableName := sq.QuoteIdentifier(dialect, alterTable.tableName)
+		tableName := QuoteIdentifier(dialect, alterTable.tableName)
 		if alterTable.tableSchema != "" && alterTable.tableSchema != m.currentSchema {
 			name = strings.ReplaceAll(alterTable.tableSchema, " ", "_") + "_" + name
-			tableName = sq.QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, alterTable.tableSchema) + "." + tableName
 		}
 		// ${prefix}_${n}_alter_${table}.sql
 		filenames = append(filenames, prefix+"_"+fmt.Sprintf("%02d", n)+"_alter_"+name+".sql")
@@ -392,7 +390,7 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 				buf.WriteString(",")
 			}
 			written = true
-			constraintName := sq.QuoteIdentifier(dialect, constraint.ConstraintName)
+			constraintName := QuoteIdentifier(dialect, constraint.ConstraintName)
 			buf.WriteString("DROP CONSTRAINT " + constraintName)
 		}
 		for _, index := range alterTable.dropIndexes {
@@ -401,7 +399,7 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 				buf.WriteString(",")
 			}
 			written = true
-			indexName := sq.QuoteIdentifier(dialect, index.IndexName)
+			indexName := QuoteIdentifier(dialect, index.IndexName)
 			buf.WriteString("DROP INDEX " + indexName)
 		}
 		for _, column := range alterTable.dropColumns {
@@ -410,7 +408,7 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 				buf.WriteString(",")
 			}
 			written = true
-			columnName := sq.QuoteIdentifier(dialect, column.ColumnName)
+			columnName := QuoteIdentifier(dialect, column.ColumnName)
 			buf.WriteString("DROP COLUMN " + columnName)
 		}
 		for _, column := range alterTable.addColumns {
@@ -481,9 +479,9 @@ func (m *mysqlMigration) sql(prefix string) (filenames []string, bufs []*bytes.B
 		buf := bufpool.Get().(*bytes.Buffer)
 		buf.Reset()
 		bufs = append(bufs, buf)
-		tableName := sq.QuoteIdentifier(dialect, fkey.TableName)
+		tableName := QuoteIdentifier(dialect, fkey.TableName)
 		if fkey.TableSchema != "" && fkey.TableSchema != m.currentSchema {
-			tableName = sq.QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
+			tableName = QuoteIdentifier(dialect, fkey.TableSchema) + "." + tableName
 		}
 		buf.WriteString("ALTER TABLE " + tableName + " ADD ")
 		writeConstraintDefinition(dialect, buf, m.currentSchema, fkey)

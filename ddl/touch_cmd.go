@@ -15,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/bokwoon95/sq"
 )
 
 // TouchCmd implements the `sqddl touch` subcommand.
@@ -265,7 +263,7 @@ func ensureHistoryTableExists(dialect string, db *sql.DB, historyTable string) e
 		timeType = "DATETIMEOFFSET"
 		boolType = "BIT"
 	}
-	query := "CREATE TABLE " + sq.QuoteIdentifier(dialect, historyTable) + " (" +
+	query := "CREATE TABLE " + QuoteIdentifier(dialect, historyTable) + " (" +
 		"\n    filename VARCHAR(255) NOT NULL" +
 		"\n    ,checksum VARCHAR(64)" +
 		"\n    ,started_at " + timeType +
