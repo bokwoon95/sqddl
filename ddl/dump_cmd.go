@@ -1224,7 +1224,7 @@ func writeColumnDefinition(dialect string, buf *bytes.Buffer, defaultCollation s
 	if column.GeneratedExpr != "" {
 		generatedExpr := wrapBrackets(column.GeneratedExpr)
 		switch dialect {
-		case DialectPostgres:
+		case DialectSQLite, DialectPostgres:
 			buf.WriteString(" GENERATED ALWAYS AS " + generatedExpr + " STORED")
 		case DialectMySQL:
 			buf.WriteString(" AS " + generatedExpr)
