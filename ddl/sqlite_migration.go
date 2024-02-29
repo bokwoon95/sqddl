@@ -378,6 +378,9 @@ func (alterTable *sqliteAlterTable) copyTable(buf *bytes.Buffer) {
 	// INSERT INTO "${TableName}_new" SELECT ... FROM "$TableName".
 	isDestColumn := make(map[string]bool)
 	for _, destColumn := range alterTable.destTable.Columns {
+		if destColumn.IsGenerated || destColumn.GeneratedExpr != "" {
+			continue
+		}
 		isDestColumn[destColumn.ColumnName] = true
 	}
 	insertColumns := make([]string, 0, len(alterTable.srcTable.Columns))
