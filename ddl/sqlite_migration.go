@@ -129,101 +129,114 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 			columnIsDropped: make(map[string]bool),
 			columnIsAdded:   make(map[string]bool),
 		}
-		if dropObjects {
-			for j := range srcTable.Constraints {
-				srcConstraint := &srcTable.Constraints[j]
-				if srcConstraint.Ignore {
-					continue
-				}
-				destConstraint := destCache.GetConstraint(destTable, srcConstraint.ConstraintName)
-				if destConstraint == nil {
-					// DROP CONSTRAINT.
-					alterTable.dropConstraints = append(alterTable.dropConstraints, srcConstraint)
-				}
+		for j := range srcTable.Constraints {
+			srcConstraint := &srcTable.Constraints[j]
+			if srcConstraint.Ignore {
+				continue
 			}
-			for j := range srcTable.Indexes {
-				srcIndex := &srcTable.Indexes[j]
-				if srcIndex.Ignore {
-					continue
-				}
-				destIndex := destCache.GetIndex(destTable, srcIndex.IndexName)
-				if destIndex == nil {
-					// DROP INDEX.
-					alterTable.dropIndexes = append(alterTable.dropIndexes, srcIndex)
-				}
+			destConstraint := destCache.GetConstraint(destTable, srcConstraint.ConstraintName)
+			if destConstraint == nil {
+				// DROP CONSTRAINT.
+				alterTable.dropConstraints = append(alterTable.dropConstraints, srcConstraint)
 			}
-			for j := range srcTable.Columns {
-				srcColumn := &srcTable.Columns[j]
-				if srcColumn.Ignore {
-					continue
-				}
-				destColumn := destCache.GetColumn(destTable, srcColumn.ColumnName)
-				if destColumn == nil {
-					// DROP COLUMN.
-					alterTable.dropColumns = append(alterTable.dropColumns, srcColumn)
-					alterTable.columnIsDropped[srcColumn.ColumnName] = true
-				}
+		}
+		for j := range srcTable.Indexes {
+			srcIndex := &srcTable.Indexes[j]
+			if srcIndex.Ignore {
+				continue
 			}
-			for j := range destTable.Columns {
-				destColumn := &destTable.Columns[j]
-				if destColumn.Ignore {
-					continue
-				}
-				srcColumn := srcCache.GetColumn(srcTable, destColumn.ColumnName)
-				if srcColumn == nil {
-					// ADD COLUMN.
-					alterTable.addColumns = append(alterTable.addColumns, destColumn)
-					alterTable.columnIsAdded[destColumn.ColumnName] = true
-					continue
-				}
-				columnsAreDifferent := func() bool {
-					if srcColumn.ColumnType != destColumn.ColumnType {
-						return true
-					}
-					srcDefault := normalizeColumnDefault(dialect, srcColumn.ColumnDefault)
-					destDefault := normalizeColumnDefault(dialect, destColumn.ColumnDefault)
-					if srcDefault != destDefault {
-						return true
-					}
-					if srcColumn.IsNotNull != destColumn.IsNotNull {
-						return true
-					}
-					return false
-				}()
-				if columnsAreDifferent {
-					// ALTER COLUMN.
-					alterTable.alterColumns = append(alterTable.alterColumns, [2]*Column{srcColumn, destColumn})
-				}
+			destIndex := destCache.GetIndex(destTable, srcIndex.IndexName)
+			if destIndex == nil {
+				// DROP INDEX.
+				alterTable.dropIndexes = append(alterTable.dropIndexes, srcIndex)
 			}
-			for j := range destTable.Indexes {
-				destIndex := &destTable.Indexes[j]
-				if destIndex.Ignore {
-					continue
-				}
-				srcIndex := srcCache.GetIndex(srcTable, destIndex.IndexName)
-				if srcIndex == nil {
-					// CREATE INDEX.
-					alterTable.createIndexes = append(alterTable.createIndexes, destIndex)
-				}
+		}
+		for j := range srcTable.Columns {
+			srcColumn := &srcTable.Columns[j]
+			if srcColumn.Ignore {
+				continue
 			}
-			for j := range destTable.Constraints {
-				destConstraint := &destTable.Constraints[j]
-				if destConstraint.Ignore {
-					continue
-				}
-				srcConstraint := srcCache.GetConstraint(srcTable, destConstraint.ConstraintName)
-				if srcConstraint == nil {
-					// ADD CONSTRAINT.
-					alterTable.addConstraints = append(alterTable.addConstraints, destConstraint)
-				}
+			destColumn := destCache.GetColumn(destTable, srcColumn.ColumnName)
+			if destColumn == nil {
+				// DROP COLUMN.
+				alterTable.dropColumns = append(alterTable.dropColumns, srcColumn)
+				alterTable.columnIsDropped[srcColumn.ColumnName] = true
 			}
-			if len(alterTable.dropConstraints) > 0 ||
-				len(alterTable.dropIndexes) > 0 ||
-				len(alterTable.addColumns) > 0 ||
-				len(alterTable.alterColumns) > 0 ||
-				len(alterTable.createIndexes) > 0 ||
-				len(alterTable.addConstraints) > 0 {
+		}
+		for j := range destTable.Columns {
+			destColumn := &destTable.Columns[j]
+			if destColumn.Ignore {
+				continue
+			}
+			srcColumn := srcCache.GetColumn(srcTable, destColumn.ColumnName)
+			if srcColumn == nil {
+				// ADD COLUMN.
+				alterTable.addColumns = append(alterTable.addColumns, destColumn)
+				alterTable.columnIsAdded[destColumn.ColumnName] = true
+				continue
+			}
+			columnsAreDifferent := func() bool {
+				if srcColumn.ColumnType != destColumn.ColumnType {
+					return true
+				}
+				srcDefault := normalizeColumnDefault(dialect, srcColumn.ColumnDefault)
+				destDefault := normalizeColumnDefault(dialect, destColumn.ColumnDefault)
+				if srcDefault != destDefault {
+					return true
+				}
+				if srcColumn.IsNotNull != destColumn.IsNotNull {
+					return true
+				}
+				return false
+			}()
+			if columnsAreDifferent {
+				// ALTER COLUMN.
+				alterTable.alterColumns = append(alterTable.alterColumns, [2]*Column{srcColumn, destColumn})
+			}
+		}
+		for j := range destTable.Indexes {
+			destIndex := &destTable.Indexes[j]
+			if destIndex.Ignore {
+				continue
+			}
+			srcIndex := srcCache.GetIndex(srcTable, destIndex.IndexName)
+			if srcIndex == nil {
+				// CREATE INDEX.
+				alterTable.createIndexes = append(alterTable.createIndexes, destIndex)
+			}
+		}
+		for j := range destTable.Constraints {
+			destConstraint := &destTable.Constraints[j]
+			if destConstraint.Ignore {
+				continue
+			}
+			srcConstraint := srcCache.GetConstraint(srcTable, destConstraint.ConstraintName)
+			if srcConstraint == nil {
+				// ADD CONSTRAINT.
+				alterTable.addConstraints = append(alterTable.addConstraints, destConstraint)
+			}
+		}
+		if len(alterTable.dropConstraints) > 0 ||
+			len(alterTable.dropIndexes) > 0 ||
+			len(alterTable.addColumns) > 0 ||
+			len(alterTable.alterColumns) > 0 ||
+			len(alterTable.createIndexes) > 0 ||
+			len(alterTable.addConstraints) > 0 {
+			if dropObjects {
+				// If we are dropping objects, it is safe to run the alter table as-is.
 				m.alterTables = append(m.alterTables, alterTable)
+			} else {
+				// Else we run alter table only if we are adding any columns or
+				// creating any indexes -- the other operations all involve
+				// dropping objects. Zero them out so that only adding columns
+				// and creating indexes are left behind.
+				if len(alterTable.addColumns) > 0 || len(alterTable.createIndexes) > 0 {
+					alterTable.dropConstraints = alterTable.dropConstraints[:0]
+					alterTable.dropIndexes = alterTable.dropIndexes[:0]
+					alterTable.alterColumns = alterTable.alterColumns[:0]
+					alterTable.addConstraints = alterTable.addConstraints[:0]
+					m.alterTables = append(m.alterTables, alterTable)
+				}
 			}
 		}
 	}
