@@ -538,9 +538,9 @@ func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt in
 			Columns:    []string{"filename", "checksum", "started_at", "time_taken_ns", "success"},
 			KeyColumns: []string{"filename"},
 		}
-		i := 0
+		j := 0
 		_, err = bi.ExecContext(cmd.Ctx, db, func(row []any) error {
-			if i > 0 {
+			if j > 0 {
 				return io.EOF
 			}
 			row[0] = m.filename
@@ -551,7 +551,7 @@ func (cmd *MigrateCmd) run(conn *sql.Conn, migrations []migration) (stoppedAt in
 			}
 			row[3] = m.timeTakenNs
 			row[4] = m.success
-			i++
+			j++
 			return nil
 		})
 		if err != nil {
