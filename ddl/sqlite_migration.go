@@ -231,8 +231,9 @@ func newSQLiteMigration(srcCatalog, destCatalog *Catalog, dropObjects bool) sqli
 				// dropping objects. Zero them out so that only adding columns
 				// and creating indexes are left behind.
 				if len(alterTable.addColumns) > 0 || len(alterTable.createIndexes) > 0 {
-					alterTable.dropConstraints = alterTable.dropConstraints[:0]
 					alterTable.dropIndexes = alterTable.dropIndexes[:0]
+					alterTable.dropConstraints = alterTable.dropConstraints[:0]
+					alterTable.dropColumns = alterTable.dropColumns[:0]
 					alterTable.alterColumns = alterTable.alterColumns[:0]
 					alterTable.addConstraints = alterTable.addConstraints[:0]
 					m.alterTables = append(m.alterTables, alterTable)
