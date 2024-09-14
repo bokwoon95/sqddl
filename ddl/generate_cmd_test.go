@@ -1,6 +1,7 @@
 package ddl
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -83,6 +84,43 @@ func TestGenerateCmd(t *testing.T) {
 				t.Error(testutil.Callers(), err)
 			}
 		})
+	}
+}
+
+func TestCurrentSchemaFollowsSrcCatalog(t *testing.T) {
+	tempDir := t.TempDir()
+	// The only difference between dest.json and dest.go.txt is that dest.json
+	// uses "public" for its current schema while dest.go.txt has a blank
+	// current schema. We expect no migrations to be generated.
+	generateCmd, err := GenerateCommand(
+		"-src", "testdata/postgres_schema/dest.json",
+		"-dest", "testdata/postgres_schema/dest.go.txt",
+		"-output-dir", tempDir,
+		"-drop-objects",
+		"-dialect", "postgres",
+		"-accept-warnings",
+	)
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	files, _, err := generateCmd.Results()
+	if err != nil {
+		t.Fatal(testutil.Callers(), err)
+	}
+	if len(files) > 0 {
+		t.Errorf(testutil.Callers()+"expected 0 migrations, got %d", len(files))
+		for _, file := range files {
+			fileInfo, err := file.Stat()
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			fmt.Println(fileInfo.Name())
+			b, err := io.ReadAll(file)
+			if err != nil {
+				t.Fatal(testutil.Callers(), err)
+			}
+			fmt.Println(string(b))
+		}
 	}
 }
 

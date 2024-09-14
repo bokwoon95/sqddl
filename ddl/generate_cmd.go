@@ -71,13 +71,13 @@ type GenerateCmd struct {
 
 // GenerateCommand creates a new GenerateCmd with the given arguments. E.g.
 //
-//   sqddl generate -src <SRC_SCHEMA> -dest <DEST_SCHEMA> [FLAGS]
+//	sqddl generate -src <SRC_SCHEMA> -dest <DEST_SCHEMA> [FLAGS]
 //
-//   GenerateCommand(
-//     "-src", "postgres://user:pass@localhost:5432/mydatabase",
-//     "-dest", "tables/tables.go",
-//     "-output-dir", "./migrations",
-//   )
+//	GenerateCommand(
+//	  "-src", "postgres://user:pass@localhost:5432/mydatabase",
+//	  "-dest", "tables/tables.go",
+//	  "-output-dir", "./migrations",
+//	)
 func GenerateCommand(args ...string) (*GenerateCmd, error) {
 	var cmd GenerateCmd
 	var db, src, dest string
@@ -134,6 +134,11 @@ Flags:
 		}
 		if cmd.DestCatalog.Dialect == "" {
 			cmd.DestCatalog.Dialect = cmd.SrcCatalog.Dialect
+		}
+	}
+	if cmd.SrcCatalog.CurrentSchema != "" {
+		if cmd.DestCatalog.CurrentSchema == "" {
+			cmd.DestCatalog.CurrentSchema = cmd.SrcCatalog.CurrentSchema
 		}
 	}
 	if dest != "" {
