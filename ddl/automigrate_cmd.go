@@ -77,9 +77,9 @@ type AutomigrateCmd struct {
 
 // AutomigrateCommand creates a new AutomigrateCmd with the given arguments. E.g.
 //
-//   sqddl automigrate -db <DATABASE_URL> -dest <DEST_SCHEMA> [FLAGS]
+//	sqddl automigrate -db <DATABASE_URL> -dest <DEST_SCHEMA> [FLAGS]
 //
-//   Automigrate("-db", "postgres://user:pass@localhost:5432/sakila", "-dest", "tables/tables.go")
+//	Automigrate("-db", "postgres://user:pass@localhost:5432/sakila", "-dest", "tables/tables.go")
 func AutomigrateCommand(args ...string) (*AutomigrateCmd, error) {
 	var cmd AutomigrateCmd
 	var dest, dir, lockTimeout, maxDelay, baseDelay string
@@ -200,6 +200,13 @@ func (cmd *AutomigrateCmd) Run() error {
 			if err != nil {
 				return err
 			}
+		}
+	} else {
+		if cmd.DestCatalog.Dialect == "" {
+			cmd.DestCatalog.Dialect = srcCatalog.Dialect
+		}
+		if cmd.DestCatalog.CurrentSchema == "" {
+			cmd.DestCatalog.CurrentSchema = srcCatalog.CurrentSchema
 		}
 	}
 	var filenames, warnings []string
