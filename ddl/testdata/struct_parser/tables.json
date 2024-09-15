@@ -1,0 +1,58 @@
+{
+  "Schemas": [
+    {
+      "Tables": [
+        {
+          "TableName": "actor",
+          "Columns": [
+            {
+              "TableName": "actor",
+              "ColumnName": "actor_id",
+              "ColumnType": "INT",
+              "IsNotNull": true,
+              "IsPrimaryKey": true
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "first_name",
+              "ColumnType": "VARCHAR(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "last_name",
+              "ColumnType": "VARCHAR(255)",
+              "CharacterLength": "255"
+            },
+            {
+              "TableName": "actor",
+              "ColumnName": "latest_film_id",
+              "ColumnType": "INT"
+            }
+          ],
+          "Constraints": [
+            {
+              "TableName": "actor",
+              "ConstraintName": "actor_actor_id_pkey",
+              "ConstraintType": "PRIMARY KEY",
+              "Columns": [
+                "actor_id"
+              ]
+            }
+          ],
+          "Indexes": [
+            {
+              "TableName": "actor",
+              "IndexName": "actor_first_name_last_name_idx",
+              "IsUnique": true,
+              "Columns": [
+                "first_name",
+                "last_name"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+package tables
+
+import "github.com/bokwoon95/sq"
+
+type ACTOR struct {
+	sq.TableStruct `ddl:"primarykey=actor_id"` // PRIMARY KEY (actor_id)
+	ACTOR_ID       sq.NumberField
+	FIRST_NAME     sq.StringField
+	LAST_NAME      sq.StringField
+	LATEST_FILM_ID sq.NumberField
+	// CREATE UNIQUE INDEX ON actor (first_name, last_name)
+	_ struct{} `ddl:"index={first_name,last_name unique}"`
+}

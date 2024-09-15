@@ -65,7 +65,7 @@ func (p *StructParser) VisitStruct(node ast.Node) {
 		return
 	}
 	// Does the struct have fields?
-	if structType.Fields == nil {
+	if structType.Fields == nil || structType.Fields.List == nil {
 		return
 	}
 	tableStruct := TableStruct{
@@ -85,6 +85,10 @@ func (p *StructParser) VisitStruct(node ast.Node) {
 			}
 		} else if typ, ok := astField.Type.(*ast.Ident); ok {
 			structField.Type = typ.Name
+		} else if typ, ok := astField.Type.(*ast.StructType); ok {
+			if typ.Fields == nil || typ.Fields.List == nil {
+				structField.Type = "struct{}"
+			}
 		}
 		// Tag
 		if astField.Tag != nil {
